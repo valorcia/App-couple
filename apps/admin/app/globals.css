@@ -1,0 +1,6 @@
+@import 'tailwindcss';
+@import '@fontsource-variable/fraunces';
+@import '@fontsource-variable/inter';
+@import '@couple/ui/tokens.css';
+@source '../../../packages/ui/src';
+body { background: var(--bg); color: var(--fg); min-height: 100dvh; }

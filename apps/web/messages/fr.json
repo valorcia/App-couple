@@ -1,0 +1,132 @@
+{
+  "common": {
+    "appName": "Entre Nous",
+    "tagline": "Organisez votre quotidien. Partagez plus de moments. Redécouvrez-vous.",
+    "loading": "Chargement…",
+    "retry": "Réessayer",
+    "cancel": "Annuler",
+    "save": "Enregistrer",
+    "continue": "Continuer",
+    "back": "Retour",
+    "close": "Fermer",
+    "copy": "Copier",
+    "copied": "Copié !",
+    "error": "Une erreur est survenue.",
+    "comingSoon": "Bientôt disponible",
+    "logout": "Se déconnecter"
+  },
+  "nav": {
+    "home": "Accueil",
+    "calendar": "Agenda",
+    "play": "Jouer",
+    "us": "Nous",
+    "more": "Plus",
+    "profile": "Profil",
+    "settings": "Réglages",
+    "login": "Connexion",
+    "signup": "Créer un compte",
+    "features": "Fonctionnalités",
+    "games": "Jeux",
+    "pricing": "Tarifs",
+    "faq": "FAQ"
+  },
+  "marketing": {
+    "hero": {
+      "eyebrow": "Le compagnon intelligent du couple",
+      "title": "Organisez votre quotidien. Partagez plus de moments. Redécouvrez-vous.",
+      "subtitle": "Un agenda partagé qui pense à vous, des jeux qui vous rapprochent, des surprises qui sortent de la routine, et un assistant qui propose sans jamais décider à votre place.",
+      "ctaPrimary": "Commencer gratuitement",
+      "ctaSecondary": "Découvrir les fonctionnalités",
+      "note": "Gratuit pour commencer. Un seul abonnement pour deux."
+    },
+    "pillars": {
+      "title": "Trois piliers, une seule application",
+      "love": { "title": "S'aimer", "body": "Réponses secrètes, confessions, envies partagées en toute confidentialité : apprenez à vous connaître encore mieux." },
+      "play": { "title": "S'amuser", "body": "Dilemmes, défis, quiz de souvenirs, « Lequel de nous deux ? » : des jeux pensés pour deux, pas des listes de questions." },
+      "build": { "title": "Construire ensemble", "body": "Agenda partagé intelligent, listes, tâches sans classement, projets de vie : le quotidien, simplement." }
+    },
+    "privacy": {
+      "title": "Votre intimité n'appartient qu'à vous",
+      "body": "Les réponses individuelles ne sont jamais révélées sans accord mutuel. Les événements privés restent privés. Aucun SDK publicitaire, aucune utilisation de vos données intimes pour entraîner une IA."
+    },
+    "ctaBottom": { "title": "Prêts à commencer ?", "body": "Créez votre compte, invitez votre partenaire avec un code, et c'est parti.", "cta": "Créer notre espace" }
+  },
+  "auth": {
+    "login": { "title": "Bon retour", "subtitle": "Connectez-vous pour retrouver votre espace.", "submit": "Se connecter", "noAccount": "Pas encore de compte ?", "forgot": "Mot de passe oublié ?" },
+    "register": { "title": "Créons votre espace", "subtitle": "Un compte par personne. Vous inviterez votre partenaire juste après.", "submit": "Créer mon compte", "hasAccount": "Déjà un compte ?", "terms": "J'accepte les <terms>conditions générales</terms> et la <privacy>politique de confidentialité</privacy>.", "marketing": "Je souhaite recevoir des idées et nouveautés par e-mail (facultatif)." },
+    "fields": { "email": "Adresse e-mail", "password": "Mot de passe", "passwordHint": "10 caractères minimum.", "displayName": "Prénom ou pseudonyme", "displayNameHint": "C'est ainsi que votre partenaire vous verra.", "newPassword": "Nouveau mot de passe" },
+    "verify": { "title": "Confirmez votre adresse", "body": "Nous avons envoyé un lien à {email}. Cliquez dessus pour activer votre compte et inviter votre partenaire.", "resend": "Renvoyer l'e-mail", "resent": "E-mail renvoyé.", "verifying": "Vérification en cours…", "success": "Adresse confirmée. Bienvenue !", "invalid": "Ce lien n'est plus valide. Demandez un nouvel e-mail depuis votre compte." },
+    "forgot": { "title": "Mot de passe oublié", "subtitle": "Indiquez votre e-mail, nous vous envoyons un lien de réinitialisation.", "submit": "Envoyer le lien", "sent": "Si un compte existe pour cette adresse, un e-mail vient de partir." },
+    "reset": { "title": "Nouveau mot de passe", "submit": "Enregistrer", "success": "Mot de passe mis à jour. Vous pouvez vous connecter." }
+  },
+  "couple": {
+    "setup": { "title": "Et maintenant, à deux", "subtitle": "Invitez votre partenaire ou rejoignez son espace avec son code.", "invite": "Inviter mon partenaire", "join": "J'ai un code" },
+    "invite": { "title": "Votre code d'invitation", "body": "Partagez ce code avec votre partenaire. Il est valable 72 heures et ne sert qu'une fois.", "emailOptional": "Son adresse e-mail (facultatif, pour lui envoyer le code)", "generate": "Générer un code", "regenerate": "Nouveau code", "waiting": "En attente de votre partenaire…", "shareLink": "Lien à partager", "expires": "Expire le {date}" },
+    "join": { "title": "Rejoindre mon partenaire", "code": "Code d'invitation", "codeHint": "8 caractères, reçus de votre partenaire.", "submit": "Rejoindre" },
+    "linked": { "title": "Vous êtes ensemble", "body": "{partner} et vous partagez désormais le même espace." },
+    "leave": { "title": "Quitter le couple", "body": "Cette action est immédiate. Vos données personnelles restent les vôtres ; l'espace commun est conservé en lecture 30 jours puis archivé.", "confirm": "Oui, quitter" }
+  },
+  "dashboard": {
+    "greeting": { "morning": "Bonjour {name}", "afternoon": "Bel après-midi {name}", "evening": "Bonsoir {name}" },
+    "together": "Ensemble depuis {days} jours",
+    "whatNow": "On fait quoi ?",
+    "whatNowHint": "Une idée pour maintenant, ce soir ou ce week-end.",
+    "upcoming": "À venir",
+    "noUpcoming": "Rien de prévu. C'est une invitation.",
+    "dailyQuestion": "Question du jour",
+    "challenge": "Défi du moment",
+    "nextDate": "Prochaine date importante",
+    "shortcuts": "Raccourcis",
+    "pendingInvitation": "Votre partenaire n'a pas encore rejoint votre espace.",
+    "seeInvitation": "Voir l'invitation"
+  },
+  "profile": {
+    "title": "Mon profil",
+    "subtitle": "Ces informations sont visibles par votre partenaire uniquement.",
+    "bio": "Quelques mots sur vous",
+    "interests": "Centres d'intérêt",
+    "interestsHint": "Séparés par des virgules.",
+    "locale": "Langue",
+    "timezone": "Fuseau horaire",
+    "saved": "Profil mis à jour.",
+    "security": "Sécurité",
+    "changePassword": "Changer de mot de passe",
+    "currentPassword": "Mot de passe actuel",
+    "passwordChanged": "Mot de passe modifié. Vos autres sessions ont été déconnectées.",
+    "sessions": "Appareils connectés",
+    "logoutEverywhere": "Déconnecter tous les appareils",
+    "theme": "Apparence",
+    "themeSystem": "Système",
+    "themeLight": "Clair",
+    "themeDark": "Sombre"
+  },
+  "errors": {
+    "VALIDATION_FAILED": "Certaines informations sont invalides.",
+    "NOT_FOUND": "Introuvable.",
+    "FORBIDDEN": "Vous n'avez pas accès à cette ressource.",
+    "UNAUTHORIZED": "Veuillez vous connecter.",
+    "CONFLICT": "Cette action entre en conflit avec l'état actuel.",
+    "RATE_LIMITED": "Trop de tentatives. Réessayez dans un instant.",
+    "INTERNAL": "Une erreur est survenue. Réessayez.",
+    "AUTH_INVALID_CREDENTIALS": "E-mail ou mot de passe incorrect.",
+    "AUTH_EMAIL_TAKEN": "Un compte existe déjà avec cet e-mail.",
+    "AUTH_EMAIL_NOT_VERIFIED": "Confirmez votre adresse e-mail pour continuer.",
+    "AUTH_TOKEN_INVALID": "Ce lien n'est plus valide.",
+    "AUTH_TOKEN_EXPIRED": "Ce lien a expiré.",
+    "AUTH_TOKEN_REUSED": "Votre session a été invalidée par sécurité. Reconnectez-vous.",
+    "AUTH_ACCOUNT_SUSPENDED": "Ce compte est suspendu.",
+    "AUTH_PASSWORD_WEAK": "Choisissez un mot de passe plus robuste (10 caractères minimum, pas trop courant).",
+    "AUTH_CSRF": "Requête refusée.",
+    "COUPLE_REQUIRED": "Associez d'abord votre partenaire.",
+    "COUPLE_ALREADY_LINKED": "Vous êtes déjà associé à un partenaire.",
+    "COUPLE_FULL": "Ce couple est déjà complet.",
+    "COUPLE_NOT_ACTIVE": "Ce couple n'est pas encore actif.",
+    "INVITATION_INVALID": "Code d'invitation invalide.",
+    "INVITATION_EXPIRED": "Ce code d'invitation a expiré.",
+    "INVITATION_SELF": "Vous ne pouvez pas accepter votre propre invitation.",
+    "INVITATION_LIMIT": "Limite d'invitations atteinte pour aujourd'hui.",
+    "ENTITLEMENT_REQUIRED": "Cette fonctionnalité est réservée à Premium.",
+    "QUOTA_EXCEEDED": "Vous avez atteint votre quota pour aujourd'hui.",
+    "NETWORK": "Impossible de joindre le serveur. Vérifiez votre connexion."
+  }
+}

@@ -87,8 +87,10 @@ si le temps de compilation le justifie.
 - Admin : rôle `ADMIN`/`SUPPORT` + TOTP (Phase 5), journalisation `AuditLog`.
 
 ### 4.2 Autorisation
-- `JwtAuthGuard` → `CoupleGuard` (charge l'appartenance active) → décorateurs
-  `@CurrentUser()`, `@CurrentCouple()`.
+- `JwtAuthGuard` → `CoupleGuard` (charge toujours le couple courant dans `req.couple`, `null`
+  sinon ; `@RequireCouple()` exige un couple ACTIF) → décorateurs `@CurrentUser()`,
+  `@CurrentCouple()` (lève `COUPLE_REQUIRED` si aucun couple actif : filet de sécurité même sans
+  décorateur), `@CurrentCoupleOptional()`.
 - Toute requête Prisma sur une ressource commune inclut `where: { coupleId }` depuis le
   contexte authentifié, jamais depuis un paramètre client.
 - Les projections de confidentialité (événement privé → « Occupé », réponses cachées

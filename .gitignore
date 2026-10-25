@@ -13,3 +13,6 @@ coverage/
 packages/database/generated/
 apps/mobile/ios/
 apps/mobile/android/
+test-results/
+playwright-report/
+e2e/screenshots/

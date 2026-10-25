@@ -63,3 +63,19 @@ Documenté comme limitation.
 
 ### ADR-012 — Pas de SDK publicitaire, analytics agrégés sans cookies tiers
 Conformité et positionnement premium.
+
+### ADR-013 — Prisma 6 (et non 7) au lancement
+Prisma 7 change le moteur (driver adapters obligatoires, `prisma.config.ts`, nouveau générateur).
+Prisma 6.19 est stable, bien documenté et suffisant ; la migration vers 7 est planifiée après la
+Phase 3, une fois le schéma stabilisé.
+
+### ADR-014 — Exécution de l'API via `@swc-node/register`
+Les packages du monorepo sont consommés en sources TypeScript (meilleure DX pour Next/Expo).
+L'API NestJS a besoin des métadonnées de décorateurs (non supportées par esbuild/tsx) : SWC les
+émet et résout les packages du workspace sans étape de build. Dev, tests (vitest + unplugin-swc)
+et image Docker utilisent le même mécanisme. Un bundle précompilé pourra remplacer ce mode si le
+temps de démarrage devient un sujet.
+
+### ADR-015 — E2E sur build de production, serveur dev réservé au développement
+Les tests Playwright démarrent l'API et un `next build && next start` (déterministe). Le serveur
+de développement Next compile à la demande et produit des faux négatifs en e2e.

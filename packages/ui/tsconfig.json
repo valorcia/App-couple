@@ -1,0 +1,5 @@
+{
+  "extends": "@couple/config/tsconfig/library.json",
+  "compilerOptions": { "jsx": "react-jsx", "lib": ["dom", "dom.iterable", "ES2023"] },
+  "include": ["src/**/*.ts", "src/**/*.tsx"]
+}

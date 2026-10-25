@@ -19,6 +19,8 @@ export class MailService {
   private transporter: Transporter | null = null;
   /** Dernier message envoyé (utile pour les tests avec provider console). */
   public lastMessage: MailMessage | null = null;
+  /** Boîte d'envoi mémoire (provider console uniquement, hors production) : 100 derniers messages. */
+  public readonly outbox: (MailMessage & { sentAt: string })[] = [];
 
   constructor(
     @Inject(ENV) private readonly env: Env,
@@ -37,6 +39,10 @@ export class MailService {
     this.lastMessage = message;
     switch (this.env.MAIL_PROVIDER) {
       case 'console':
+        if (this.env.NODE_ENV !== 'production') {
+          this.outbox.push({ ...message, sentAt: new Date().toISOString() });
+          if (this.outbox.length > 100) this.outbox.shift();
+        }
         if (this.env.NODE_ENV !== 'test') {
           this.logger.log({ to: message.to, subject: message.subject, text: message.text }, '[mail:console]');
         }

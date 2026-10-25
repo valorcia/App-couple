@@ -19,6 +19,7 @@ import { CouplesModule } from './modules/couples/couples.module';
 import { EntitlementsModule } from './modules/entitlements/entitlements.module';
 import { AdminModule } from './modules/admin/admin.module';
 import { HealthModule } from './modules/health/health.module';
+import { DevModule } from './modules/dev/dev.module';
 
 const SENSITIVE_PATHS = ['/auth', '/me/confirm-adult'];
 
@@ -56,6 +57,7 @@ const SENSITIVE_PATHS = ['/auth', '/me/confirm-adult'];
     EntitlementsModule,
     AdminModule,
     HealthModule,
+    DevModule.register(),
   ],
   providers: [
     fieldCipherProvider,

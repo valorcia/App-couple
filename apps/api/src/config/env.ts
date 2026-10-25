@@ -16,7 +16,9 @@ const envSchema = z.object({
   JWT_SECRET: z.string().min(32, 'JWT_SECRET doit faire au moins 32 caractères'),
   JWT_ACCESS_TTL: z.string().default('15m'),
   REFRESH_TOKEN_TTL_DAYS: z.coerce.number().int().min(1).max(365).default(30),
-  DATA_ENCRYPTION_KEY: z.string().min(40, 'DATA_ENCRYPTION_KEY : 32 octets base64 attendus'),
+  DATA_ENCRYPTION_KEY: z
+    .string()
+    .refine((v) => Buffer.from(v, 'base64').length === 32, 'DATA_ENCRYPTION_KEY : 32 octets encodés en base64 attendus (openssl rand -base64 32)'),
   COOKIE_SECURE: z.coerce.boolean().default(false),
 
   MAIL_PROVIDER: z.enum(['console', 'smtp', 'resend']).default('console'),
@@ -41,6 +43,8 @@ const envSchema = z.object({
 
   EXPO_ACCESS_TOKEN: z.string().optional(),
   LOG_LEVEL: z.enum(['fatal', 'error', 'warn', 'info', 'debug', 'trace', 'silent']).default('info'),
+  /** Désactive le rate limiting (tests e2e locaux uniquement ; ignoré en production). */
+  RATE_LIMIT_DISABLED: z.coerce.boolean().default(false),
 });
 
 export type Env = z.infer<typeof envSchema>;
@@ -50,6 +54,9 @@ export function loadEnv(source: NodeJS.ProcessEnv = process.env): Env {
   if (!parsed.success) {
     const issues = parsed.error.issues.map((i) => `${i.path.join('.')}: ${i.message}`).join('\n  ');
     throw new Error(`Configuration invalide :\n  ${issues}`);
+  }
+  if (parsed.data.NODE_ENV === 'production' && parsed.data.RATE_LIMIT_DISABLED) {
+    throw new Error('RATE_LIMIT_DISABLED est interdit en production');
   }
   return parsed.data;
 }

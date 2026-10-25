@@ -10,6 +10,7 @@
     "./errors": "./src/errors.ts",
     "./ids": "./src/ids.ts",
     "./constants": "./src/constants.ts",
+    "./api-client": "./src/api-client.ts",
     "./i18n/fr": "./src/i18n/fr.json"
   },
   "scripts": { "typecheck": "tsc --noEmit -p tsconfig.json", "test": "vitest run" },

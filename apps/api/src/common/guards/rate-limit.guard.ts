@@ -1,5 +1,6 @@
-import { type CanActivate, type ExecutionContext, Injectable } from '@nestjs/common';
+import { type CanActivate, type ExecutionContext, Inject, Injectable } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
+import { ENV, type Env } from '@/config/env';
 import { AppError, ErrorCode } from '@couple/shared';
 import { RedisService } from '../redis/redis.service';
 import { RATE_LIMIT_KEY, type RateLimitOptions } from '../decorators/rate-limit.decorator';
@@ -8,11 +9,13 @@ import type { AuthenticatedRequest } from '../decorators/auth.decorators';
 @Injectable()
 export class RateLimitGuard implements CanActivate {
   constructor(
+    @Inject(ENV) private readonly env: Env,
     private readonly reflector: Reflector,
     private readonly redis: RedisService,
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
+    if (this.env.RATE_LIMIT_DISABLED) return true;
     const options = this.reflector.getAllAndOverride<RateLimitOptions | undefined>(RATE_LIMIT_KEY, [
       context.getHandler(),
       context.getClass(),
