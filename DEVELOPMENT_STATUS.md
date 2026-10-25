@@ -55,6 +55,8 @@ Dernière mise à jour : 2026-10-25 — Phases 1, 2 et 3 terminées. **Phase 4 (
 
 - **« Les cartes du soir »** (espace Intimité) : jeu de cartes à tirer, à tour de rôle, avec gestes et défis du tendre (niveau 1, gratuit) au très explicite (niveau 4 « Feu », Premium). Table **partagée** par le couple (Redis, expiration à 5 h locale) : la carte tirée est la même sur les deux écrans, qui réalise quoi est indiqué (celui qui tire, l'autre, ou à deux), minuteur local, « Fait », « Autre carte », fin de soirée. Niveaux bornés par l'intensité maximale acceptée par **chacun** des deux partenaires ; aucune carte répétée dans la soirée ; contenu jamais transmis par le socket temps réel. Modèle `IntimacyCard` (migration `intimacy_cards`), 44 cartes seedées, type « Cartes du soir » dans le CMS admin, écran web à identité propre (table de nuit, sceaux de cire, carte à retourner), écran mobile, démo, test d'intégration.
 
+- **Icône de l'application** : `apps/mobile/assets/icon.svg` (source) rendue en `icon.png` 1024, `adaptive-icon.png` (premier plan Android, zone sûre), `splash-icon.png` ; reprise comme icône web (`apps/web/app/icon.png`, `apple-icon.png`) et admin ; le composant `Logo` reprend le même dessin. Script de rendu : Chromium via Playwright (`scratchpad/render-icons.js`, à rejouer si le SVG change).
+
 ## En cours
 - Phase 4, jalon 2 : souvenirs (stockage S3) — pas encore commencé.
 

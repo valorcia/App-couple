@@ -7,11 +7,48 @@
     "scheme": "entrenous",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
-    "ios": { "supportsTablet": false, "bundleIdentifier": "com.entrenous.app" },
-    "android": { "package": "com.entrenous.app", "adaptiveIcon": { "backgroundColor": "#F8F3EC" } },
-    "web": { "bundler": "metro", "output": "static" },
-    "plugins": ["expo-router", "expo-secure-store", "expo-localization", ["expo-splash-screen", { "backgroundColor": "#F8F3EC" }]],
-    "experiments": { "typedRoutes": true },
-    "extra": { "apiUrl": "http://localhost:4000", "revenuecat": { "ios": "", "android": "" } }
+    "ios": {
+      "supportsTablet": false,
+      "bundleIdentifier": "com.entrenous.app"
+    },
+    "android": {
+      "package": "com.entrenous.app",
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#F3E7D3"
+      }
+    },
+    "web": {
+      "bundler": "metro",
+      "output": "static",
+      "favicon": "./assets/splash-icon.png"
+    },
+    "plugins": [
+      "expo-router",
+      "expo-secure-store",
+      "expo-localization",
+      [
+        "expo-splash-screen",
+        {
+          "image": "./assets/splash-icon.png",
+          "imageWidth": 200,
+          "backgroundColor": "#F3E7D3",
+          "dark": {
+            "backgroundColor": "#1D1418"
+          }
+        }
+      ]
+    ],
+    "experiments": {
+      "typedRoutes": true
+    },
+    "extra": {
+      "apiUrl": "http://localhost:4000",
+      "revenuecat": {
+        "ios": "",
+        "android": ""
+      }
+    },
+    "icon": "./assets/icon.png"
   }
 }

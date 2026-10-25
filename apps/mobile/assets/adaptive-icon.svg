@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" width="1024" height="1024">
+  <!-- Premier plan Android (zone sûre : 66 % central), fond fourni par app.json. -->
+  <defs><clipPath id="lens"><circle cx="432" cy="528" r="292"/></clipPath></defs>
+  <g transform="translate(512 512) scale(0.64) translate(-512 -512)">
+    <g transform="translate(26 26)" fill="#271922"><circle cx="432" cy="528" r="292"/><circle cx="592" cy="528" r="292"/></g>
+    <circle cx="432" cy="528" r="292" fill="#E0582B"/>
+    <circle cx="592" cy="528" r="292" fill="#4B2A46"/>
+    <g clip-path="url(#lens)"><circle cx="592" cy="528" r="292" fill="#F2BF45"/></g>
+    <circle cx="432" cy="528" r="292" fill="none" stroke="#271922" stroke-width="18"/>
+    <circle cx="592" cy="528" r="292" fill="none" stroke="#271922" stroke-width="18"/>
+    <path d="M322 376c36-60 96-100 164-112" fill="none" stroke="#F3E7D3" stroke-width="16" stroke-linecap="round" opacity="0.85"/>
+    <g fill="none" stroke="#271922" stroke-width="16" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M846 172l22 52 52 22-52 22-22 52-22-52-52-22 52-22z"/>
+      <path d="M152 836l12 28 28 12-28 12-12 28-12-28-28-12 28-12z" stroke-width="12"/>
+    </g>
+  </g>
+</svg>
