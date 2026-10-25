@@ -2,7 +2,7 @@
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { useTranslations } from 'next-intl';
-import { CalendarDays, Gamepad2, Home, LogOut, MoreHorizontal, Sparkles, Users } from 'lucide-react';
+import { CalendarDays, Gamepad2, Home, ListChecks, LogOut, MoreHorizontal, Sparkles, Users } from 'lucide-react';
 import { Avatar, Button, Logo, cn } from '@couple/ui';
 import { useAuth } from '@/lib/auth-provider';
 import { NotificationBell } from '@/components/notifications/notification-bell';
@@ -11,9 +11,12 @@ const NAV = [
   { href: '/accueil', key: 'home', icon: Home },
   { href: '/agenda', key: 'calendar', icon: CalendarDays },
   { href: '/jouer', key: 'play', icon: Gamepad2 },
+  { href: '/quotidien', key: 'daily', icon: ListChecks, mobile: false },
   { href: '/couple', key: 'us', icon: Users },
   { href: '/profil', key: 'more', icon: MoreHorizontal },
 ] as const;
+/** Barre mobile : 5 entrées max ; le Quotidien est accessible depuis l'accueil et « Plus ». */
+const MOBILE_NAV = NAV.filter((n) => !('mobile' in n && n.mobile === false));
 
 export function AppShell({ children }: { children: React.ReactNode }) {
   const t = useTranslations('nav');
@@ -33,7 +36,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         <Link href="/accueil" aria-label="Accueil"><Logo /></Link>
         <nav className="mt-10 flex flex-col gap-1" aria-label="Application">
           {NAV.map(({ href, key, icon: Icon }) => {
-            const active = pathname.startsWith(href);
+            const active = pathname.startsWith(href) || (href === '/quotidien' && pathname.startsWith('/projets'));
             return (
               <Link
                 key={href}
@@ -72,7 +75,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         <main className="flex-1 pb-24 md:pb-0">{children}</main>
         <nav className="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-bg-elevated/95 backdrop-blur md:hidden" aria-label="Navigation mobile" style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}>
           <ul className="grid grid-cols-5">
-            {NAV.map(({ href, key, icon: Icon }) => {
+            {MOBILE_NAV.map(({ href, key, icon: Icon }) => {
               const active = pathname.startsWith(href);
               return (
                 <li key={href}>

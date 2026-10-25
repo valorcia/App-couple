@@ -1,5 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import { Prisma } from '@couple/database';
 import { AppError, ErrorCode } from '@couple/shared';
 import type { DesireItemDto, DesireMatchesDto, IntimacyCategory, IntimacySettingsDto } from '@couple/types';
 import type { z } from 'zod';

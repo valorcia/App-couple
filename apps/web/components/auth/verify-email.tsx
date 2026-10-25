@@ -37,7 +37,7 @@ export function VerifyEmail() {
         setTimeout(() => latest.current.router.replace('/couple'), 1200);
       })
       .catch(() => setState('invalid'));
-  }, [token]);
+  }, [token, qc]);
 
   const resend = async () => {
     await api.post('/auth/resend-verification');

@@ -12,7 +12,7 @@ import { DailyQuestionCard } from '@/components/games/daily-question';
 import { FeaturedChallenge } from '@/components/challenges/featured-challenge';
 import { WhatNow } from '@/components/ideas/what-now';
 import * as React from 'react';
-import { CalendarDays, ClipboardList, Gamepad2, Gift, Sparkles } from 'lucide-react';
+import { CalendarDays, ClipboardList, Gamepad2, Gift, ListChecks, Sparkles } from 'lucide-react';
 import { Button, Card, CardContent, CardHeader, CardTitle, EmptyState } from '@couple/ui';
 import { useAuth } from '@/lib/auth-provider';
 
@@ -106,9 +106,10 @@ export function Dashboard() {
 
       <section aria-labelledby="shortcuts-title" className="space-y-3">
         <h2 id="shortcuts-title" className="text-xl">{t('shortcuts')}</h2>
-        <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+        <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
           {[
             { icon: CalendarDays, label: 'Agenda', href: '/agenda' },
+            { icon: ListChecks, label: 'Quotidien', href: '/quotidien' },
             { icon: Gamepad2, label: 'Jouer', href: '/jouer' },
             { icon: ClipboardList, label: 'Défis', href: '/defis' },
             { icon: Gift, label: 'Intimité', href: '/intimite' },

@@ -1,6 +1,6 @@
 # DEVELOPMENT_STATUS
 
-Dernière mise à jour : 2026-10-25 — Phases 1 et 2 terminées, **Phase 3 (MVP commercial) terminée : 10 jalons livrés**. Phase 4 à démarrer.
+Dernière mise à jour : 2026-10-25 — Phases 1, 2 et 3 terminées. **Phase 4 (fonctions avancées) en cours : jalon 1 livré (Quotidien : listes de courses, tâches, projets).**
 
 ## Fonctionnalités terminées
 
@@ -36,22 +36,23 @@ Dernière mise à jour : 2026-10-25 — Phases 1 et 2 terminées, **Phase 3 (MVP
 
 - **Notifications** (API + web + mobile) : files BullMQ (`push`, `reminders`, `daily`) consommées en ligne en dev/test ou par un worker dédié (`WORKER_MODE`), envoi push via l'API Expo par lots avec retrait des jetons invalides, préférences par catégorie (push / in-app / plafond quotidien), heures silencieuses globales avec report du push après la plage (fuseau de l'utilisateur), rappels d'événements à l'échéance (idempotents, première occurrence des récurrents), notification matinale de la question du jour à 9 h locale, enregistrement et suppression d'appareils. Web : cloche avec compteur de non-lus, centre de notifications avec liens profonds, page de réglages. Mobile : demande de permission et enregistrement du jeton Expo après connexion, retrait à la déconnexion.
 
-7. Abonnements (Stripe web, RevenueCat mobile) + quotas gratuits.
-8. Notifications (préférences, heures silencieuses, push Expo).
-9. CMS admin des contenus.
-10. Écrans mobiles des modules ci-dessus.
-11. Phase 4 : assistant IA, surprises, expériences, projets, listes & tâches, souvenirs, synchronisations calendrier.
-12. Phase 5 : site marketing complet, OAuth Apple/Google, 2FA admin, DPIA, charge, stores.
-
 - **CMS des contenus** (API + admin) : CRUD paginé et filtrable (recherche, statut, offre, langue, jeu, catégorie) pour questions, défis, envies, idées d'activités, catégories et packs ; statut DRAFT / PUBLISHED / ARCHIVED (les brouillons ne sont jamais servis aux joueurs) ; suppression physique des brouillons seulement, archivage sinon ; import JSON en masse avec rapport d'erreurs par index ; écriture réservée au rôle ADMIN, lecture SUPPORT ; journal d'audit sur chaque écriture. Admin : pages « Contenus » par type avec compteurs, filtres, éditeur généré par type, publication/archivage, import.
 
 - **Mobile (Expo)** : écrans des modules MVP — Accueil (question du jour, « On fait quoi ? » en 4 étapes avec ajout à l'agenda, événements à venir, défi du moment), Agenda (30 jours, création avec visibilité et invitation, réponse aux invitations), Jouer (catalogue, lancement, parties en cours), écran de partie (manches, réponses texte/choix/vote, révélation, verdict, résumé), Défis, Intimité & Double Secret, Premium (RevenueCat avec chargement dynamique et repli honnête sans clés ; restauration ; liens de gestion des stores), réglages de notifications, Nous, Plus. Temps réel via Socket.IO. **Non exécuté sur appareil ou simulateur dans cette session** (typecheck + lint uniquement) : une passe de QA sur iOS/Android est indispensable avant toute soumission.
 
+### Fonctions avancées (Phase 4) — en cours
+- **Quotidien : listes de courses, tâches, projets** (API + web + mobile) :
+  - *Listes de courses* : plusieurs listes par couple, articles avec quantité et rayon, cochage attribué (« Coché par … »), articles cochés en bas de liste, retrait des cochés, archivage / restauration, suppression. Temps réel `shopping.changed` (un article coché apparaît instantanément chez le partenaire, vérifié en e2e).
+  - *Tâches* : création avec attribution **volontaire** (moi / partenaire / « on verra »), priorité, échéance, récurrence RRULE (une tâche récurrente terminée recrée l'occurrence suivante), rattachement à un projet, commentaires, filtres À faire / Terminées, notification in-app à l'attribution et au commentaire. **Aucun classement ni score** (règle produit). Temps réel `task.changed`.
+  - *Projets* : gabarits (logement, voyage, mariage/union, travaux, arrivée d'un enfant, déménagement, libre) qui pré-remplissent des étapes modifiables, progression calculée sur les étapes, objectif, date cible, budget indicatif, notes partagées, tâches liées (`openTasks`), statuts En cours / Réalisé / Archivé. Temps réel `project.changed`.
+  - Isolation stricte par couple (404 hors couple, attribution limitée aux deux membres, projet lié vérifié). Web : page `/quotidien` à onglets + `/projets/[id]` ; composants réutilisables ajoutés au design system (`Checkbox`, `Progress`, `Select`). Mobile : écrans `quotidien` et `projets/[id]`, accès depuis l'accueil et « Plus ».
+  - Non livré dans ce jalon : documents de projet (`ProjectDocument`, dépend du stockage S3 du jalon Souvenirs), rappels push sur l'échéance des tâches (à brancher sur la file `reminders`).
+
 ## En cours
-- Rien : fin de la Phase 3.
+- Phase 4, jalon 2 : souvenirs (stockage S3) — pas encore commencé.
 
 ## Restant (ordre prévu — voir docs/ROADMAP.md)
-11. Phase 4 : assistant IA conversationnel (personnel / commun, outils), surprises, générateur d'expériences, projets, listes & tâches temps réel, souvenirs (S3, quotas), synchronisations calendrier Google / Microsoft / ICS.
+11. Phase 4 (suite) : souvenirs (S3, quotas, miniatures), surprises, générateur d'expériences, assistant IA conversationnel « Notre Complice » (personnel / commun, outils), synchronisations calendrier Google / Microsoft / ICS, documents de projet, rappels d'échéance des tâches, QA mobile sur appareil.
 12. Phase 5 : site marketing complet (pages fonctionnalités, FAQ, cookies, données structurées), OAuth Apple / Google, 2FA admin, DPIA, tests de charge, runbook, préparation des stores.
 
 ## Bugs connus / limitations
@@ -65,10 +66,10 @@ Dernière mise à jour : 2026-10-25 — Phases 1 et 2 terminées, **Phase 3 (MVP
 | Unitaires `@couple/validation` | `pnpm --filter @couple/validation test` | 1 test |
 | Unitaires `@couple/game-engine` | `pnpm --filter @couple/game-engine test` | 5 tests |
 | Unitaires `@couple/ai` | `pnpm --filter @couple/ai test` | 4 tests |
-| API (unitaires + intégration sur PostgreSQL réel) | `pnpm --filter @couple/api test` | 66 tests : auth, couples, autorisations, admin, agenda, récurrence, temps réel, jeux, question du jour, défis, intimité, « On fait quoi ? », abonnements, notifications, CMS des contenus |
+| API (unitaires + intégration sur PostgreSQL réel) | `pnpm --filter @couple/api test` | 69 tests : auth, couples, autorisations, admin, agenda, récurrence, temps réel, jeux, question du jour, défis, intimité, « On fait quoi ? », abonnements, notifications, CMS des contenus, quotidien (listes, tâches, projets) |
 | Lint + typecheck (toutes apps/packages) | `pnpm turbo run lint typecheck` | OK |
 | Build Next web + admin | `pnpm --filter @couple/web --filter @couple/admin build` | OK |
-| E2E Playwright (navigateur réel, API + web production) | `pnpm --filter @couple/web test:e2e` | 10 scénarios (web + admin) : onboarding à deux comptes, refus de connexion, agenda (partagé / occupé / privé / invitation), dilemme à deux + question du jour, défi à deux, Double Secret (activation, confidentialité, révélation mutuelle), « On fait quoi ? » (catalogue → agenda), page Premium sans clés de paiement, notifications (centre, badge, réglages), admin (connexion réservée, création et publication d'une question) |
+| E2E Playwright (navigateur réel, API + web production) | `pnpm --filter @couple/web test:e2e` | 11 scénarios (web + admin) : onboarding à deux comptes, refus de connexion, agenda (partagé / occupé / privé / invitation), dilemme à deux + question du jour, défi à deux, Double Secret (activation, confidentialité, révélation mutuelle), « On fait quoi ? » (catalogue → agenda), page Premium sans clés de paiement, notifications (centre, badge, réglages), admin (connexion réservée, création et publication d'une question), quotidien (liste partagée avec propagation temps réel, tâche attribuée puis terminée par le partenaire, projet depuis gabarit avec étape, note et progression vues par les deux) |
 
 ## Dépendances externes (à fournir)
 | Besoin | Variable(s) | Phase |

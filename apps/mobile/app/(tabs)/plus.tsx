@@ -17,6 +17,8 @@ export default function MoreScreen() {
         <View style={{ height: spacing(2) }} />
         <Button title="Premium Couple" variant="secondary" onPress={() => router.push('/premium')} />
         <View style={{ height: spacing(2) }} />
+        <Button title="Quotidien : courses, tâches, projets" variant="secondary" onPress={() => router.push('/quotidien')} />
+        <View style={{ height: spacing(2) }} />
         <Button title="Défis" variant="ghost" onPress={() => router.push('/defis')} />
         <View style={{ height: spacing(4) }} />
         <Button title="Se déconnecter" variant="ghost" onPress={() => void logout()} />

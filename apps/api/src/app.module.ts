@@ -32,6 +32,8 @@ import { BillingModule } from './modules/billing/billing.module';
 import { QueueModule } from './common/queue/queue.module';
 import { PushModule } from './modules/push/push.module';
 import { SchedulerModule } from './modules/scheduler/scheduler.module';
+import { DailyLifeModule } from './modules/daily-life/daily-life.module';
+import { ProjectsModule } from './modules/projects/projects.module';
 
 const SENSITIVE_PATHS = ['/auth', '/me/confirm-adult'];
 
@@ -80,6 +82,8 @@ const SENSITIVE_PATHS = ['/auth', '/me/confirm-adult'];
     AiModule,
     IdeasModule,
     BillingModule,
+    DailyLifeModule,
+    ProjectsModule,
     HealthModule,
     DevModule.register(),
   ],

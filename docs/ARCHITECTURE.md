@@ -104,7 +104,7 @@ si le temps de compilation le justifie.
 
 ### 4.4 Temps réel
 Gateway Socket.IO authentifiée par access token ; room `couple:<id>` ; événements
-`calendar.event.upsert`, `game.session.updated`, `shopping.item.updated`, etc. Adaptateur
+`calendar.changed`, `game.changed`, `daily.changed`, `challenge.changed`, `intimacy.changed`, `shopping.changed`, `task.changed`, `project.changed`, `entitlements.changed`, `notification.new` (signaux sans contenu : les clients invalident leurs requêtes). Adaptateur
 Redis pour plusieurs instances.
 
 ### 4.5 Files et tâches planifiées

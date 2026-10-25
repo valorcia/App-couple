@@ -13,3 +13,6 @@ export * from './components/alert';
 export * from './components/segmented';
 export * from './components/dialog';
 export * from './components/switch';
+export * from './components/checkbox';
+export * from './components/progress';
+export * from './components/select';

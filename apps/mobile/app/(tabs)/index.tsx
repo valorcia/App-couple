@@ -41,6 +41,14 @@ export default function HomeScreen() {
           </Pressable>
         </Card>
         <View style={{ height: 12 }} />
+        <Pressable onPress={() => router.push('/quotidien')} accessibilityRole="button">
+          <Card>
+            <Text style={{ color: t.fgSubtle, fontSize: 12, textTransform: 'uppercase', letterSpacing: 1 }}>Notre quotidien</Text>
+            <Text style={{ color: t.fg, fontWeight: '600', marginTop: spacing(1) }}>Courses, tâches et projets</Text>
+            <Muted>Partagés en temps réel, sans classement.</Muted>
+          </Card>
+        </Pressable>
+        <View style={{ height: 12 }} />
         <DailyQuestionCard />
         <View style={{ height: 12 }} />
         <Card>

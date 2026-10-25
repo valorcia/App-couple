@@ -434,3 +434,81 @@ export interface NotificationPreferencesDto {
   quietEnd: string | null;
   devices: { id: string; platform: string; deviceName: string | null; lastSeenAt: string }[];
 }
+
+// ---------------------------------------------------------------- Quotidien
+export interface ShoppingItemDto {
+  id: string;
+  name: string;
+  quantity: string | null;
+  category: string | null;
+  position: number;
+  checkedAt: string | null;
+  checkedByUserId: string | null;
+}
+export interface ShoppingListDto {
+  id: string;
+  name: string;
+  archivedAt: string | null;
+  itemCount: number;
+  checkedCount: number;
+  items: ShoppingItemDto[];
+  updatedAt: string;
+}
+export type TaskPriority = 'LOW' | 'MEDIUM' | 'HIGH';
+export type TaskStatus = 'OPEN' | 'DONE' | 'CANCELED';
+export interface TaskCommentDto {
+  id: string;
+  userId: string;
+  body: string;
+  createdAt: string;
+}
+export interface TaskDto {
+  id: string;
+  title: string;
+  description: string | null;
+  creatorUserId: string;
+  assigneeUserId: string | null;
+  projectId: string | null;
+  priority: TaskPriority;
+  status: TaskStatus;
+  dueAt: string | null;
+  rrule: string | null;
+  completedAt: string | null;
+  comments: TaskCommentDto[];
+  createdAt: string;
+  updatedAt: string;
+}
+
+// ---------------------------------------------------------------- Projets
+export type ProjectStatus = 'ACTIVE' | 'COMPLETED' | 'ARCHIVED';
+export interface ProjectStepDto {
+  id: string;
+  title: string;
+  position: number;
+  dueAt: string | null;
+  completedAt: string | null;
+}
+export interface ProjectNoteDto {
+  id: string;
+  body: string;
+  createdAt: string;
+  updatedAt: string;
+}
+export interface ProjectDto {
+  id: string;
+  templateCode: string | null;
+  title: string;
+  goal: string | null;
+  description: string | null;
+  status: ProjectStatus;
+  startAt: string | null;
+  targetAt: string | null;
+  budgetCents: number | null;
+  currency: string;
+  progress: number;
+  steps: ProjectStepDto[];
+  notes: ProjectNoteDto[];
+  openTasks: number;
+  createdAt: string;
+  updatedAt: string;
+}

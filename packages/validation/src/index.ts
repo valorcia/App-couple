@@ -11,3 +11,4 @@ export * from './ideas';
 export * from './billing';
 export * from './notifications';
 export * from './admin-content';
+export * from './daily-life';

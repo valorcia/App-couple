@@ -57,6 +57,8 @@ function AuthGate() {
       <Stack.Screen name="couple" options={{ headerShown: true, title: 'Nous', headerTintColor: t.secondary, headerStyle: { backgroundColor: t.bg } }} />
       <Stack.Screen name="jouer/[id]" />
       <Stack.Screen name="defis" />
+      <Stack.Screen name="quotidien" />
+      <Stack.Screen name="projets/[id]" />
       <Stack.Screen name="intimite" />
       <Stack.Screen name="premium" />
       <Stack.Screen name="notifications-reglages" />
