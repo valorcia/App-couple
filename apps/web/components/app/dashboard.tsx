@@ -8,8 +8,9 @@ import type { CalendarEventDto } from '@couple/types';
 import { api } from '@/lib/api';
 import { useRealtimeInvalidation } from '@/lib/realtime';
 import { eventColor } from '@/lib/calendar-utils';
+import { DailyQuestionCard } from '@/components/games/daily-question';
 import { CalendarDays, ClipboardList, Gamepad2, Gift, Sparkles } from 'lucide-react';
-import { Badge, Button, Card, CardContent, CardDescription, CardHeader, CardTitle, EmptyState } from '@couple/ui';
+import { Badge, Button, Card, CardContent, CardHeader, CardTitle, EmptyState } from '@couple/ui';
 import { useAuth } from '@/lib/auth-provider';
 
 function greetingKey(d = new Date()): 'morning' | 'afternoon' | 'evening' {
@@ -90,13 +91,7 @@ export function Dashboard() {
             )}
           </CardContent>
         </Card>
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2"><Gamepad2 className="h-5 w-5 text-primary" aria-hidden />{t('dailyQuestion')}</CardTitle>
-            <CardDescription>{tc('comingSoon')}</CardDescription>
-          </CardHeader>
-          <CardContent><div className="h-16 rounded-md bg-bg-muted" /></CardContent>
-        </Card>
+        <DailyQuestionCard />
       </div>
 
       <section aria-labelledby="shortcuts-title" className="space-y-3">

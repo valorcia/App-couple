@@ -12,6 +12,8 @@ export const APP_SETTINGS = {
   'quota.free.storageBytes': 500 * 1024 * 1024,
   'quota.premium.storageBytes': 20 * 1024 * 1024 * 1024,
   'quota.free.challengesCatalog': 5,
+  'quota.free.gameSessionsPerDay': 3,
+  'games.freeCategories': ['love', 'humor', 'daily'] as string[],
   'invitation.ttlHours': 72,
   'invitation.maxPerDay': 5,
   'couple.dissolutionGraceDays': 30,

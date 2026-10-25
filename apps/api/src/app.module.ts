@@ -23,6 +23,7 @@ import { DevModule } from './modules/dev/dev.module';
 import { RealtimeModule } from './modules/realtime/realtime.module';
 import { NotificationsModule } from './modules/notifications/notifications.module';
 import { CalendarModule } from './modules/calendar/calendar.module';
+import { GamesModule } from './modules/games/games.module';
 
 const SENSITIVE_PATHS = ['/auth', '/me/confirm-adult'];
 
@@ -62,6 +63,7 @@ const SENSITIVE_PATHS = ['/auth', '/me/confirm-adult'];
     RealtimeModule,
     NotificationsModule,
     CalendarModule,
+    GamesModule,
     HealthModule,
     DevModule.register(),
   ],

@@ -127,6 +127,13 @@ describe('Couples', () => {
     expect(await ctx.prisma.couple.findUnique({ where: { id: fresh.body.id } })).toBeNull();
   });
 
+  it('absorbe des associations concurrentes de couples différents', async () => {
+    const pairs = await Promise.all(Array.from({ length: 4 }, async () => ({ a: await registerVerifiedUser(ctx), b: await registerVerifiedUser(ctx) })));
+    const codes = await Promise.all(pairs.map(async (p) => (await ctx.http().post('/couples').set(auth(p.a.accessToken)).send({})).body.pendingInvitation.code as string));
+    const results = await Promise.all(pairs.map((p, i) => ctx.http().post('/couples/join').set(auth(p.b.accessToken)).send({ code: codes[i] })));
+    expect(results.map((r) => [r.status, r.body.code, r.body.message])).toEqual([[200, undefined, undefined], [200, undefined, undefined], [200, undefined, undefined], [200, undefined, undefined]]);
+  });
+
   it('la base refuse un troisième membre actif même en contournant l\'API', async () => {
     const { coupleId } = await createCouple(ctx);
     const c = await registerVerifiedUser(ctx);

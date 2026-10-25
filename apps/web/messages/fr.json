@@ -300,5 +300,112 @@
       "me": "Vous",
       "partner": "{partner}"
     }
+  },
+  "games": {
+    "title": "Jouer",
+    "subtitle": "Des jeux pensés pour deux. Les réponses se dévoilent en même temps, jamais avant.",
+    "openSessions": "Parties en cours",
+    "history": "Parties terminées",
+    "noOpen": "Aucune partie en cours.",
+    "yourTurn": "À vous de jouer",
+    "waitingPartner": "En attente de {partner}",
+    "start": "Lancer une partie",
+    "play": "Jouer",
+    "resume": "Reprendre",
+    "view": "Voir",
+    "sessionsLeft": "{count} partie(s) gratuite(s) restante(s) aujourd'hui",
+    "premiumAll": "Premium : toutes les catégories, parties illimitées.",
+    "locked": "Premium",
+    "questions": "{count} questions",
+    "length": {
+      "short": "Partie courte (5)",
+      "long": "Partie longue (10)"
+    },
+    "categories": "Catégories",
+    "allCategories": "Toutes les catégories accessibles",
+    "maxLevel": "Niveau maximal",
+    "levels": {
+      "1": "Léger",
+      "2": "Personnel",
+      "3": "Profond",
+      "4": "Très intime"
+    },
+    "types": {
+      "SECRET_ANSWERS": {
+        "name": "Réponses secrètes",
+        "tagline": "Même question, réponses cachées, révélation simultanée."
+      },
+      "WHO_KNOWS_BEST": {
+        "name": "Qui connaît le mieux l'autre ?",
+        "tagline": "L'un répond sur lui-même, l'autre devine."
+      },
+      "DILEMMA": {
+        "name": "Dilemmes",
+        "tagline": "Deux options, un choix secret chacun."
+      },
+      "WHICH_OF_US": {
+        "name": "Lequel de nous deux ?",
+        "tagline": "Une affirmation, un vote."
+      },
+      "CONFESSIONS": {
+        "name": "Confessions",
+        "tagline": "Des questions plus profondes, par niveaux, toujours refusables."
+      },
+      "CHALLENGE": {
+        "name": "Défis à deux",
+        "tagline": "Romantiques, drôles, créatifs… à relever ensemble."
+      },
+      "MEMORY_QUIZ": {
+        "name": "Nos souvenirs",
+        "tagline": "Un quiz généré à partir de vos souvenirs."
+      }
+    },
+    "round": "Manche {index} / {total}",
+    "answerPlaceholder": "Votre réponse, rien que pour vous deux…",
+    "send": "Envoyer",
+    "skip": "Passer cette question",
+    "skipHint": "Aucune réponse ne sera révélée.",
+    "answered": "Réponse envoyée. En attente de {partner}…",
+    "partnerAnswered": "{partner} a déjà répondu.",
+    "reveal": "Révélation",
+    "you": "Vous",
+    "me": "Moi",
+    "partner": "{partner}",
+    "skipped": "Question passée.",
+    "wkb": {
+      "subjectHint": "Répondez pour vous-même : {partner} devra deviner.",
+      "guessHint": "Devinez la réponse de {partner}.",
+      "verdictTitle": "Alors, {partner} a-t-il/elle vu juste ?",
+      "EXACT": "Dans le mille",
+      "CLOSE": "Pas loin",
+      "MISS": "Raté",
+      "awaiting": "En attente du verdict de {partner}."
+    },
+    "dilemma": {
+      "same": "Même choix !",
+      "different": "Deux avis différents."
+    },
+    "summary": {
+      "title": "Partie terminée",
+      "revealed": "{count} révélées",
+      "skipped": "{count} passées",
+      "same": "{count} fois le même choix",
+      "unanimous": "{count} votes unanimes",
+      "points": "{points} points",
+      "again": "Rejouer",
+      "back": "Retour aux jeux"
+    },
+    "abandon": "Abandonner la partie",
+    "abandonHint": "Sans pénalité : vous pourrez en relancer une.",
+    "daily": {
+      "title": "Question du jour",
+      "answer": "Répondre",
+      "waiting": "Réponse envoyée. On attend {partner}.",
+      "partnerFirst": "{partner} a déjà répondu, à vous !",
+      "revealed": "Révélé",
+      "none": "Pas de question aujourd'hui."
+    },
+    "next": "Continuer",
+    "seeSummary": "Voir le résumé"
   }
 }

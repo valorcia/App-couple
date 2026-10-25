@@ -45,7 +45,15 @@ export class AllExceptionsFilter implements ExceptionFilter {
         status = 404;
         code = ErrorCode.NOT_FOUND;
         message = 'Ressource introuvable.';
+      } else if (exception.code === 'P2034') {
+        status = 409;
+        code = ErrorCode.CONFLICT;
+        message = 'Conflit d\u2019écriture, réessayez.';
       }
+    } else if (exception instanceof Prisma.PrismaClientUnknownRequestError && exception.message.includes('COUPLE_FULL')) {
+      status = 409;
+      code = ErrorCode.COUPLE_FULL;
+      message = 'Ce couple est déjà complet.';
     }
 
     if (status >= 500) {

@@ -4,3 +4,4 @@ export * from './profile';
 export * from './couple';
 export * from './admin';
 export * from './calendar';
+export * from './games';

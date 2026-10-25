@@ -127,6 +127,8 @@ model Session {
   expiresAt  DateTime
   lastUsedAt DateTime  @default(now())
   revokedAt  DateTime?
+  /// Posé lors d'une rotation (≠ déconnexion) : autorise une courte fenêtre de grâce anti-concurrence.
+  rotatedAt  DateTime?
   createdAt  DateTime  @default(now())
 
   @@index([userId])
@@ -899,6 +901,8 @@ model GameRound {
   /// Copie du texte/payload au moment du jeu (le catalogue peut évoluer).
   prompt     Json
   revealedAt DateTime?
+  /// Résultat de manche : passée, verdict « Qui connaît le mieux »…
+  result     Json?
   createdAt  DateTime    @default(now())
 
   answers Answer[]

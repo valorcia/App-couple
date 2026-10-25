@@ -24,6 +24,12 @@ export interface IssuedTokens {
 
 const VERIFY_TTL_MS = 24 * 3600 * 1000;
 const RESET_TTL_MS = 30 * 60 * 1000;
+/**
+ * Fenêtre de grâce après rotation : deux requêtes concurrentes (deux onglets, rechargement pendant
+ * un refresh) peuvent présenter le même jeton. Dans cette fenêtre, on tourne à nouveau sans
+ * révoquer la famille ; au-delà, la réutilisation est traitée comme une compromission.
+ */
+const ROTATION_GRACE_MS = 30_000;
 
 @Injectable()
 export class AuthService {
@@ -123,16 +129,21 @@ export class AuthService {
     if (!session) throw new AppError(ErrorCode.AUTH_TOKEN_INVALID, 'Session invalide.', 401);
 
     if (session.revokedAt) {
-      // Réutilisation d'un jeton déjà tourné : compromission probable → révoque toute la famille.
-      await this.prisma.session.updateMany({ where: { familyId: session.familyId, revokedAt: null }, data: { revokedAt: new Date() } });
-      await this.audit.log({ actorUserId: session.userId, action: 'auth.refresh_reuse_detected', targetType: 'Session', targetId: session.id, ip: meta.ip });
-      throw new AppError(ErrorCode.AUTH_TOKEN_REUSED, 'Votre session a été invalidée par sécurité.', 401);
+      const inGrace = session.rotatedAt && Date.now() - session.rotatedAt.getTime() < ROTATION_GRACE_MS;
+      if (!inGrace) {
+        // Réutilisation d'un jeton déjà tourné (hors fenêtre de grâce) ou révoqué : compromission probable → révoque toute la famille.
+        await this.prisma.session.updateMany({ where: { familyId: session.familyId, revokedAt: null }, data: { revokedAt: new Date() } });
+        await this.audit.log({ actorUserId: session.userId, action: 'auth.refresh_reuse_detected', targetType: 'Session', targetId: session.id, ip: meta.ip });
+        throw new AppError(ErrorCode.AUTH_TOKEN_REUSED, 'Votre session a été invalidée par sécurité.', 401);
+      }
     }
     if (session.expiresAt < new Date()) throw new AppError(ErrorCode.AUTH_TOKEN_EXPIRED, 'Session expirée.', 401);
     if (session.user.status !== 'ACTIVE' && session.user.status !== 'PENDING_DELETION') throw AppError.unauthorized();
 
     const tokens = await this.prisma.$transaction(async (tx) => {
-      await tx.session.update({ where: { id: session.id }, data: { revokedAt: new Date(), lastUsedAt: new Date() } });
+      if (!session.revokedAt) {
+        await tx.session.update({ where: { id: session.id }, data: { revokedAt: new Date(), rotatedAt: new Date(), lastUsedAt: new Date() } });
+      }
       return this.createSession(tx, session.user, meta, session.familyId);
     });
     return { user: session.user, tokens };

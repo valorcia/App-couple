@@ -94,8 +94,9 @@ export class CouplesService {
     await this.assertNotLinked(userId);
     const codeHash = sha256(normalizeInvitationCode(rawCode));
 
-    const couple = await this.prisma.$transaction(
-      async (tx) => {
+    // Intégrité garantie par la base (index partiels + trigger « deux membres max ») : pas besoin
+    // d'isolation sérialisable, qui provoquait des conflits entre couples sans rapport.
+    const couple = await this.prisma.$transaction(async (tx) => {
         const invitation = await tx.invitation.findUnique({ where: { codeHash }, include: { couple: { include: { memberships: { where: { leftAt: null } } } } } });
         if (!invitation || invitation.status !== 'PENDING') throw new AppError(ErrorCode.INVITATION_INVALID, "Code d'invitation invalide.", 400);
         if (invitation.expiresAt < new Date()) {
@@ -116,9 +117,15 @@ export class CouplesService {
         });
         await this.audit.log({ actorUserId: userId, action: 'couple.joined', targetType: 'Couple', targetId: updated.id, ip: meta.ip }, tx);
         return updated;
-      },
-      { isolationLevel: Prisma.TransactionIsolationLevel.Serializable },
-    );
+    }).catch((e: unknown) => {
+      if (e instanceof Prisma.PrismaClientKnownRequestError && e.code === 'P2002') {
+        throw AppError.conflict(ErrorCode.COUPLE_ALREADY_LINKED, 'Vous êtes déjà associé à un partenaire.');
+      }
+      if (e instanceof Prisma.PrismaClientUnknownRequestError && e.message.includes('COUPLE_FULL')) {
+        throw AppError.conflict(ErrorCode.COUPLE_FULL, 'Ce couple est déjà complet.');
+      }
+      throw e;
+    });
     return this.toDto(couple, userId);
   }
 

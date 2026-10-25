@@ -72,7 +72,9 @@ export function extractToken(text: string | undefined, param = 'token'): string 
 
 export async function registerVerifiedUser(ctx: TestContext, overrides: Partial<{ email: string; displayName: string; password: string }> = {}) {
   const user = await registerUser(ctx, overrides);
-  const token = extractToken(ctx.mail.lastMessage?.text);
+  // Recherche par destinataire : des inscriptions concurrentes ne partagent pas « lastMessage ».
+  const mail = [...ctx.mail.outbox].reverse().find((m) => m.to === user.email);
+  const token = extractToken(mail?.text);
   counter += 1;
   const res = await ctx.http().post('/auth/verify-email').set('X-Forwarded-For', `10.${(counter >> 16) & 255}.${(counter >> 8) & 255}.${counter & 255}`).send({ token });
   if (res.status !== 200) throw new Error(`verify failed ${res.status}`);

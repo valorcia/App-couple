@@ -73,12 +73,28 @@ describe('Auth', () => {
     const newRefresh = r1.body.tokens.refreshToken as string;
     expect(newRefresh).not.toBe(u.refreshToken);
 
-    // Réutilisation de l'ancien jeton → famille révoquée.
+    // Réutilisation de l'ancien jeton hors fenêtre de grâce → famille révoquée.
+    await ctx.prisma.session.updateMany({ where: { userId: u.userId, rotatedAt: { not: null } }, data: { rotatedAt: new Date(Date.now() - 120_000) } });
     const reuse = await ctx.http().post('/auth/refresh').send({ refreshToken: u.refreshToken });
     expect(reuse.status).toBe(401);
     expect(reuse.body.code).toBe('AUTH_TOKEN_REUSED');
     const afterReuse = await ctx.http().post('/auth/refresh').send({ refreshToken: newRefresh });
     expect(afterReuse.status).toBe(401);
+  });
+
+  it('tolère deux refresh concurrents dans la fenêtre de grâce, mais pas au-delà', async () => {
+    const u = await registerVerifiedUser(ctx);
+    const [r1, r2] = await Promise.all([
+      ctx.http().post('/auth/refresh').send({ refreshToken: u.refreshToken }),
+      ctx.http().post('/auth/refresh').send({ refreshToken: u.refreshToken }),
+    ]);
+    expect([r1.status, r2.status]).toEqual([200, 200]);
+    // Hors fenêtre de grâce : réutilisation = compromission.
+    await ctx.prisma.session.updateMany({ where: { userId: u.userId, rotatedAt: { not: null } }, data: { rotatedAt: new Date(Date.now() - 120_000) } });
+    const late = await ctx.http().post('/auth/refresh').send({ refreshToken: u.refreshToken });
+    expect(late.status).toBe(401);
+    expect(late.body.code).toBe('AUTH_TOKEN_REUSED');
+    expect((await ctx.http().post('/auth/refresh').send({ refreshToken: r1.body.tokens.refreshToken })).status).toBe(401);
   });
 
   it('pose un cookie httpOnly pour le web et exige l\'en-tête anti-CSRF au refresh', async () => {

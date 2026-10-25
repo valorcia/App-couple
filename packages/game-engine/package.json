@@ -1,0 +1,10 @@
+{
+  "name": "@couple/game-engine",
+  "version": "0.1.0",
+  "private": true,
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": { ".": "./src/index.ts" },
+  "scripts": { "typecheck": "tsc --noEmit -p tsconfig.json", "test": "vitest run" },
+  "devDependencies": { "@couple/config": "workspace:*", "typescript": "5.9.3", "vitest": "^4.0.0" }
+}

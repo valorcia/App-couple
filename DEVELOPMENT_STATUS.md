@@ -1,6 +1,6 @@
 # DEVELOPMENT_STATUS
 
-Dernière mise à jour : 2026-10-25 — Phase 1 terminée, **Phase 2 (socle technique) terminée**, Phase 3 à démarrer.
+Dernière mise à jour : 2026-10-25 — Phases 1 et 2 terminées, **Phase 3 en cours (jalons 1 à 3 livrés : agenda, moteur de jeux, 5 jeux + question du jour)**.
 
 ## Fonctionnalités terminées
 
@@ -22,13 +22,16 @@ Dernière mise à jour : 2026-10-25 — Phase 1 terminée, **Phase 2 (socle tech
 - **Mobile Expo** (`apps/mobile`) : scaffold Expo Router (connexion, inscription, vérification, association du couple, onglets), client API partagé avec refresh token en SecureStore, thème clair/sombre. Non exécuté sur simulateur dans cette session (typecheck + lint uniquement).
 - **Qualité / exploitation** : CI GitHub Actions (lint, typecheck, tests avec Postgres/Redis, build web/admin, e2e Playwright), Dockerfiles API/web/admin, docker-compose de dev (Postgres, Redis, MinIO, Mailpit), `.env.example` documenté.
 
+### MVP (Phase 3) — livré
+- **Agenda partagé** (API + web) : CRUD par couple, visibilité Partagé / Occupé uniquement (bloc sans titre ni détail) / Privé (invisible), récurrence RRULE avec heure locale préservée (DST), exclusion d'occurrence, rappels, invitation du partenaire (accepter/décliner) avec notifications in-app, créneaux libres communs (sans trahir les événements privés), temps réel Socket.IO (rooms user/couple, adaptateur Redis). Web : vues jour/semaine/mois, formulaire complet, fiche événement, événements à venir sur l'accueil.
+- **Moteur de jeux** (`packages/game-engine`, logique pure testée) + API `games` : catalogue par type/catégorie avec verrouillage Premium, sessions courtes/longues, manches avec réponses **jamais exposées avant révélation** (transaction + verrou), passer une question (réponses effacées), verdict « Qui connaît le mieux » réservé au sujet, résumés de partie, quota gratuit configurable (`quota.free.gameSessionsPerDay`, `games.freeCategories`), question du jour commune (révélation quand les deux ont répondu), notifications et temps réel. Jeux livrés : Réponses secrètes, Qui connaît le mieux, Dilemmes, Lequel de nous deux, Confessions (niveaux). Web : catalogue, lancement, écran de jeu manche par manche, révélation, verdict, résumé, question du jour sur l'accueil.
+- **Notifications in-app** : création, liste, non lus, lecture (push et préférences au jalon 8).
+- **Robustesse** : fenêtre de grâce de 30 s sur la rotation des refresh tokens (requêtes concurrentes), association de couples sans isolation sérialisable (intégrité par contraintes SQL, erreurs mappées).
+
 ## En cours
-- Rien (fin de phase).
+- Jalon 4 : Défis à deux.
 
 ## Restant (ordre prévu — voir docs/ROADMAP.md)
-1. Agenda partagé (CRUD, visibilité Privé/Partagé/Occupé, récurrence, rappels, invitations) + temps réel.
-2. Moteur de jeux + Réponses secrètes + question du jour.
-3. Dilemmes, Lequel de nous deux, Qui connaît le mieux.
 4. Défis.
 5. Double Secret (consentement, intersection serveur, révélation mutuelle).
 6. « On fait quoi ? » (catalogue → agenda ; IA ensuite).
@@ -47,10 +50,11 @@ Dernière mise à jour : 2026-10-25 — Phase 1 terminée, **Phase 2 (socle tech
 | --- | --- | --- |
 | Unitaires `@couple/shared` | `pnpm --filter @couple/shared test` | 5 tests |
 | Unitaires `@couple/validation` | `pnpm --filter @couple/validation test` | 1 test |
-| API (unitaires + intégration sur PostgreSQL réel) | `pnpm --filter @couple/api test` | 22 tests : auth, couples, autorisations, admin |
+| Unitaires `@couple/game-engine` | `pnpm --filter @couple/game-engine test` | 5 tests |
+| API (unitaires + intégration sur PostgreSQL réel) | `pnpm --filter @couple/api test` | 41 tests : auth, couples, autorisations, admin, agenda, récurrence, temps réel, notifications, jeux, question du jour |
 | Lint + typecheck (toutes apps/packages) | `pnpm turbo run lint typecheck` | OK |
 | Build Next web + admin | `pnpm --filter @couple/web --filter @couple/admin build` | OK |
-| E2E Playwright (navigateur réel, API + web production) | `pnpm --filter @couple/web test:e2e` | 2 scénarios : onboarding complet à deux comptes, refus de connexion |
+| E2E Playwright (navigateur réel, API + web production) | `pnpm --filter @couple/web test:e2e` | 4 scénarios : onboarding à deux comptes, refus de connexion, agenda (partagé / occupé / privé / invitation), dilemme à deux + question du jour |
 
 ## Dépendances externes (à fournir)
 | Besoin | Variable(s) | Phase |

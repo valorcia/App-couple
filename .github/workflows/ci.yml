@@ -85,6 +85,7 @@ jobs:
       - run: pnpm db:generate
       - run: pnpm --filter @couple/database migrate:deploy
       - run: cp .env.example .env
+      - run: pnpm db:seed
       - run: pnpm --filter @couple/web exec playwright install --with-deps chromium
       - run: pnpm --filter @couple/web test:e2e
       - uses: actions/upload-artifact@v4

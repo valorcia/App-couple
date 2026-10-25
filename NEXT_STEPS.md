@@ -18,16 +18,15 @@ pnpm test              # tout doit être vert avant de commencer
 2. `docs/DECISIONS.md` section A : arbitrages A1–A6. S'ils ont reçu une réponse du propriétaire, les appliquer d'abord.
 3. `docs/ARCHITECTURE.md` §4 (conventions API : guards, DTO de sortie, projections de confidentialité).
 
-## 3. Prochaine tâche : Phase 3, jalon 1 — Agenda partagé
-Périmètre : module `apps/api/src/modules/calendar/`
-- `CalendarEventsService` : CRUD filtré par `coupleId` ; projection « Occupé » pour les événements PRIVATE/BUSY du partenaire (jamais le titre, le lieu ni la description) ; récurrence RRULE (lib `rrule`) avec expansion côté serveur sur une fenêtre ; rappels (`EventReminder`) ; invitations internes (`EventAttendee`).
-- Schémas zod dans `packages/validation/src/calendar.ts` ; DTO dans `packages/types`.
-- Gateway Socket.IO `calendar.event.*` (room `couple:<id>`), adaptateur Redis.
-- Tests : authz (partenaire ↔ privé, cross-couple), récurrence, projection « Occupé ».
-- Web : vues jour/semaine/mois (`apps/web/app/(app)/agenda`), formulaire d'événement, visibilité, couleurs/catégories.
-- Mobile : liste + création simple.
+## 3. Prochaine tâche : Phase 3, jalon 4 — Défis à deux
+Périmètre : module `apps/api/src/modules/challenges/`
+- Catalogue (`Challenge`, seedé) filtré par locale/tier/intimate ; quota gratuit `quota.free.challengesCatalog`.
+- `ChallengeProgress` par couple : proposer (notifie le partenaire), accepter, passer (sans pénalité), marquer terminé (validation volontaire par chacun : `completedByUserIds`), note facultative.
+- Endpoints : `GET /challenges` (catalogue + état), `POST /challenges/:id/propose|accept|skip|complete`, `GET /challenges/progress`.
+- Web : onglet Défis dans « Jouer » (cartes avec durée/difficulté/budget/matériel), fiche défi avec instructions, « Défi du moment » sur l'accueil.
+- Tests d'intégration (authz cross-couple, quota, double validation).
 
-Puis suivre l'ordre de `DEVELOPMENT_STATUS.md` → « Restant ».
+Ensuite : jalon 5 Double Secret (voir `docs/PRODUCT_SPEC.md` P5 et `docs/DATABASE_SCHEMA.md` Intimité), jalon 6 « On fait quoi ? », jalon 7 abonnements.
 
 ## 4. Conventions à respecter
 - Jamais d'entité Prisma brute en sortie d'API : mapper vers un DTO explicite.

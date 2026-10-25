@@ -176,3 +176,82 @@ export interface FreeSlotDto {
   endAt: string;
   minutes: number;
 }
+
+// ---------------------------------------------------------------- Jeux
+export type GameType = 'SECRET_ANSWERS' | 'WHO_KNOWS_BEST' | 'DILEMMA' | 'WHICH_OF_US' | 'CHALLENGE' | 'CONFESSIONS' | 'MEMORY_QUIZ';
+export type GameSessionStatus = 'OPEN' | 'COMPLETED' | 'ABANDONED';
+export type AnswerPayloadDto = { kind: 'text'; text: string } | { kind: 'choice'; index: number } | { kind: 'vote'; userId: string };
+
+export interface GameCategoryDto {
+  code: string;
+  name: string;
+  description: string | null;
+  icon: string | null;
+  questionCount: number;
+  locked: boolean;
+}
+
+export interface GameCatalogEntryDto {
+  gameType: GameType;
+  available: boolean;
+  categories: GameCategoryDto[];
+  totalQuestions: number;
+}
+
+export interface GameCatalogDto {
+  games: GameCatalogEntryDto[];
+  premium: boolean;
+  sessionsLeftToday: number | null;
+}
+
+export interface GameRoundDto {
+  index: number;
+  prompt: { text: string; options?: string[]; subjectUserId?: string; categoryCode?: string | null; level?: number };
+  /** Ma réponse (si j'ai répondu). */
+  myAnswer: AnswerPayloadDto | null;
+  partnerAnswered: boolean;
+  revealedAt: string | null;
+  /** Réponse du partenaire : présente uniquement après révélation. */
+  partnerAnswer: AnswerPayloadDto | null;
+  skipped: boolean;
+  verdict: 'EXACT' | 'CLOSE' | 'MISS' | null;
+  /** Qui doit donner le verdict (Qui connaît le mieux) : le sujet, après révélation. */
+  awaitingVerdictFrom: string | null;
+  funLine: string | null;
+}
+
+export interface GameSessionDto {
+  id: string;
+  gameType: GameType;
+  status: GameSessionStatus;
+  createdByUserId: string;
+  participantIds: string[];
+  rounds: GameRoundDto[];
+  currentRoundIndex: number | null;
+  summary: Record<string, unknown> | null;
+  createdAt: string;
+  completedAt: string | null;
+}
+
+export interface GameSessionListItemDto {
+  id: string;
+  gameType: GameType;
+  status: GameSessionStatus;
+  roundsTotal: number;
+  roundsClosed: number;
+  /** Une manche attend ma réponse. */
+  myTurn: boolean;
+  createdAt: string;
+  completedAt: string | null;
+}
+
+export interface DailyQuestionDto {
+  id: string;
+  date: string;
+  text: string;
+  categoryCode: string | null;
+  myAnswer: string | null;
+  partnerAnswered: boolean;
+  revealedAt: string | null;
+  partnerAnswer: string | null;
+}
