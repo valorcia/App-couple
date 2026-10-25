@@ -58,7 +58,7 @@ export function SessionPlay({ id }: { id: string }) {
           const closed = r.revealedAt || r.skipped;
           return (
             <li key={r.index} className="flex-1">
-              <button type="button" onClick={() => (closed || r.index === s.currentRoundIndex) && setView(r.index)} aria-current={view !== 'summary' && r.index === activeIndex} className={cn('h-1.5 w-full rounded-pill transition-colors', view !== 'summary' && r.index === activeIndex ? 'bg-primary' : closed ? 'bg-secondary/60' : 'bg-border')} aria-label={t('round', { index: r.index + 1, total })} />
+              <button type="button" onClick={() => (closed || r.index === s.currentRoundIndex) && setView(r.index)} aria-current={view !== 'summary' && r.index === activeIndex} className={cn('h-2 w-full border border-ink/50 transition-colors', view !== 'summary' && r.index === activeIndex ? 'bg-primary' : closed ? 'bg-ink' : 'bg-transparent')} aria-label={t('round', { index: r.index + 1, total })} />
             </li>
           );
         })}
@@ -106,8 +106,8 @@ function RoundView({ s, round, userId, names, onAnswer, onSkip, onVerdict, pendi
       <Card tone="night" className="relative overflow-hidden p-8 sm:p-10">
         <Glow tone="primary" size={320} className="-right-24 -top-28" />
         <div className="relative">
-        {round.prompt.categoryCode ? <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-primary">{round.prompt.categoryCode}</p> : null}
-        <p className="mt-3 font-display-soft text-3xl leading-[1.15] sm:text-4xl">{round.prompt.text}</p>
+        {round.prompt.categoryCode ? <p className="label-sc text-paper/70">{round.prompt.categoryCode}</p> : null}
+        <p className="mt-3 text-3xl leading-[1.05] sm:text-[2.6rem]">{round.prompt.text}</p>
         {s.gameType === 'WHO_KNOWS_BEST' ? <p className="mt-3 text-sm opacity-80">{isSubject ? t('wkb.subjectHint', { partner: names.partner }) : t('wkb.guessHint', { partner: names.partner })}</p> : null}
         </div>
       </Card>
@@ -128,7 +128,7 @@ function RoundView({ s, round, userId, names, onAnswer, onSkip, onVerdict, pendi
           {s.gameType === 'DILEMMA' && round.prompt.options ? (
             <div className="grid gap-3 sm:grid-cols-2">
               {round.prompt.options.map((o, i) => (
-                <button key={i} type="button" disabled={pending} onClick={() => onAnswer({ kind: 'choice', index: i })} className="hover-lift min-h-28 rounded-lg border border-border bg-bg-elevated p-5 text-left font-display text-xl hover:border-primary hover:bg-primary/5">
+                <button key={i} type="button" disabled={pending} onClick={() => onAnswer({ kind: 'choice', index: i })} className="hover-lift min-h-28 rounded-md border-2 border-ink bg-bg-elevated p-5 text-left font-display text-xl">
                   {o}
                 </button>
               ))}
@@ -136,7 +136,7 @@ function RoundView({ s, round, userId, names, onAnswer, onSkip, onVerdict, pendi
           ) : s.gameType === 'WHICH_OF_US' ? (
             <div className="grid grid-cols-2 gap-3">
               {[{ id: userId, name: names.me }, { id: partnerId, name: names.partner }].map((p) => (
-                <button key={p.id} type="button" disabled={pending} onClick={() => onAnswer({ kind: 'vote', userId: p.id })} className="hover-lift flex flex-col items-center gap-3 rounded-lg border border-border bg-bg-elevated p-6 hover:border-primary hover:bg-primary/5">
+                <button key={p.id} type="button" disabled={pending} onClick={() => onAnswer({ kind: 'vote', userId: p.id })} className="hover-lift flex flex-col items-center gap-3 rounded-md border-2 border-ink bg-bg-elevated p-6">
                   <Avatar name={p.name} size={56} />
                   <span className="font-medium">{p.name}</span>
                 </button>
@@ -187,9 +187,9 @@ function Reveal({ s, round, userId, partnerId, names, onVerdict, pending }: { s:
 
 function RevealCard({ label, children, delay }: { label: string; children: React.ReactNode; delay: number }) {
   return (
-    <div className="animate-curtain surface-warm rounded-lg border border-border p-5 shadow-card" style={{ animationDelay: `${delay}ms` }}>
-      <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-primary">{label}</p>
-      <p className="mt-2 font-display-italic text-2xl leading-snug text-secondary">{children}</p>
+    <div className="animate-curtain rounded-md border-2 border-ink bg-bg-elevated p-5 shadow-card" style={{ animationDelay: `${delay}ms` }}>
+      <p className="label-sc">{label}</p>
+      <p className="mt-2 font-display-italic text-2xl leading-snug">{children}</p>
     </div>
   );
 }

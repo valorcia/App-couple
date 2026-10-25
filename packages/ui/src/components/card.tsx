@@ -3,21 +3,21 @@ import { cn } from '../cn';
 
 export type CardTone = 'default' | 'blush' | 'plum' | 'champagne' | 'honey' | 'night' | 'sage' | 'warm';
 
+/** Feuilles de papier : contour encre fin, angles presque droits, aplats de couleur ; `interactive` = ombre dure au survol. */
 const TONES: Record<CardTone, string> = {
-  default: 'border border-border bg-bg-elevated shadow-card',
-  warm: 'surface-warm border border-border/70 shadow-card',
-  blush: 'bg-bg-blush border border-transparent',
-  champagne: 'bg-accent text-accent-fg border border-transparent',
-  honey: 'surface-honey border border-transparent',
-  sage: 'bg-bg-sage border border-transparent',
-  plum: 'bg-plum text-ivory border border-transparent shadow-soft',
-  night: 'surface-night border border-white/5 shadow-soft',
+  default: 'border border-ink/30 bg-bg-elevated',
+  warm: 'border border-ink/30 bg-bg-elevated',
+  blush: 'border border-ink/30 bg-bg-blush',
+  champagne: 'border border-ink/30 bg-bg-honey text-ink',
+  honey: 'border border-ink/30 bg-bg-honey text-ink',
+  sage: 'border border-ink/30 bg-bg-sage',
+  plum: 'border border-ink bg-ink text-paper',
+  night: 'border border-ink bg-ink text-paper',
 };
 
-/** Carte « coussin » : coins généreux, ombre colorée ; `interactive` ajoute l'élévation au survol. */
 export const Card = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement> & { tone?: CardTone; interactive?: boolean }>(
   ({ className, tone = 'default', interactive = false, ...props }, ref) => (
-    <div ref={ref} className={cn('relative rounded-lg', TONES[tone], interactive && 'hover-lift cursor-pointer', className)} {...props} />
+    <div ref={ref} className={cn('relative rounded-md', TONES[tone], interactive && 'hover-lift cursor-pointer', className)} {...props} />
   ),
 );
 Card.displayName = 'Card';

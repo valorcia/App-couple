@@ -55,7 +55,7 @@ export function GamesHome() {
               const Icon = meta.icon;
               return (
                 <Card key={g.gameType} tone={meta.tone} interactive className="flex flex-col gap-3 p-6 animate-rise" style={{ ['--i' as string]: i }}>
-                  <span className="flex h-11 w-11 items-center justify-center rounded-full bg-white/40 dark:bg-white/10"><Icon className="h-6 w-6" aria-hidden /></span>
+                  <Icon className="h-7 w-7" strokeWidth={1.75} aria-hidden />
                   <div className="flex-1">
                     <h3 className="text-xl">{t(`types.${g.gameType}.name`)}</h3>
                     <p className="mt-1 text-sm opacity-80">{t(`types.${g.gameType}.tagline`)}</p>

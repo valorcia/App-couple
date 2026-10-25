@@ -1,12 +1,12 @@
 import Link from 'next/link';
-import { Blob, Doodle, Logo } from '@couple/ui';
+import { Doodle, Logo } from '@couple/ui';
 
 export default function AuthLayout({ children }: { children: React.ReactNode }) {
   return (
     <div className="relative flex min-h-dvh flex-col overflow-hidden">
-      <div className="pointer-events-none absolute -left-32 top-24 opacity-70 animate-float" aria-hidden><Blob size={380} /></div>
+      <div className="pointer-events-none absolute -left-6 top-28 hidden text-ink/15 lg:block" aria-hidden><Doodle name="plaid" size={220} /></div>
       <div className="pointer-events-none absolute -right-10 bottom-10 text-secondary/15" aria-hidden><Doodle name="moon" size={180} /></div>
-      <header className="container-page flex h-16 items-center">
+      <header className="container-page flex h-16 items-center border-b-2 border-ink/80">
         <Link href="/" aria-label="Entre Nous — accueil"><Logo /></Link>
       </header>
       <main className="container-page flex flex-1 items-start justify-center py-10 sm:items-center">

@@ -53,9 +53,9 @@ export function Dashboard() {
   return (
     <div className="container-page space-y-8 py-8">
       <div className="animate-fade-up">
-        <p className="text-sm capitalize text-fg-subtle">{new Intl.DateTimeFormat(user.locale, { weekday: 'long', day: 'numeric', month: 'long' }).format(new Date())}</p>
-        <h1 className="mt-1 text-[2.4rem] text-secondary sm:text-5xl">{t(`greeting.${greetingKey()}`, { name: user.profile.displayName })}</h1>
-        {partner && days !== null ? <p className="mt-2 font-display-italic text-lg text-fg-muted">{t('together', { days })} · {partner.profile.displayName}</p> : null}
+        <p className="rule-double label-sc flex items-center justify-between pt-3 capitalize"><span>{new Intl.DateTimeFormat(user.locale, { weekday: 'long', day: 'numeric', month: 'long' }).format(new Date())}</span><span className="normal-case">Nº {Math.max(1, days ?? 1)}</span></p>
+        <h1 className="mt-5 text-[2.8rem] leading-[0.95] sm:text-6xl">{t(`greeting.${greetingKey()}`, { name: user.profile.displayName })}</h1>
+        {partner && days !== null ? <p className="mt-3 font-display-italic text-xl text-fg-muted">{t('together', { days })} · {partner.profile.displayName}</p> : null}
       </div>
 
       {couple?.status !== 'ACTIVE' ? (
@@ -66,13 +66,13 @@ export function Dashboard() {
       ) : null}
 
       <section id="on-fait-quoi" aria-labelledby="ofq-title" className="animate-rise" style={{ ['--i' as string]: 1 }}>
-        <Surface tone="night" glow="primary" className="p-8 sm:p-10">
-          <Doodle name="moon" size={96} className="absolute -right-2 -top-4 text-night-fg/15 sm:right-6" />
-          <div className="relative max-w-xl">
-            <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-primary">{t('tonight')}</p>
-            <h2 id="ofq-title" className="mt-2 font-display-soft text-4xl sm:text-5xl">{t('whatNow')}</h2>
-            <p className="mt-3 text-pretty text-night-fg/80">{t('whatNowHint')}</p>
-            <Button className="mt-6 animate-pulse-glow" size="xl" onClick={() => setWhatNowOpen(true)} disabled={couple?.status !== 'ACTIVE'}>
+        <Surface tone="night" className="p-7 sm:p-10">
+          <Doodle name="moon" size={110} className="absolute -right-3 -top-6 text-paper/15 sm:right-8" />
+          <div className="relative max-w-2xl">
+            <p className="label-sc text-paper/70">{t('tonight')}</p>
+            <h2 id="ofq-title" className="mt-3 text-[2.6rem] leading-[0.95] text-paper sm:text-[4rem]">{t('whatNow')}</h2>
+            <p className="mt-4 max-w-md text-pretty text-paper/75">{t('whatNowHint')}</p>
+            <Button className="mt-7" size="xl" onClick={() => setWhatNowOpen(true)} disabled={couple?.status !== 'ACTIVE'}>
               <Sparkles className="h-5 w-5" aria-hidden />{t('whatNow')}
             </Button>
           </div>
@@ -83,18 +83,21 @@ export function Dashboard() {
       <div className="grid gap-6 md:grid-cols-2">
         <div className="animate-rise" style={{ ['--i' as string]: 2 }}><DailyQuestionCard /></div>
         <Card className="animate-rise" style={{ ['--i' as string]: 3 }}>
-          <CardHeader><CardTitle className="flex items-center gap-2 text-secondary"><CalendarDays className="h-5 w-5 text-primary" aria-hidden />{t('upcoming')}</CardTitle></CardHeader>
+          <CardHeader><CardTitle className="label-sc flex items-center gap-2"><CalendarDays className="h-4 w-4" aria-hidden />{t('upcoming')}</CardTitle></CardHeader>
           <CardContent>
             {nextEvents.length === 0 ? (
               <EmptyState doodle="cup" title={t('noUpcoming')} className="border-0 bg-transparent p-6" action={<Button asChild variant="outline" size="sm"><Link href="/agenda">{t('addEvent')}</Link></Button>} />
             ) : (
-              <ol className="relative ml-2 space-y-1 border-l border-dashed border-border-strong pl-5">
+              <ol className="divide-y divide-ink/15">
                 {nextEvents.map((e) => (
-                  <li key={e.instanceId} className="relative">
-                    <span className="absolute -left-[27px] top-3 h-3 w-3 rounded-full ring-4 ring-bg-elevated" style={{ backgroundColor: eventColor(e) }} aria-hidden />
-                    <Link href="/agenda" className="block rounded-md px-2 py-2 hover:bg-bg-muted/70">
-                      <span className="block truncate font-medium">{e.busy ? 'Occupé' : e.title}</span>
-                      <span className="block text-sm capitalize text-fg-muted">{format(new Date(e.startAt), e.allDay ? 'EEEE d MMMM' : 'EEEE d MMMM · HH:mm', { locale: fr })}</span>
+                  <li key={e.instanceId}>
+                    <Link href="/agenda" className="flex items-baseline gap-4 py-3 hover:text-primary">
+                      <span className="w-14 shrink-0 font-display text-lg tabular-nums leading-none">{format(new Date(e.startAt), e.allDay ? 'd MMM' : 'HH:mm', { locale: fr })}</span>
+                      <span className="min-w-0 flex-1">
+                        <span className="block truncate font-semibold">{e.busy ? 'Occupé' : e.title}</span>
+                        <span className="block text-sm capitalize text-fg-muted">{format(new Date(e.startAt), 'EEEE d MMMM', { locale: fr })}</span>
+                      </span>
+                      <span className="h-2.5 w-2.5 shrink-0 rounded-sm" style={{ backgroundColor: eventColor(e) }} aria-hidden />
                     </Link>
                   </li>
                 ))}
@@ -106,7 +109,7 @@ export function Dashboard() {
       </div>
 
       <section aria-labelledby="shortcuts-title" className="space-y-3">
-        <h2 id="shortcuts-title" className="text-xl text-secondary">{t('shortcuts')}</h2>
+        <h2 id="shortcuts-title" className="label-sc rule-strong pt-3">{t('shortcuts')}</h2>
         <div className="flex flex-wrap gap-3">
           {[
             { icon: CalendarDays, label: 'Agenda', href: '/agenda' },
@@ -115,7 +118,7 @@ export function Dashboard() {
             { icon: ClipboardList, label: 'Défis', href: '/defis' },
             { icon: Gift, label: 'Intimité', href: '/intimite' },
           ].map(({ icon: Icon, label, href }, i) => (
-            <Link key={href} href={href} className="hover-lift animate-rise inline-flex items-center gap-2.5 rounded-pill border border-border bg-bg-elevated py-3 pl-4 pr-5 font-display text-lg text-secondary" style={{ ['--i' as string]: 5 + i }}>
+            <Link key={href} href={href} className="hover-lift animate-rise inline-flex items-center gap-2.5 rounded-sm border-2 border-ink bg-bg-elevated py-2.5 pl-3.5 pr-4 font-display text-lg shadow-card" style={{ ['--i' as string]: 5 + i }}>
               <Icon className="h-5 w-5 text-primary" aria-hidden />{label}
             </Link>
           ))}

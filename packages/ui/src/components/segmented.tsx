@@ -22,8 +22,8 @@ export function Segmented<T extends string>({ options, value, onChange, classNam
             aria-checked={active}
             onClick={() => onChange(o.value)}
             className={cn(
-              'flex min-h-11 items-center justify-center gap-2 rounded-md border px-3 py-2 text-sm font-medium transition-colors duration-150',
-              active ? 'border-primary bg-primary/10 text-primary' : 'border-border bg-bg-elevated text-fg hover:bg-bg-muted',
+              'flex min-h-11 items-center justify-center gap-2 rounded-sm border-2 px-3 py-2 text-sm font-semibold transition-colors duration-100',
+              active ? 'border-ink bg-ink text-paper' : 'border-ink/30 bg-transparent text-fg hover:border-ink',
             )}
           >
             {o.icon}
@@ -42,8 +42,8 @@ export function Chip({ active, children, onClick, className }: { active?: boolea
       aria-pressed={active}
       onClick={onClick}
       className={cn(
-        'inline-flex h-10 items-center gap-1.5 rounded-pill border px-4 text-sm font-medium transition-colors duration-150',
-        active ? 'border-secondary bg-secondary text-secondary-fg' : 'border-border bg-bg-elevated text-fg hover:bg-bg-muted',
+        'inline-flex h-10 items-center gap-1.5 rounded-sm border-2 px-3.5 text-sm font-semibold transition-colors duration-100',
+        active ? 'border-ink bg-ink text-paper' : 'border-ink/30 bg-transparent text-fg hover:border-ink',
         className,
       )}
     >

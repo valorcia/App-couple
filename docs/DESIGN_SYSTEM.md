@@ -1,37 +1,31 @@
 # DESIGN_SYSTEM — Entre Nous
 
 ## 1. Direction artistique
-**« Un soir d'hiver à deux ».** Un salon le soir : plaid, bougie, lumière chaude et basse,
-papier épais, encre douce. Chaleureux, intime, rassurant, un peu artisanal. Jamais
-clinique, jamais « SaaS » : on doit se sentir à la maison, pas dans un outil.
+**« Papier & encre ».** Un magazine imprimé des années 70 qu'on lirait sous un plaid : papier
+crème, encre prune-noire, orange brûlé, jaune marqueur, olive. Filets fins et doubles filets
+plutôt que cartes, angles presque droits, ombres portées **dures** (encre pleine, décalées de
+3 à 6 px), titres Fraunces très gras et légèrement bancals (axe `WONK`), libellés en petites
+capitales numérotés (folios), surlignages au marqueur, tampons penchés, pictos tracés à la main.
 
-Mots-clés : cocon, lumière, complicité, douceur, précision.
+Ce que cette direction refuse, parce que c'est le « look IA » : cartes arrondies à ombres douces,
+dégradés et halos pastel, surtitres en capitales espacées, icônes dans des ronds, boutons pilule,
+grilles symétriques de cartes identiques.
 
-Principes :
-- **Lumière et matière** : halo chaud en haut de page (lampe), grain de papier très discret
-  (`body::before`, bruit SVG, opacité 4,5 % clair / 6 % sombre, `soft-light`), ombres
-  colorées prune (jamais gris pur), rayons généreux, cartes « coussin ».
-- **Une seule action évidente** par écran (bouton corail en dégradé), le reste en
-  surfaces douces.
-- **Discrétion visible** : verrous, mentions rassurantes, aucune donnée intime en évidence.
-
-À éviter : cœurs en motif, photos stock de couples, dégradés saturés, écrans denses,
-iconographie enfantine, stéréotypes de genre, tableaux de bord « corporate ».
+Mots-clés : imprimé, chaleureux, tactile, un peu insolent, précis.
 
 ## 2. Couleurs
 
 ### Palette de marque
 | Token | Clair | Sombre | Usage |
 | --- | --- | --- | --- |
-| `--ivory` | `#F9F3EA` | — | fond principal clair |
-| `--blush` (rose poudré) | `#EFCBC3` | `#3B2A32` (surface) | surfaces douces, piliers « S'aimer » |
-| `--coral` (terracotta) | `#D8664D` | `#F08F78` | action principale, accent émotionnel |
-| `--plum` (prune) | `#4B2A46` | `#DDC3DD` | titres, texte fort, cartes immersives |
-| `--plum-deep` / `--night` | `#2F1D33` | `#16101A` | surfaces « nuit » : jeu en cours, « On fait quoi ? », Double Secret |
-| `--champagne` | `#ECD9B4` | `#8F7449` | surlignages, Premium |
-| `--honey` (miel) | `#D9A441` | `#E3B35C` | chaleur, carte postale, piliers « S'amuser », bandeau démo |
-| `--sage` (sauge) | `#6E9B7F` | `#7FB391` | états positifs, piliers « Construire » |
-| `--charcoal` | `#2D2530` | `#1C1519` (fond) | texte, fond veilleuse |
+| `--paper` | `#F3E7D3` | `#1D1418` (bistre) | fond, papier |
+| `--paper-2` / `--paper-3` | `#EADBC2` / `#E0CFB0` | `#271C21` / `#33262C` | zones secondaires |
+| `--ink` | `#271922` | `#F1E4D0` (crème) | texte, contours, ombres dures, affiches |
+| `--orange` (primary) | `#E0582B` | `#F08A5A` | action principale, folios |
+| `--marker` | `#F2BF45` | `#D9A63A` | surlignage, carte postale, bandeau démo, tampon Premium |
+| `--olive` (sage) | `#6E7F4B` | `#93A86A` | états positifs |
+| `--rose` (blush) | `#E3A79A` / surface `#EFCFC4` | `#4A2F36` | papier rose (piliers « S'aimer », dernière page) |
+| `--plum` | `#4B2A46` | `#E8C8DC` | encre secondaire |
 
 ### Tokens sémantiques
 ```
@@ -47,8 +41,8 @@ iconographie enfantine, stéréotypes de genre, tableaux de bord « corporate »
 --glow / --halo / --halo-2               halos (lampe) et lueurs
 --shadow-soft / --shadow-card / --shadow-lift / --shadow-glow
 ```
-Mode sombre « veilleuse » : fond brun-prune `#1C1519` (jamais noir), cartes `#261D23`,
-texte ivoire `#F5ECE2`, corail adouci, prune comme accent clair. Activation via
+Mode sombre : papier bistre `#1D1418` (jamais noir ni gris), encre crème `#F1E4D0`, orange adouci,
+marqueur doré ; les ombres dures passent en noir. Activation via
 `data-theme="dark"` (préférence système par défaut).
 
 Contraste : tous les couples texte/fond ≥ 4,5:1 (AA). Le corail sur ivoire est réservé
@@ -64,9 +58,11 @@ aux éléments ≥ 18 px, aux surtitres en capitales espacées et aux fonds plei
 
 ## 4. Espacement, rayons, ombres
 - Grille 4 pt : 4, 8, 12, 16, 24, 32, 48, 64.
-- Rayons : `sm 12px`, `md 18px`, `lg 28px`, `pill 999px`. Cartes `lg`.
-- Ombres colorées prune : `card` (repos), `soft` (surfaces nuit, boutons), `lift` (survol,
-  dialogues), `glow` (halo corail). Bordures 1 px `--border` sur les cartes claires.
+- Rayons : `sm 3px`, `md 6px`, `lg 10px` ; la pilule est réservée aux sceaux et avatars.
+- Ombres portées dures en encre : `card` 3 px, `hard`/`soft` 4 px, `lift` 6 px (survol : la carte
+  se soulève de 2 px, au clic elle s'écrase). Contours 1 px encre à 30 % sur les feuilles, 2 px
+  encre pleine sur les panneaux et boutons. Utilitaires : `.rule`, `.rule-strong`, `.rule-double`,
+  `.label-sc`, `.marker`, `.stamp`, `.tape`, `.arch`.
 - Composants de composition (`packages/ui`) : `Surface` (section enveloppante avec halo,
   tons warm / night / honey / blush), `Glow`, `SectionHeader` (surtitre + titre + note),
   `Doodle` (pictos monochromes tracés à main levée : tasse, plaid, bougie, guirlande,

@@ -7,23 +7,24 @@ export interface Theme {
 }
 
 export const palette: { light: Theme; dark: Theme } = {
-  // « Un soir d'hiver à deux » : lumière chaude et basse (clair), veilleuse brun-prune (sombre).
+  // « Papier & encre » : magazine chaleureux années 70. Angles droits, ombres dures, aplats.
   light: {
-    bg: '#F8F1E7', bgElevated: '#FFFAF3', bgMuted: '#F1E6D8', bgBlush: '#F7E3DC', bgHoney: '#F6E8C9', night: '#2F1D33', nightFg: '#F7ECE4',
-    fg: '#2D2530', fgMuted: '#6C6168', fgSubtle: '#9A8F95', border: '#EAD9C8',
-    primary: '#D8664D', primaryFg: '#FFFFFF', secondary: '#4B2A46', secondaryFg: '#FFFFFF',
-    accent: '#ECD9B4', accentFg: '#5A4523', honey: '#D9A441', sage: '#6E9B7F', danger: '#C4453C', success: '#3F8F6B',
+    bg: '#F3E7D3', bgElevated: '#F8EFE0', bgMuted: '#EADBC2', bgBlush: '#EFCFC4', bgHoney: '#F4DC9A', night: '#271922', nightFg: '#F3E7D3',
+    fg: '#271922', fgMuted: '#5E4A55', fgSubtle: '#8A7580', border: '#B9A9A0',
+    primary: '#E0582B', primaryFg: '#F8EFE0', secondary: '#271922', secondaryFg: '#F3E7D3',
+    accent: '#F2BF45', accentFg: '#271922', honey: '#F2BF45', sage: '#6E7F4B', danger: '#B4311C', success: '#4F6A2E',
   },
   dark: {
-    bg: '#1C1519', bgElevated: '#261D23', bgMuted: '#30262E', bgBlush: '#3B2A32', bgHoney: '#3A2F22', night: '#16101A', nightFg: '#F7ECE4',
-    fg: '#F5ECE2', fgMuted: '#B9ADB3', fgSubtle: '#87797F', border: '#3A2D36',
-    primary: '#F08F78', primaryFg: '#1C1519', secondary: '#DDC3DD', secondaryFg: '#1C1519',
-    accent: '#8F7449', accentFg: '#F8ECD6', honey: '#E3B35C', sage: '#7FB391', danger: '#E2655C', success: '#5FB08A',
+    bg: '#1D1418', bgElevated: '#241A1F', bgMuted: '#2D2127', bgBlush: '#4A2F36', bgHoney: '#4A3A1C', night: '#120C0F', nightFg: '#F1E4D0',
+    fg: '#F1E4D0', fgMuted: '#C2B0B8', fgSubtle: '#8F7D86', border: '#5A4A52',
+    primary: '#F08A5A', primaryFg: '#1D1418', secondary: '#F1E4D0', secondaryFg: '#1D1418',
+    accent: '#D9A63A', accentFg: '#1D1418', honey: '#D9A63A', sage: '#93A86A', danger: '#E2655C', success: '#93A86A',
   },
 };
-export const radius = { sm: 12, md: 18, lg: 28, pill: 999 } as const;
+export const radius = { sm: 3, md: 6, lg: 10, pill: 999 } as const;
 /** Ombre colorée douce (iOS) + élévation (Android). */
-export const shadow = { shadowColor: '#4B2A46', shadowOpacity: 0.12, shadowRadius: 18, shadowOffset: { width: 0, height: 10 }, elevation: 3 } as const;
+/** Ombre portée « imprimée » : dure, décalée, couleur encre. */
+export const shadow = { shadowColor: '#271922', shadowOpacity: 1, shadowRadius: 0, shadowOffset: { width: 3, height: 3 }, elevation: 3 } as const;
 export const spacing = (n: number) => n * 4;
 
 export function useTheme(): Theme {

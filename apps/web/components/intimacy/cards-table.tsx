@@ -66,7 +66,7 @@ export function CardsTable() {
 
       <section className="card-table relative overflow-hidden rounded-lg px-5 py-8 sm:px-10 sm:py-10" aria-labelledby="cards-title">
         <div className="relative text-center">
-          <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-primary">{t('eyebrow')}</p>
+          <p className="label-sc text-paper/70">{t('eyebrow')}</p>
           <h1 id="cards-title" className="mt-2 font-display-soft text-4xl text-night-fg sm:text-5xl">{t('title')}</h1>
           <p className="mx-auto mt-3 max-w-xl text-pretty text-sm text-night-fg/75">{t('subtitle')}</p>
         </div>

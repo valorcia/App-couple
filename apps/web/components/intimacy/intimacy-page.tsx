@@ -128,8 +128,8 @@ function DoubleSecret({ partner, premium }: { partner: string; premium: boolean 
         <Glow tone="primary" size={300} className="-right-24 -top-24" />
         <div className="relative flex items-start justify-between gap-4">
           <div>
-            <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-primary">{t('matches.eyebrow')}</p>
-            <h2 className="mt-1 flex items-center gap-2 font-display-soft text-3xl"><Lock className="h-5 w-5" aria-hidden />{t('matches.title')}</h2>
+            <p className="label-sc text-paper/70">{t('matches.eyebrow')}</p>
+            <h2 className="mt-1 flex items-center gap-2 text-3xl"><Lock className="h-5 w-5" aria-hidden />{t('matches.title')}</h2>
             <p className="mt-1 text-sm opacity-80">{t('matches.privacy')}</p>
           </div>
         </div>
@@ -165,7 +165,7 @@ function DoubleSecret({ partner, premium }: { partner: string; premium: boolean 
               <h3 className="text-lg">{t(`categories.${category}`)}</h3>
               <ul className="space-y-2">
                 {list.map((item) => (
-                  <li key={item.id} className={cn('flex flex-col gap-3 rounded-lg border border-border bg-bg-elevated p-4 shadow-card sm:flex-row sm:items-center sm:justify-between', item.intensity >= 4 && 'border-primary/30 bg-[linear-gradient(135deg,var(--bg-elevated),var(--bg-blush))]', item.locked && 'opacity-70')}>
+                  <li key={item.id} className={cn('flex flex-col gap-3 rounded-md border border-ink/30 bg-bg-elevated p-4 sm:flex-row sm:items-center sm:justify-between', item.intensity >= 4 && 'border-primary bg-bg-blush', item.locked && 'opacity-70')}>
                     <div className="flex items-center gap-2">
                       {item.locked ? <Lock className="h-4 w-4 text-fg-muted" aria-hidden /> : null}
                       <span>{item.text}</span>
@@ -181,7 +181,7 @@ function DoubleSecret({ partner, premium }: { partner: string; premium: boolean 
                           aria-checked={item.myChoice === c}
                           disabled={item.locked || respond.isPending}
                           onClick={() => respond.mutate({ id: item.id, choice: c })}
-                          className={cn('min-w-[72px] rounded-pill border px-3 py-1.5 text-sm font-medium transition-colors', item.myChoice === c ? (c === 'YES' ? 'border-primary bg-primary text-primary-fg' : c === 'NO' ? 'border-fg-muted bg-fg-muted text-bg' : 'border-secondary bg-secondary text-secondary-fg') : 'border-border hover:bg-bg-muted')}
+                          className={cn('min-w-[72px] rounded-sm border-2 px-3 py-1.5 text-sm font-semibold transition-colors', item.myChoice === c ? (c === 'YES' ? 'border-ink bg-primary text-primary-fg' : c === 'NO' ? 'border-ink bg-ink text-paper' : 'border-ink bg-marker text-ink') : 'border-ink/30 hover:border-ink')}
                         >
                           {t(`choices.${c}`)}
                         </button>
@@ -212,8 +212,8 @@ function Tonight({ partner }: { partner: string }) {
       <Glow tone={mutual ? 'primary' : 'honey'} size={280} className="-right-20 -top-24" />
       <Doodle name="candle" size={72} className={cn('absolute right-6 top-6 hidden sm:block', mutual ? 'text-primary' : 'text-honey/80')} />
       <div className="relative max-w-xl">
-        <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-primary">{t('eyebrow')}</p>
-        <h2 className={cn('mt-1 flex items-center gap-2 font-display-soft text-3xl', !mutual && 'text-secondary')}><Flame className={cn('h-6 w-6', mutual ? 'text-primary' : 'text-fg-subtle')} aria-hidden />{t('title')}</h2>
+        <p className="label-sc text-paper/70">{t('eyebrow')}</p>
+        <h2 className={cn('mt-1 flex items-center gap-2 text-3xl')}><Flame className={cn('h-6 w-6', mutual ? 'text-primary' : 'text-fg-subtle')} aria-hidden />{t('title')}</h2>
         <p className={cn('mt-2 text-sm', mutual ? 'opacity-80' : 'text-fg-muted')}>{t('hint', { partner })}</p>
         {error ? <Alert tone="danger" className="mt-3">{error}</Alert> : null}
         <div className="mt-5 flex flex-wrap items-center gap-4">
@@ -236,8 +236,8 @@ function CardsTeaser() {
           <div className="card-back-pattern absolute inset-0 rotate-3 rounded-[10px]" />
         </div>
         <div className="min-w-0 flex-1">
-          <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-primary">{t('eyebrow')}</p>
-          <h2 className="mt-1 font-display-soft text-3xl text-night-fg">{t('title')}</h2>
+          <p className="label-sc text-paper/70">{t('eyebrow')}</p>
+          <h2 className="mt-1 text-3xl text-paper">{t('title')}</h2>
           <p className="mt-1 text-sm text-night-fg/75">{t('subtitle')}</p>
         </div>
         <span className="wax-seal shrink-0"><Spade className="h-5 w-5" aria-hidden /></span>

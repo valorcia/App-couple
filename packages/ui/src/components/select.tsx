@@ -9,8 +9,8 @@ export const Select = React.forwardRef<HTMLSelectElement, SelectProps>(({ classN
     ref={ref}
     aria-invalid={invalid || undefined}
     className={cn(
-      'flex h-12 w-full rounded-md border border-border bg-bg-elevated px-3 text-[15px] text-fg transition-colors duration-150',
-      'focus-visible:outline-none focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-ring/30 disabled:cursor-not-allowed disabled:opacity-60',
+      'flex h-12 w-full rounded-sm border-2 border-ink/35 bg-bg-elevated px-3 text-[15px] text-fg transition-colors duration-150',
+      'focus-visible:outline-none focus-visible:border-ink disabled:cursor-not-allowed disabled:opacity-60',
       invalid && 'border-danger',
       className,
     )}

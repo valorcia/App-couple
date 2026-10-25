@@ -14,65 +14,64 @@ body {
   @apply mx-auto w-full max-w-6xl px-4 sm:px-6 lg:px-8;
 }
 
-/* Lien de navigation latérale */
+/* Sommaire latéral : entrées numérotées séparées par des filets, l'entrée active est surlignée au marqueur. */
 .nav-item {
-  @apply flex items-center gap-3 rounded-pill px-4 py-2.5 text-[15px] font-medium text-fg-muted transition-[background-color,color,box-shadow] duration-200;
+  @apply flex items-center gap-3 border-b border-ink/15 px-1 py-3 text-[15px] font-medium text-fg transition-colors duration-100;
 }
-.nav-item:hover { @apply bg-bg-elevated/70 text-fg; }
-.nav-item[aria-current='page'] { @apply bg-bg-elevated text-secondary shadow-card; }
+.nav-item .nav-no { @apply font-display text-sm tabular-nums text-fg-subtle; }
+.nav-item:hover { @apply text-primary; }
+.nav-item[aria-current='page'] { @apply font-semibold; }
+.nav-item[aria-current='page'] .nav-label { background: linear-gradient(104deg, transparent 2%, color-mix(in oklab, var(--marker) 85%, transparent) 2.5%, color-mix(in oklab, var(--marker) 85%, transparent) 97%, transparent 97.5%); padding: 0 0.2em; }
 
-/* Carte « postale » : bord crème, timbre en coin */
-.postcard { background-image: linear-gradient(160deg, var(--bg-elevated), var(--bg-honey)); }
+/* Carte postale : papier jaune, timbre en coin, angle droit. */
+.postcard { background: var(--bg-honey); }
 .postcard::after {
   content: '';
-  position: absolute; top: 14px; right: 14px; width: 34px; height: 42px; border-radius: 4px;
-  border: 1.5px dashed color-mix(in oklab, var(--honey) 70%, transparent);
-  background: repeating-linear-gradient(45deg, transparent 0 4px, color-mix(in oklab, var(--honey) 35%, transparent) 4px 6px);
-  opacity: 0.8;
+  position: absolute; top: 14px; right: 14px; width: 34px; height: 42px;
+  border: 1.5px solid color-mix(in oklab, var(--ink) 55%, transparent);
+  background: repeating-linear-gradient(45deg, transparent 0 4px, color-mix(in oklab, var(--ink) 25%, transparent) 4px 6px);
+  mask: radial-gradient(circle at 0 0, transparent 3px, black 3.5px) 0 0 / 8px 8px round;
 }
 
-/* ---- Les cartes du soir : table de nuit, carte à retourner ---- */
+/* ---- Les cartes du soir : table encre, carte à retourner ---- */
 .card-table {
-  background:
-    radial-gradient(120% 90% at 50% 0%, color-mix(in oklab, var(--primary) 18%, transparent), transparent 60%),
-    radial-gradient(80% 60% at 50% 110%, rgb(0 0 0 / 0.35), transparent 70%),
-    linear-gradient(160deg, var(--night-elevated), var(--night) 70%);
-  color: var(--night-fg);
-  box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.06), var(--shadow-soft);
+  background: var(--ink);
+  color: var(--paper);
+  box-shadow: var(--shadow-lift);
+  border: 2px solid var(--ink);
 }
 .card-table::before {
   content: '';
-  position: absolute; inset: 14px; border-radius: inherit; pointer-events: none;
-  border: 1px dashed rgb(255 255 255 / 0.14);
+  position: absolute; inset: 12px; border-radius: 4px; pointer-events: none;
+  border: 1px dashed color-mix(in oklab, var(--paper) 35%, transparent);
 }
 .card3d { perspective: 1400px; }
 .card3d-inner { position: relative; transform-style: preserve-3d; transition: transform 760ms var(--ease); }
 .card3d.is-flipped .card3d-inner { transform: rotateY(180deg); }
-.card-face { position: absolute; inset: 0; backface-visibility: hidden; -webkit-backface-visibility: hidden; border-radius: 22px; }
+.card-face { position: absolute; inset: 0; backface-visibility: hidden; -webkit-backface-visibility: hidden; border-radius: 10px; }
 .card-face.back { transform: rotateY(180deg); }
 .card-back-pattern {
-  background-color: var(--plum-deep);
+  background-color: var(--orange-deep, #c4471f);
   background-image:
-    radial-gradient(circle at 10px 10px, rgb(255 255 255 / 0.14) 1.6px, transparent 2px),
-    radial-gradient(circle at 30px 30px, rgb(216 102 77 / 0.5) 1.6px, transparent 2px);
+    radial-gradient(circle at 10px 10px, rgb(243 231 211 / 0.35) 1.6px, transparent 2px),
+    radial-gradient(circle at 30px 30px, rgb(39 25 34 / 0.6) 1.6px, transparent 2px);
   background-size: 40px 40px;
-  box-shadow: inset 0 0 0 10px var(--plum-deep), inset 0 0 0 11px rgb(255 255 255 / 0.25), 0 20px 40px -18px rgb(0 0 0 / 0.6);
+  box-shadow: inset 0 0 0 10px var(--orange-deep, #c4471f), inset 0 0 0 11px rgb(243 231 211 / 0.6), 6px 6px 0 0 rgb(0 0 0 / 0.35);
 }
 .card-front-paper {
-  background: linear-gradient(170deg, #fffaf1, #f4e7d4);
-  color: var(--charcoal);
-  box-shadow: inset 0 0 0 10px #fffaf1, inset 0 0 0 11px color-mix(in oklab, var(--plum) 35%, transparent), 0 30px 50px -20px rgb(0 0 0 / 0.55);
+  background: #f8efe0;
+  color: #271922;
+  box-shadow: inset 0 0 0 10px #f8efe0, inset 0 0 0 11px #271922, 8px 8px 0 0 rgb(0 0 0 / 0.4);
 }
-.card-corner { position: absolute; width: 28px; height: 28px; border-color: color-mix(in oklab, var(--plum) 45%, transparent); border-style: solid; }
-.card-corner.tl { top: 20px; left: 20px; border-width: 1.5px 0 0 1.5px; border-top-left-radius: 8px; }
-.card-corner.tr { top: 20px; right: 20px; border-width: 1.5px 1.5px 0 0; border-top-right-radius: 8px; }
-.card-corner.bl { bottom: 20px; left: 20px; border-width: 0 0 1.5px 1.5px; border-bottom-left-radius: 8px; }
-.card-corner.br { bottom: 20px; right: 20px; border-width: 0 1.5px 1.5px 0; border-bottom-right-radius: 8px; }
+.card-corner { position: absolute; width: 26px; height: 26px; border-color: #271922; border-style: solid; }
+.card-corner.tl { top: 20px; left: 20px; border-width: 1.5px 0 0 1.5px; }
+.card-corner.tr { top: 20px; right: 20px; border-width: 1.5px 1.5px 0 0; }
+.card-corner.bl { bottom: 20px; left: 20px; border-width: 0 0 1.5px 1.5px; }
+.card-corner.br { bottom: 20px; right: 20px; border-width: 0 1.5px 1.5px 0; }
 .wax-seal {
   width: 56px; height: 56px; border-radius: 999px; display: inline-flex; align-items: center; justify-content: center;
-  background: radial-gradient(circle at 35% 30%, color-mix(in oklab, var(--primary) 70%, white), var(--primary) 55%, var(--primary-hover) 100%);
-  box-shadow: 0 6px 14px -6px rgb(0 0 0 / 0.6), inset 0 -3px 6px rgb(0 0 0 / 0.25), inset 0 2px 3px rgb(255 255 255 / 0.35);
-  color: white; font-family: var(--font-display); font-style: italic; font-size: 20px;
+  background: var(--primary); border: 2px solid var(--ink); box-shadow: 3px 3px 0 0 var(--ink);
+  color: var(--primary-fg); font-family: var(--font-display); font-style: italic; font-weight: 700; font-size: 20px;
 }
-.wax-seal.is-muted { background: radial-gradient(circle at 35% 30%, #5a4a5e, #3f3043 60%, #2b1f2f); color: rgb(255 255 255 / 0.55); box-shadow: none; }
+.wax-seal.is-muted { background: transparent; color: color-mix(in oklab, var(--paper) 60%, transparent); border-color: color-mix(in oklab, var(--paper) 40%, transparent); box-shadow: none; }
 @media (prefers-reduced-motion: reduce) { .card3d-inner { transition: none; } }

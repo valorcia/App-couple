@@ -13,7 +13,7 @@ export function Screen({ children, style, ...props }: ViewProps) {
 
 export function Title({ children }: { children: React.ReactNode }) {
   const t = useTheme();
-  return <Text style={{ fontSize: 34, lineHeight: 40, color: t.secondary, fontWeight: '600', letterSpacing: -0.5, marginBottom: spacing(2) }}>{children}</Text>;
+  return <Text style={{ fontSize: 36, lineHeight: 38, color: t.fg, fontWeight: '800', letterSpacing: -1, marginBottom: spacing(2) }}>{children}</Text>;
 }
 
 export function Muted({ children }: { children: React.ReactNode }) {
@@ -25,7 +25,7 @@ export function Card({ children, style, tone = 'default', ...props }: ViewProps 
   const t = useTheme();
   const bg = tone === 'blush' ? t.bgBlush : tone === 'plum' ? t.secondary : tone === 'honey' ? t.bgHoney : tone === 'night' ? t.night : t.bgElevated;
   return (
-    <View style={[{ backgroundColor: bg, borderRadius: radius.lg, padding: spacing(5), borderWidth: tone === 'default' ? 1 : 0, borderColor: t.border }, tone === 'default' || tone === 'night' ? shadow : null, style]} {...props}>
+    <View style={[{ backgroundColor: bg, borderRadius: radius.md, padding: spacing(5), borderWidth: 1.5, borderColor: tone === 'default' ? t.border : t.secondary }, tone === 'default' || tone === 'night' ? shadow : null, style]} {...props}>
       {children}
     </View>
   );
@@ -34,7 +34,7 @@ export function Card({ children, style, tone = 'default', ...props }: ViewProps 
 export function Button({ title, onPress, variant = 'primary', loading, disabled }: { title: string; onPress: () => void; variant?: 'primary' | 'secondary' | 'ghost'; loading?: boolean; disabled?: boolean }) {
   const t = useTheme();
   const bg = variant === 'primary' ? t.primary : variant === 'secondary' ? t.secondary : 'transparent';
-  const elevated = variant === 'primary' ? { ...shadow, shadowColor: t.primary, shadowOpacity: 0.3 } : null;
+  const elevated = variant === 'primary' || variant === 'secondary' ? { ...shadow, borderWidth: 2, borderColor: t.secondary } : null;
   const fg = variant === 'primary' ? t.primaryFg : variant === 'secondary' ? t.secondaryFg : t.fg;
   return (
     <Pressable
@@ -76,6 +76,6 @@ export function ErrorBanner({ message }: { message: string | null }) {
 }
 
 const styles = StyleSheet.create({
-  button: { minHeight: 48, borderRadius: radius.pill, alignItems: 'center', justifyContent: 'center', paddingHorizontal: spacing(6) },
-  input: { minHeight: 48, borderRadius: radius.md, borderWidth: 1, paddingHorizontal: spacing(4), fontSize: 16 },
+  button: { minHeight: 48, borderRadius: radius.md, alignItems: 'center', justifyContent: 'center', paddingHorizontal: spacing(6) },
+  input: { minHeight: 48, borderRadius: radius.sm, borderWidth: 2, paddingHorizontal: spacing(4), fontSize: 16 },
 });

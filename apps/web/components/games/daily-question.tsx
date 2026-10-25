@@ -25,11 +25,11 @@ export function DailyQuestionCard() {
   const data = daily.data && 'text' in daily.data ? daily.data : null;
   return (
     <Card tone="honey" className="postcard h-full">
-      <CardHeader><CardTitle className="flex items-center gap-2 text-secondary"><span className="text-[11px] font-semibold uppercase tracking-[0.18em] text-primary">{t('title')}</span></CardTitle></CardHeader>
+      <CardHeader><CardTitle className="label-sc">{t('title')}</CardTitle></CardHeader>
       <CardContent className="space-y-3">
         {daily.isPending ? <Skeleton className="h-16" /> : !data ? <p className="text-sm text-secondary/80">{t('none')}</p> : (
           <>
-            <p className="font-display-italic pr-10 text-2xl leading-snug text-secondary">{data.text}</p>
+            <p className="pr-10 font-display text-2xl leading-tight">{data.text}</p>
             {error ? <Alert tone="danger">{error}</Alert> : null}
             {data.revealedAt ? (
               <div className="grid gap-2 sm:grid-cols-2">

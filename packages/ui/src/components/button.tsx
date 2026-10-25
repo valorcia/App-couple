@@ -5,26 +5,27 @@ import { cva, type VariantProps } from 'class-variance-authority';
 import { Loader2 } from 'lucide-react';
 import { cn } from '../cn';
 
+/** Boutons « imprimés » : bloc plein, contour encre, ombre portée dure qui s'écrase au clic. */
 export const buttonVariants = cva(
-  'inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-pill font-medium transition-[background-color,transform,box-shadow,color] duration-200 ease-brand focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-bg disabled:pointer-events-none disabled:opacity-50 active:scale-[0.98] select-none',
+  'inline-flex items-center justify-center gap-2 whitespace-nowrap rounded-md font-semibold transition-[transform,box-shadow,background-color,color] duration-100 ease-brand focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-bg disabled:pointer-events-none disabled:opacity-50 select-none',
   {
     variants: {
       variant: {
-        primary: 'bg-[linear-gradient(135deg,var(--primary),var(--primary-hover))] text-primary-fg shadow-soft hover:brightness-105 hover:shadow-lift',
-        secondary: 'bg-secondary text-secondary-fg hover:bg-secondary-hover shadow-card',
-        outline: 'border border-border-strong bg-bg-elevated/60 text-fg hover:bg-bg-muted',
-        ghost: 'text-fg hover:bg-bg-muted',
-        soft: 'bg-bg-blush text-secondary hover:bg-blush/70',
-        honey: 'bg-bg-honey text-accent-fg hover:brightness-[0.98] shadow-card',
-        night: 'bg-night-elevated text-night-fg hover:bg-night border border-white/10',
-        danger: 'bg-danger text-white hover:brightness-95',
-        link: 'text-primary underline-offset-4 hover:underline rounded-none px-0',
+        primary: 'border-2 border-ink bg-primary text-primary-fg shadow-hard hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-lift active:translate-x-0.5 active:translate-y-0.5 active:shadow-none',
+        secondary: 'border-2 border-ink bg-ink text-paper shadow-hard hover:-translate-x-0.5 hover:-translate-y-0.5 hover:shadow-lift active:translate-x-0.5 active:translate-y-0.5 active:shadow-none',
+        outline: 'border-2 border-ink bg-transparent text-fg hover:bg-bg-muted active:translate-x-0.5 active:translate-y-0.5',
+        ghost: 'text-fg underline-offset-4 hover:underline',
+        soft: 'border-2 border-ink bg-bg-blush text-fg shadow-card hover:shadow-lift active:shadow-none',
+        honey: 'border-2 border-ink bg-marker text-ink shadow-card hover:shadow-lift active:shadow-none',
+        night: 'border-2 border-paper bg-transparent text-paper hover:bg-paper hover:text-ink',
+        danger: 'border-2 border-danger bg-danger text-white hover:brightness-95',
+        link: 'text-primary underline underline-offset-4 decoration-2 rounded-none px-0',
       },
       size: {
-        sm: 'h-9 px-4 text-sm',
+        sm: 'h-9 px-3.5 text-sm',
         md: 'h-11 px-5 text-[15px]',
         lg: 'h-13 px-7 text-base',
-        xl: 'h-14 px-8 text-base',
+        xl: 'h-14 px-8 text-lg',
         icon: 'h-11 w-11',
       },
     },
