@@ -74,7 +74,7 @@
 /* Mode sombre : papier bistre, encre crème. Jamais noir, jamais gris. */
 :root[data-theme='dark'] {
   --paper: #1d1418; --paper-2: #271c21; --paper-3: #33262c; --ink: #f1e4d0; --ink-2: #e8c8dc;
-  --bg: #1d1418; --bg-elevated: #241a1f; --bg-muted: #2d2127; --bg-blush: #4a2f36; --bg-honey: #4a3a1c; --bg-sage: #2f3627;
+  --bg: #1d1418; --bg-elevated: #241a1f; --bg-muted: #2d2127; --bg-blush: #4a2f36; --bg-honey: #55451f; --bg-sage: #2f3627;
   --night: #120c0f; --night-elevated: #241a1f; --night-fg: #f1e4d0;
   --fg: #f1e4d0; --fg-muted: #c2b0b8; --fg-subtle: #8f7d86;
   --border: rgb(241 228 208 / 0.22); --border-strong: #f1e4d0;
@@ -88,7 +88,7 @@
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme='light']) {
     --paper: #1d1418; --paper-2: #271c21; --paper-3: #33262c; --ink: #f1e4d0; --ink-2: #e8c8dc;
-    --bg: #1d1418; --bg-elevated: #241a1f; --bg-muted: #2d2127; --bg-blush: #4a2f36; --bg-honey: #4a3a1c; --bg-sage: #2f3627;
+    --bg: #1d1418; --bg-elevated: #241a1f; --bg-muted: #2d2127; --bg-blush: #4a2f36; --bg-honey: #55451f; --bg-sage: #2f3627;
     --night: #120c0f; --night-elevated: #241a1f; --night-fg: #f1e4d0;
     --fg: #f1e4d0; --fg-muted: #c2b0b8; --fg-subtle: #8f7d86;
     --border: rgb(241 228 208 / 0.22); --border-strong: #f1e4d0;
@@ -200,6 +200,7 @@ h1 { font-weight: 800; letter-spacing: -0.03em; }
 h3 { font-weight: 600; line-height: 1.12; }
 .font-display-soft { font-family: var(--font-display); font-weight: 800; font-variation-settings: 'opsz' 144, 'SOFT' 100, 'WONK' 1; letter-spacing: -0.03em; }
 .font-display-italic { font-family: var(--font-display); font-style: italic; font-weight: 500; font-variation-settings: 'opsz' 96, 'SOFT' 40, 'WONK' 1; }
+@layer components {
 /* Libellés « petites capitales » numérotés : remplacent les surtitres en capitales espacées. */
 .label-sc { font-family: var(--font-sans); font-variant-caps: all-small-caps; letter-spacing: 0.08em; font-weight: 600; font-size: 0.95rem; color: var(--fg-muted); }
 .marker { background: linear-gradient(104deg, transparent 2%, color-mix(in oklab, var(--marker) 85%, transparent) 2.5%, color-mix(in oklab, var(--marker) 85%, transparent) 97%, transparent 97.5%); padding: 0 0.15em; box-decoration-break: clone; -webkit-box-decoration-break: clone; }
@@ -221,6 +222,8 @@ h3 { font-weight: 600; line-height: 1.12; }
 .hover-lift:hover { transform: translate(-2px, -2px); box-shadow: var(--shadow-lift); }
 .hover-lift:active { transform: translate(1px, 1px); box-shadow: 1px 1px 0 0 var(--ink); }
 .stitch { background-image: repeating-linear-gradient(90deg, currentColor 0 6px, transparent 6px 12px); background-size: 100% 1px; background-repeat: no-repeat; background-position: 0 100%; }
+
+}
 
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }

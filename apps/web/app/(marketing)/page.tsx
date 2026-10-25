@@ -174,9 +174,9 @@ async function HeroCollage() {
   return (
     <div className="relative mx-auto h-[540px] w-full max-w-md animate-bloom" aria-hidden>
       {/* Agenda, scotché, penché à gauche */}
-      <div className="tape absolute left-0 top-8 w-60 -rotate-6 rounded-md border-2 border-ink bg-bg-elevated p-5 shadow-hard">
+      <div className="tape absolute -left-3 top-10 w-56 -rotate-6 rounded-md border-2 border-ink bg-bg-elevated p-4 shadow-hard">
         <p className="label-sc">{t('upcoming')}</p>
-        <p className="mt-2 font-display text-lg leading-tight">{t('event')}</p>
+        <p className="mt-2 font-display text-base leading-tight">{t('event')}</p>
         <p className="text-sm text-fg-muted">{t('eventMeta')}</p>
         <div className="mt-4 flex gap-1">{[3, 4, 5, 6, 7, 8, 9].map((d, i) => <span key={d} className={i === 5 ? 'h-7 w-7 border-2 border-ink bg-primary text-center text-xs font-semibold leading-6 text-primary-fg' : 'h-7 w-7 border border-ink/30 text-center text-xs leading-7'}>{d}</span>)}</div>
       </div>

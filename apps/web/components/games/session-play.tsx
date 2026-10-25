@@ -107,7 +107,7 @@ function RoundView({ s, round, userId, names, onAnswer, onSkip, onVerdict, pendi
         <Glow tone="primary" size={320} className="-right-24 -top-28" />
         <div className="relative">
         {round.prompt.categoryCode ? <p className="label-sc text-paper/70">{round.prompt.categoryCode}</p> : null}
-        <p className="mt-3 text-3xl leading-[1.05] sm:text-[2.6rem]">{round.prompt.text}</p>
+        <p className="mt-3 font-display text-3xl leading-[1.05] sm:text-[2.6rem]">{round.prompt.text}</p>
         {s.gameType === 'WHO_KNOWS_BEST' ? <p className="mt-3 text-sm opacity-80">{isSubject ? t('wkb.subjectHint', { partner: names.partner }) : t('wkb.guessHint', { partner: names.partner })}</p> : null}
         </div>
       </Card>
