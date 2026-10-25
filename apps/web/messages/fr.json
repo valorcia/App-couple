@@ -41,33 +41,113 @@
     },
     "pillars": {
       "title": "Trois piliers, une seule application",
-      "love": { "title": "S'aimer", "body": "Réponses secrètes, confessions, envies partagées en toute confidentialité : apprenez à vous connaître encore mieux." },
-      "play": { "title": "S'amuser", "body": "Dilemmes, défis, quiz de souvenirs, « Lequel de nous deux ? » : des jeux pensés pour deux, pas des listes de questions." },
-      "build": { "title": "Construire ensemble", "body": "Agenda partagé intelligent, listes, tâches sans classement, projets de vie : le quotidien, simplement." }
+      "love": {
+        "title": "S'aimer",
+        "body": "Réponses secrètes, confessions, envies partagées en toute confidentialité : apprenez à vous connaître encore mieux."
+      },
+      "play": {
+        "title": "S'amuser",
+        "body": "Dilemmes, défis, quiz de souvenirs, « Lequel de nous deux ? » : des jeux pensés pour deux, pas des listes de questions."
+      },
+      "build": {
+        "title": "Construire ensemble",
+        "body": "Agenda partagé intelligent, listes, tâches sans classement, projets de vie : le quotidien, simplement."
+      }
     },
     "privacy": {
       "title": "Votre intimité n'appartient qu'à vous",
       "body": "Les réponses individuelles ne sont jamais révélées sans accord mutuel. Les événements privés restent privés. Aucun SDK publicitaire, aucune utilisation de vos données intimes pour entraîner une IA."
     },
-    "ctaBottom": { "title": "Prêts à commencer ?", "body": "Créez votre compte, invitez votre partenaire avec un code, et c'est parti.", "cta": "Créer notre espace" }
+    "ctaBottom": {
+      "title": "Prêts à commencer ?",
+      "body": "Créez votre compte, invitez votre partenaire avec un code, et c'est parti.",
+      "cta": "Créer notre espace"
+    }
   },
   "auth": {
-    "login": { "title": "Bon retour", "subtitle": "Connectez-vous pour retrouver votre espace.", "submit": "Se connecter", "noAccount": "Pas encore de compte ?", "forgot": "Mot de passe oublié ?" },
-    "register": { "title": "Créons votre espace", "subtitle": "Un compte par personne. Vous inviterez votre partenaire juste après.", "submit": "Créer mon compte", "hasAccount": "Déjà un compte ?", "terms": "J'accepte les <terms>conditions générales</terms> et la <privacy>politique de confidentialité</privacy>.", "marketing": "Je souhaite recevoir des idées et nouveautés par e-mail (facultatif)." },
-    "fields": { "email": "Adresse e-mail", "password": "Mot de passe", "passwordHint": "10 caractères minimum.", "displayName": "Prénom ou pseudonyme", "displayNameHint": "C'est ainsi que votre partenaire vous verra.", "newPassword": "Nouveau mot de passe" },
-    "verify": { "title": "Confirmez votre adresse", "body": "Nous avons envoyé un lien à {email}. Cliquez dessus pour activer votre compte et inviter votre partenaire.", "resend": "Renvoyer l'e-mail", "resent": "E-mail renvoyé.", "verifying": "Vérification en cours…", "success": "Adresse confirmée. Bienvenue !", "invalid": "Ce lien n'est plus valide. Demandez un nouvel e-mail depuis votre compte." },
-    "forgot": { "title": "Mot de passe oublié", "subtitle": "Indiquez votre e-mail, nous vous envoyons un lien de réinitialisation.", "submit": "Envoyer le lien", "sent": "Si un compte existe pour cette adresse, un e-mail vient de partir." },
-    "reset": { "title": "Nouveau mot de passe", "submit": "Enregistrer", "success": "Mot de passe mis à jour. Vous pouvez vous connecter." }
+    "login": {
+      "title": "Bon retour",
+      "subtitle": "Connectez-vous pour retrouver votre espace.",
+      "submit": "Se connecter",
+      "noAccount": "Pas encore de compte ?",
+      "forgot": "Mot de passe oublié ?"
+    },
+    "register": {
+      "title": "Créons votre espace",
+      "subtitle": "Un compte par personne. Vous inviterez votre partenaire juste après.",
+      "submit": "Créer mon compte",
+      "hasAccount": "Déjà un compte ?",
+      "terms": "J'accepte les <terms>conditions générales</terms> et la <privacy>politique de confidentialité</privacy>.",
+      "marketing": "Je souhaite recevoir des idées et nouveautés par e-mail (facultatif)."
+    },
+    "fields": {
+      "email": "Adresse e-mail",
+      "password": "Mot de passe",
+      "passwordHint": "10 caractères minimum.",
+      "displayName": "Prénom ou pseudonyme",
+      "displayNameHint": "C'est ainsi que votre partenaire vous verra.",
+      "newPassword": "Nouveau mot de passe"
+    },
+    "verify": {
+      "title": "Confirmez votre adresse",
+      "body": "Nous avons envoyé un lien à {email}. Cliquez dessus pour activer votre compte et inviter votre partenaire.",
+      "resend": "Renvoyer l'e-mail",
+      "resent": "E-mail renvoyé.",
+      "verifying": "Vérification en cours…",
+      "success": "Adresse confirmée. Bienvenue !",
+      "invalid": "Ce lien n'est plus valide. Demandez un nouvel e-mail depuis votre compte."
+    },
+    "forgot": {
+      "title": "Mot de passe oublié",
+      "subtitle": "Indiquez votre e-mail, nous vous envoyons un lien de réinitialisation.",
+      "submit": "Envoyer le lien",
+      "sent": "Si un compte existe pour cette adresse, un e-mail vient de partir."
+    },
+    "reset": {
+      "title": "Nouveau mot de passe",
+      "submit": "Enregistrer",
+      "success": "Mot de passe mis à jour. Vous pouvez vous connecter."
+    }
   },
   "couple": {
-    "setup": { "title": "Et maintenant, à deux", "subtitle": "Invitez votre partenaire ou rejoignez son espace avec son code.", "invite": "Inviter mon partenaire", "join": "J'ai un code" },
-    "invite": { "title": "Votre code d'invitation", "body": "Partagez ce code avec votre partenaire. Il est valable 72 heures et ne sert qu'une fois.", "emailOptional": "Son adresse e-mail (facultatif, pour lui envoyer le code)", "generate": "Générer un code", "regenerate": "Nouveau code", "waiting": "En attente de votre partenaire…", "shareLink": "Lien à partager", "expires": "Expire le {date}" },
-    "join": { "title": "Rejoindre mon partenaire", "code": "Code d'invitation", "codeHint": "8 caractères, reçus de votre partenaire.", "submit": "Rejoindre" },
-    "linked": { "title": "Vous êtes ensemble", "body": "{partner} et vous partagez désormais le même espace." },
-    "leave": { "title": "Quitter le couple", "body": "Cette action est immédiate. Vos données personnelles restent les vôtres ; l'espace commun est conservé en lecture 30 jours puis archivé.", "confirm": "Oui, quitter" }
+    "setup": {
+      "title": "Et maintenant, à deux",
+      "subtitle": "Invitez votre partenaire ou rejoignez son espace avec son code.",
+      "invite": "Inviter mon partenaire",
+      "join": "J'ai un code"
+    },
+    "invite": {
+      "title": "Votre code d'invitation",
+      "body": "Partagez ce code avec votre partenaire. Il est valable 72 heures et ne sert qu'une fois.",
+      "emailOptional": "Son adresse e-mail (facultatif, pour lui envoyer le code)",
+      "generate": "Générer un code",
+      "regenerate": "Nouveau code",
+      "waiting": "En attente de votre partenaire…",
+      "shareLink": "Lien à partager",
+      "expires": "Expire le {date}"
+    },
+    "join": {
+      "title": "Rejoindre mon partenaire",
+      "code": "Code d'invitation",
+      "codeHint": "8 caractères, reçus de votre partenaire.",
+      "submit": "Rejoindre"
+    },
+    "linked": {
+      "title": "Vous êtes ensemble",
+      "body": "{partner} et vous partagez désormais le même espace."
+    },
+    "leave": {
+      "title": "Quitter le couple",
+      "body": "Cette action est immédiate. Vos données personnelles restent les vôtres ; l'espace commun est conservé en lecture 30 jours puis archivé.",
+      "confirm": "Oui, quitter"
+    }
   },
   "dashboard": {
-    "greeting": { "morning": "Bonjour {name}", "afternoon": "Bel après-midi {name}", "evening": "Bonsoir {name}" },
+    "greeting": {
+      "morning": "Bonjour {name}",
+      "afternoon": "Bel après-midi {name}",
+      "evening": "Bonsoir {name}"
+    },
     "together": "Ensemble depuis {days} jours",
     "whatNow": "On fait quoi ?",
     "whatNowHint": "Une idée pour maintenant, ce soir ou ce week-end.",
@@ -78,7 +158,8 @@
     "nextDate": "Prochaine date importante",
     "shortcuts": "Raccourcis",
     "pendingInvitation": "Votre partenaire n'a pas encore rejoint votre espace.",
-    "seeInvitation": "Voir l'invitation"
+    "seeInvitation": "Voir l'invitation",
+    "addEvent": "Ajouter un moment"
   },
   "profile": {
     "title": "Mon profil",
@@ -128,5 +209,96 @@
     "ENTITLEMENT_REQUIRED": "Cette fonctionnalité est réservée à Premium.",
     "QUOTA_EXCEEDED": "Vous avez atteint votre quota pour aujourd'hui.",
     "NETWORK": "Impossible de joindre le serveur. Vérifiez votre connexion."
+  },
+  "calendar": {
+    "title": "Agenda",
+    "subtitle": "Votre agenda à deux. Le privé reste privé.",
+    "views": {
+      "day": "Jour",
+      "week": "Semaine",
+      "month": "Mois"
+    },
+    "today": "Aujourd'hui",
+    "new": "Nouvel événement",
+    "edit": "Modifier",
+    "delete": "Supprimer",
+    "deleteConfirm": "Supprimer cet événement ?",
+    "deleteSeries": "Toute la série",
+    "deleteOccurrence": "Cette occurrence seulement",
+    "busy": "Occupé",
+    "allDay": "Toute la journée",
+    "empty": "Rien de prévu ce jour-là.",
+    "emptyHint": "Et si vous ajoutiez un moment à deux ?",
+    "fields": {
+      "title": "Titre",
+      "description": "Description",
+      "location": "Lieu",
+      "start": "Début",
+      "end": "Fin",
+      "allDay": "Toute la journée",
+      "visibility": "Visibilité",
+      "type": "Type",
+      "color": "Couleur",
+      "category": "Catégorie",
+      "recurrence": "Récurrence",
+      "reminders": "Rappels",
+      "invitePartner": "Inviter {partner}",
+      "invitePartnerHint": "Votre partenaire pourra accepter ou décliner."
+    },
+    "visibility": {
+      "SHARED": "Partagé",
+      "SHARED_hint": "Visible et modifiable par vous deux.",
+      "BUSY": "Occupé uniquement",
+      "BUSY_hint": "Votre partenaire voit un créneau occupé, sans titre ni détail.",
+      "PRIVATE": "Privé",
+      "PRIVATE_hint": "Invisible pour votre partenaire."
+    },
+    "types": {
+      "PERSONAL": "Personnel",
+      "SHARED": "Commun",
+      "FAMILY": "Familial",
+      "WORK": "Professionnel",
+      "SURPRISE": "Surprise",
+      "VACATION": "Vacances",
+      "DATE": "Rendez-vous",
+      "BIRTHDAY": "Anniversaire",
+      "OTHER": "Autre"
+    },
+    "recurrence": {
+      "none": "Jamais",
+      "daily": "Tous les jours",
+      "weekly": "Toutes les semaines",
+      "biweekly": "Toutes les deux semaines",
+      "monthly": "Tous les mois",
+      "yearly": "Tous les ans",
+      "custom": "Personnalisée (RRULE)"
+    },
+    "reminders": {
+      "none": "Aucun",
+      "m0": "À l'heure",
+      "m10": "10 min avant",
+      "m30": "30 min avant",
+      "m60": "1 h avant",
+      "m1440": "La veille"
+    },
+    "attendance": {
+      "pending": "En attente de réponse",
+      "accepted": "Accepté",
+      "declined": "Décliné",
+      "accept": "J'accepte",
+      "decline": "Je ne peux pas",
+      "youDeclined": "Vous avez décliné",
+      "partnerPending": "{partner} n'a pas encore répondu",
+      "partnerAccepted": "{partner} a accepté",
+      "partnerDeclined": "{partner} ne pourra pas"
+    },
+    "errors": {
+      "endBeforeStart": "La fin doit être après le début."
+    },
+    "saved": "Événement enregistré.",
+    "owner": {
+      "me": "Vous",
+      "partner": "{partner}"
+    }
   }
 }

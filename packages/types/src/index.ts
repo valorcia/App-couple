@@ -123,3 +123,56 @@ export interface AdminStatsDto {
   premiumCouples: number;
   signups7d: number;
 }
+
+// ---------------------------------------------------------------- Agenda
+export type EventVisibility = 'PRIVATE' | 'SHARED' | 'BUSY';
+export type EventType = 'PERSONAL' | 'SHARED' | 'FAMILY' | 'WORK' | 'SURPRISE' | 'VACATION' | 'DATE' | 'BIRTHDAY' | 'OTHER';
+export type AttendeeStatus = 'PENDING' | 'ACCEPTED' | 'DECLINED';
+
+export interface EventReminderDto {
+  id: string;
+  minutesBefore: number;
+  channel: string;
+}
+
+export interface EventAttendeeDto {
+  userId: string;
+  status: AttendeeStatus;
+  respondedAt: string | null;
+}
+
+/** Événement tel que vu par l'utilisateur courant. Un événement « Occupé » du partenaire est projeté : `busy: true`, sans détails. */
+export interface CalendarEventDto {
+  id: string;
+  /** Identifiant d'occurrence (événements récurrents) : `${id}@${startAt}`. */
+  instanceId: string;
+  ownerUserId: string;
+  isMine: boolean;
+  busy: boolean;
+  title: string;
+  description: string | null;
+  location: string | null;
+  startAt: string;
+  endAt: string;
+  allDay: boolean;
+  timezone: string;
+  visibility: EventVisibility;
+  type: EventType;
+  color: string | null;
+  category: string | null;
+  rrule: string | null;
+  exdates: string[];
+  isRecurring: boolean;
+  reminders: EventReminderDto[];
+  attendees: EventAttendeeDto[];
+  canEdit: boolean;
+  surpriseId: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface FreeSlotDto {
+  startAt: string;
+  endAt: string;
+  minutes: number;
+}

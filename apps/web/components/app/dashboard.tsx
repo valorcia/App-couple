@@ -1,6 +1,13 @@
 'use client';
 import Link from 'next/link';
 import { useTranslations } from 'next-intl';
+import { useQuery } from '@tanstack/react-query';
+import { format } from 'date-fns';
+import { fr } from 'date-fns/locale';
+import type { CalendarEventDto } from '@couple/types';
+import { api } from '@/lib/api';
+import { useRealtimeInvalidation } from '@/lib/realtime';
+import { eventColor } from '@/lib/calendar-utils';
 import { CalendarDays, ClipboardList, Gamepad2, Gift, Sparkles } from 'lucide-react';
 import { Badge, Button, Card, CardContent, CardDescription, CardHeader, CardTitle, EmptyState } from '@couple/ui';
 import { useAuth } from '@/lib/auth-provider';
@@ -14,8 +21,20 @@ export function Dashboard() {
   const t = useTranslations('dashboard');
   const tc = useTranslations('common');
   const { user } = useAuth();
+  const coupleActive = user?.couple?.status === 'ACTIVE';
+  const upcoming = useQuery({
+    queryKey: ['calendar', 'upcoming'],
+    queryFn: () => {
+      const from = new Date();
+      const to = new Date(from.getTime() + 14 * 86_400_000);
+      return api.get<CalendarEventDto[]>('/calendar/events', { query: { from: from.toISOString(), to: to.toISOString() } });
+    },
+    enabled: coupleActive,
+  });
+  useRealtimeInvalidation('calendar.changed', [['calendar']]);
   if (!user) return null;
   const couple = user.couple;
+  const nextEvents = (upcoming.data ?? []).filter((e) => new Date(e.endAt) > new Date()).slice(0, 4);
   const partner = couple?.partner;
   // Date de rencontre si renseignée, sinon date d'association.
   const since = couple?.metAt ?? couple?.activatedAt ?? null;
@@ -52,7 +71,23 @@ export function Dashboard() {
         <Card>
           <CardHeader><CardTitle className="flex items-center gap-2"><CalendarDays className="h-5 w-5 text-primary" aria-hidden />{t('upcoming')}</CardTitle></CardHeader>
           <CardContent>
-            <EmptyState title={t('noUpcoming')} description={tc('comingSoon')} className="border-0 p-6" />
+            {nextEvents.length === 0 ? (
+              <EmptyState title={t('noUpcoming')} className="border-0 p-6" action={<Button asChild variant="outline" size="sm"><Link href="/agenda">{t('addEvent')}</Link></Button>} />
+            ) : (
+              <ul className="space-y-2">
+                {nextEvents.map((e) => (
+                  <li key={e.instanceId}>
+                    <Link href="/agenda" className="flex items-center gap-3 rounded-md p-2 hover:bg-bg-muted">
+                      <span className="h-10 w-1.5 rounded-pill" style={{ backgroundColor: eventColor(e) }} aria-hidden />
+                      <span className="min-w-0 flex-1">
+                        <span className="block truncate font-medium">{e.busy ? 'Occupé' : e.title}</span>
+                        <span className="block text-sm text-fg-muted capitalize">{format(new Date(e.startAt), e.allDay ? 'EEEE d MMMM' : 'EEEE d MMMM · HH:mm', { locale: fr })}</span>
+                      </span>
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            )}
           </CardContent>
         </Card>
         <Card>

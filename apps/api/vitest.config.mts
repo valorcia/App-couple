@@ -13,7 +13,7 @@ export default defineConfig({
       module: { type: 'es6' },
     }),
   ],
-  resolve: { alias: { '@': path.resolve(__dirname, 'src') } },
+  resolve: { alias: { '@': path.resolve(import.meta.dirname, 'src') } },
   test: {
     include: ['src/**/*.spec.ts', 'test/**/*.spec.ts'],
     globals: false,

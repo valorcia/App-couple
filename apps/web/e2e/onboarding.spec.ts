@@ -1,19 +1,6 @@
 import { test, expect, type Page, type APIRequestContext } from '@playwright/test';
 
-const API = 'http://localhost:4100';
-const PASSWORD = 'UnMotDePasse!Solide';
-const unique = (p: string) => `${p}-${Date.now()}-${Math.floor(Math.random() * 1e6)}@e2e.local`;
-
-async function latestMail(request: APIRequestContext, to: string, contains: string) {
-  for (let i = 0; i < 20; i++) {
-    const res = await request.get(`${API}/dev/mailbox`, { params: { to } });
-    const { items } = (await res.json()) as { items: { text: string }[] };
-    const found = items.find((m) => m.text.includes(contains));
-    if (found) return found.text;
-    await new Promise((r) => setTimeout(r, 300));
-  }
-  throw new Error(`Aucun e-mail pour ${to} contenant ${contains}`);
-}
+import { API, PASSWORD, latestMail, unique } from './fixtures';
 
 function debug(page: Page) {
   page.on('console', (m) => { if (m.type() === 'error' || m.type() === 'warning') console.log(`[browser:${m.type()}]`, m.text()); });
@@ -54,9 +41,10 @@ test('inscription → vérification → invitation → association du partenaire
   const code = (await codeEl.textContent())!.trim();
   expect(code).toMatch(/^[A-Z0-9]{8}$/);
 
-  // L'accueil signale l'attente du partenaire.
+  // Tant que le couple n'est pas actif, l'accueil renvoie vers l'écran d'attente.
   await pageA.goto('/accueil');
-  await expect(pageA.getByText("Votre partenaire n'a pas encore rejoint votre espace.")).toBeVisible();
+  await expect(pageA).toHaveURL(/\/couple/);
+  await expect(pageA.getByRole('heading', { name: 'En attente de votre partenaire…' })).toBeVisible();
 
   // Camille rejoint avec le code.
   const ctxB = await browser.newContext();

@@ -20,6 +20,9 @@ import { EntitlementsModule } from './modules/entitlements/entitlements.module';
 import { AdminModule } from './modules/admin/admin.module';
 import { HealthModule } from './modules/health/health.module';
 import { DevModule } from './modules/dev/dev.module';
+import { RealtimeModule } from './modules/realtime/realtime.module';
+import { NotificationsModule } from './modules/notifications/notifications.module';
+import { CalendarModule } from './modules/calendar/calendar.module';
 
 const SENSITIVE_PATHS = ['/auth', '/me/confirm-adult'];
 
@@ -56,6 +59,9 @@ const SENSITIVE_PATHS = ['/auth', '/me/confirm-adult'];
     CouplesModule,
     EntitlementsModule,
     AdminModule,
+    RealtimeModule,
+    NotificationsModule,
+    CalendarModule,
     HealthModule,
     DevModule.register(),
   ],
