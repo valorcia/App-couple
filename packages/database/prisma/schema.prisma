@@ -1,0 +1,1537 @@
+// Entre Nous — schéma relationnel. Voir docs/DATABASE_SCHEMA.md pour les intentions.
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["postgresqlExtensions"]
+}
+
+datasource db {
+  provider   = "postgresql"
+  url        = env("DATABASE_URL")
+  extensions = [citext]
+}
+
+// =====================================================================
+// IDENTITÉ
+// =====================================================================
+
+enum UserRole {
+  USER
+  SUPPORT
+  ADMIN
+}
+
+enum UserStatus {
+  ACTIVE
+  SUSPENDED
+  PENDING_DELETION
+  DELETED
+}
+
+model User {
+  id               String     @id @default(uuid(7)) @db.Uuid
+  email            String     @unique @db.Citext
+  passwordHash     String?
+  role             UserRole   @default(USER)
+  status           UserStatus @default(ACTIVE)
+  emailVerifiedAt  DateTime?
+  adultConfirmedAt DateTime?
+  locale           String     @default("fr")
+  timezone         String     @default("Europe/Paris")
+  sessionVersion   Int        @default(1)
+  lastLoginAt      DateTime?
+  suspendedReason  String?
+  createdAt        DateTime   @default(now())
+  updatedAt        DateTime   @updatedAt
+  deletedAt        DateTime?
+
+  profile                 Profile?
+  oauthAccounts           OAuthAccount[]
+  sessions                Session[]
+  emailVerificationTokens EmailVerificationToken[]
+  passwordResetTokens     PasswordResetToken[]
+  memberships             CoupleMembership[]
+  invitationsSent         Invitation[]             @relation("InvitationInviter")
+  invitationsAccepted     Invitation[]             @relation("InvitationAcceptor")
+  consents                ConsentRecord[]
+  calendars               Calendar[]
+  events                  CalendarEvent[]          @relation("EventOwner")
+  attendees               EventAttendee[]
+  calendarConnections     CalendarConnection[]
+  tasksAssigned           Task[]                   @relation("TaskAssignee")
+  tasksCreated            Task[]                   @relation("TaskCreator")
+  taskComments            TaskComment[]
+  gameSessionsCreated     GameSession[]
+  gameParticipants        GameParticipant[]
+  answers                 Answer[]
+  intimacySettings        IntimacySetting[]
+  desireResponses         DesireResponse[]
+  surprisesCreated        Surprise[]
+  experiences             Experience[]
+  memoriesCreated         Memory[]
+  aiConversations         AIConversation[]
+  aiUsages                AIUsage[]
+  pushDevices             PushDevice[]
+  notifications           Notification[]
+  notificationPreferences NotificationPreference[]
+  auditLogsAsActor        AuditLog[]               @relation("AuditActor")
+  dataExportRequests      DataExportRequest[]
+  deletionRequests        AccountDeletionRequest[]
+  purchases               Purchase[]
+  subscriptionsPurchased  Subscription[]
+  shoppingItemsChecked    ShoppingItem[]           @relation("ItemChecker")
+  dailyQuestionAnswers    DailyQuestionAnswer[]
+
+  @@index([status])
+  @@index([createdAt])
+}
+
+model Profile {
+  userId      String   @id @db.Uuid
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  displayName String
+  avatarKey   String?
+  bio         String?
+  interests   String[] @default([])
+  birthDate   DateTime? @db.Date
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+enum OAuthProvider {
+  APPLE
+  GOOGLE
+}
+
+model OAuthAccount {
+  id                String        @id @default(uuid(7)) @db.Uuid
+  userId            String        @db.Uuid
+  user              User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  provider          OAuthProvider
+  providerAccountId String
+  email             String?
+  createdAt         DateTime      @default(now())
+
+  @@unique([provider, providerAccountId])
+  @@index([userId])
+}
+
+model Session {
+  id         String    @id @default(uuid(7)) @db.Uuid
+  userId     String    @db.Uuid
+  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tokenHash  String    @unique
+  familyId   String    @db.Uuid
+  userAgent  String?
+  ip         String?
+  platform   String?
+  expiresAt  DateTime
+  lastUsedAt DateTime  @default(now())
+  revokedAt  DateTime?
+  createdAt  DateTime  @default(now())
+
+  @@index([userId])
+  @@index([familyId])
+  @@index([expiresAt])
+}
+
+model EmailVerificationToken {
+  id        String    @id @default(uuid(7)) @db.Uuid
+  userId    String    @db.Uuid
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tokenHash String    @unique
+  newEmail  String?   @db.Citext
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime  @default(now())
+
+  @@index([userId])
+}
+
+model PasswordResetToken {
+  id        String    @id @default(uuid(7)) @db.Uuid
+  userId    String    @db.Uuid
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  tokenHash String    @unique
+  expiresAt DateTime
+  usedAt    DateTime?
+  createdAt DateTime  @default(now())
+
+  @@index([userId])
+}
+
+// =====================================================================
+// COUPLE
+// =====================================================================
+
+enum CoupleStatus {
+  PENDING
+  ACTIVE
+  DISSOLVED
+}
+
+model Couple {
+  id            String       @id @default(uuid(7)) @db.Uuid
+  status        CoupleStatus @default(PENDING)
+  name          String?
+  metAt         DateTime?    @db.Date
+  anniversaryAt DateTime?    @db.Date
+  settings      Json         @default("{}")
+  activatedAt   DateTime?
+  dissolvedAt   DateTime?
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+
+  memberships        CoupleMembership[]
+  invitations        Invitation[]
+  subscriptions      Subscription[]
+  purchases          Purchase[]
+  entitlements       Entitlement[]
+  calendars          Calendar[]
+  events             CalendarEvent[]
+  calendarConnections CalendarConnection[]
+  shoppingLists      ShoppingList[]
+  tasks              Task[]
+  projects           Project[]
+  familyMembers      FamilyMember[]
+  gameSessions       GameSession[]
+  challengeProgress  ChallengeProgress[]
+  dailyQuestions     DailyQuestion[]
+  intimacySettings   IntimacySetting[]
+  desireResponses    DesireResponse[]
+  desireReveals      DesireReveal[]
+  experiences        Experience[]
+  surprises          Surprise[]
+  missionProgress    MissionProgress[]
+  albums             Album[]
+  memories           Memory[]
+  storageUsage       StorageUsage?
+  aiConversations    AIConversation[]
+  aiUsages           AIUsage[]
+  webhookEvents      WebhookEvent[]
+
+  @@index([status])
+}
+
+model CoupleMembership {
+  id       String    @id @default(uuid(7)) @db.Uuid
+  coupleId String    @db.Uuid
+  couple   Couple    @relation(fields: [coupleId], references: [id], onDelete: Cascade)
+  userId   String    @db.Uuid
+  user     User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  joinedAt DateTime  @default(now())
+  leftAt   DateTime?
+
+  // Index unique partiel "un seul couple actif par utilisateur" ajouté en SQL dans la migration.
+  @@unique([coupleId, userId])
+  @@index([userId])
+}
+
+enum InvitationStatus {
+  PENDING
+  ACCEPTED
+  EXPIRED
+  REVOKED
+}
+
+model Invitation {
+  id               String           @id @default(uuid(7)) @db.Uuid
+  coupleId         String           @db.Uuid
+  couple           Couple           @relation(fields: [coupleId], references: [id], onDelete: Cascade)
+  inviterUserId    String           @db.Uuid
+  inviter          User             @relation("InvitationInviter", fields: [inviterUserId], references: [id], onDelete: Cascade)
+  codeHash         String           @unique
+  status           InvitationStatus @default(PENDING)
+  targetEmail      String?          @db.Citext
+  expiresAt        DateTime
+  acceptedAt       DateTime?
+  acceptedByUserId String?          @db.Uuid
+  acceptedBy       User?            @relation("InvitationAcceptor", fields: [acceptedByUserId], references: [id], onDelete: SetNull)
+  revokedAt        DateTime?
+  createdAt        DateTime         @default(now())
+
+  @@index([coupleId])
+  @@index([inviterUserId])
+}
+
+enum ConsentScope {
+  TERMS
+  PRIVACY
+  INTIMACY
+  AI_MEMORIES
+  AI_PERSONAL_TO_SHARED
+  MARKETING
+  ANALYTICS
+}
+
+model ConsentRecord {
+  id        String       @id @default(uuid(7)) @db.Uuid
+  userId    String       @db.Uuid
+  user      User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  scope     ConsentScope
+  version   String
+  grantedAt DateTime     @default(now())
+  revokedAt DateTime?
+  ip        String?
+  userAgent String?
+
+  @@index([userId, scope])
+}
+
+// =====================================================================
+// MONÉTISATION
+// =====================================================================
+
+enum ProductType {
+  SUBSCRIPTION
+  PACK
+}
+
+enum BillingInterval {
+  MONTH
+  YEAR
+}
+
+model Product {
+  id              String           @id @default(uuid(7)) @db.Uuid
+  code            String           @unique
+  type            ProductType
+  name            String
+  description     String?
+  priceCents      Int
+  currency        String           @default("EUR")
+  interval        BillingInterval?
+  entitlementKey  String
+  stripePriceId   String?
+  appleProductId  String?
+  googleProductId String?
+  active          Boolean          @default(true)
+  sortOrder       Int              @default(0)
+  metadata        Json             @default("{}")
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+
+  subscriptions Subscription[]
+  purchases     Purchase[]
+  contentPack   ContentPack?
+}
+
+enum PaymentProvider {
+  STRIPE
+  APPLE
+  GOOGLE
+  MANUAL
+}
+
+enum SubscriptionStatus {
+  TRIALING
+  ACTIVE
+  PAST_DUE
+  CANCELED
+  EXPIRED
+  PAUSED
+}
+
+model Subscription {
+  id                     String             @id @default(uuid(7)) @db.Uuid
+  coupleId               String             @db.Uuid
+  couple                 Couple             @relation(fields: [coupleId], references: [id], onDelete: Cascade)
+  purchaserUserId        String?            @db.Uuid
+  purchaser              User?              @relation(fields: [purchaserUserId], references: [id], onDelete: SetNull)
+  productId              String?            @db.Uuid
+  product                Product?           @relation(fields: [productId], references: [id], onDelete: SetNull)
+  provider               PaymentProvider
+  providerSubscriptionId String
+  providerCustomerId     String?
+  status                 SubscriptionStatus
+  currentPeriodStart     DateTime?
+  currentPeriodEnd       DateTime?
+  cancelAtPeriodEnd      Boolean            @default(false)
+  canceledAt             DateTime?
+  trialEndsAt            DateTime?
+  metadata               Json               @default("{}")
+  createdAt              DateTime           @default(now())
+  updatedAt              DateTime           @updatedAt
+
+  @@unique([provider, providerSubscriptionId])
+  @@index([coupleId])
+  @@index([status, currentPeriodEnd])
+}
+
+enum PurchaseStatus {
+  PENDING
+  COMPLETED
+  REFUNDED
+  FAILED
+}
+
+model Purchase {
+  id                    String          @id @default(uuid(7)) @db.Uuid
+  coupleId              String          @db.Uuid
+  couple                Couple          @relation(fields: [coupleId], references: [id], onDelete: Cascade)
+  userId                String?         @db.Uuid
+  user                  User?           @relation(fields: [userId], references: [id], onDelete: SetNull)
+  productId             String          @db.Uuid
+  product               Product         @relation(fields: [productId], references: [id])
+  provider              PaymentProvider
+  providerTransactionId String
+  amountCents           Int
+  currency              String
+  status                PurchaseStatus
+  createdAt             DateTime        @default(now())
+  updatedAt             DateTime        @updatedAt
+
+  @@unique([provider, providerTransactionId])
+  @@index([coupleId])
+}
+
+enum EntitlementSource {
+  SUBSCRIPTION
+  PURCHASE
+  PROMO
+  ADMIN
+  TRIAL
+}
+
+model Entitlement {
+  id        String            @id @default(uuid(7)) @db.Uuid
+  coupleId  String            @db.Uuid
+  couple    Couple            @relation(fields: [coupleId], references: [id], onDelete: Cascade)
+  key       String
+  source    EntitlementSource
+  sourceRef String?
+  expiresAt DateTime?
+  createdAt DateTime          @default(now())
+  updatedAt DateTime          @updatedAt
+
+  @@unique([coupleId, key])
+  @@index([expiresAt])
+}
+
+model PromoCode {
+  id              String    @id @default(uuid(7)) @db.Uuid
+  code            String    @unique
+  description     String?
+  entitlementKey  String
+  durationDays    Int?
+  maxRedemptions  Int?
+  redemptions     Int       @default(0)
+  expiresAt       DateTime?
+  active          Boolean   @default(true)
+  createdAt       DateTime  @default(now())
+}
+
+model WebhookEvent {
+  id          String          @id @default(uuid(7)) @db.Uuid
+  provider    PaymentProvider
+  eventId     String
+  type        String
+  coupleId    String?         @db.Uuid
+  couple      Couple?         @relation(fields: [coupleId], references: [id], onDelete: SetNull)
+  payload     Json
+  processedAt DateTime?
+  error       String?
+  createdAt   DateTime        @default(now())
+
+  @@unique([provider, eventId])
+}
+
+// =====================================================================
+// AGENDA
+// =====================================================================
+
+enum CalendarKind {
+  PERSONAL
+  COUPLE
+  FAMILY
+  EXTERNAL
+}
+
+model Calendar {
+  id           String              @id @default(uuid(7)) @db.Uuid
+  coupleId     String?             @db.Uuid
+  couple       Couple?             @relation(fields: [coupleId], references: [id], onDelete: Cascade)
+  ownerUserId  String?             @db.Uuid
+  owner        User?               @relation(fields: [ownerUserId], references: [id], onDelete: Cascade)
+  kind         CalendarKind
+  name         String
+  color        String              @default("#E0705A")
+  connectionId String?             @db.Uuid
+  connection   CalendarConnection? @relation(fields: [connectionId], references: [id], onDelete: Cascade)
+  externalId   String?
+  createdAt    DateTime            @default(now())
+  updatedAt    DateTime            @updatedAt
+
+  events CalendarEvent[]
+
+  @@index([coupleId])
+  @@index([ownerUserId])
+}
+
+enum EventVisibility {
+  PRIVATE
+  SHARED
+  BUSY
+}
+
+enum EventType {
+  PERSONAL
+  SHARED
+  FAMILY
+  WORK
+  SURPRISE
+  VACATION
+  DATE
+  BIRTHDAY
+  OTHER
+}
+
+model CalendarEvent {
+  id           String          @id @default(uuid(7)) @db.Uuid
+  calendarId   String?         @db.Uuid
+  calendar     Calendar?       @relation(fields: [calendarId], references: [id], onDelete: SetNull)
+  coupleId     String?         @db.Uuid
+  couple       Couple?         @relation(fields: [coupleId], references: [id], onDelete: Cascade)
+  ownerUserId  String          @db.Uuid
+  owner        User            @relation("EventOwner", fields: [ownerUserId], references: [id], onDelete: Cascade)
+  visibility   EventVisibility @default(SHARED)
+  type         EventType       @default(SHARED)
+  title        String
+  description  String?
+  location     String?
+  startAt      DateTime
+  endAt        DateTime
+  allDay       Boolean         @default(false)
+  timezone     String          @default("Europe/Paris")
+  rrule        String?
+  exdates      DateTime[]      @default([])
+  color        String?
+  category     String?
+  externalId   String?
+  iCalUid      String?
+  source       String          @default("app")
+  surpriseId   String?         @unique @db.Uuid
+  surprise     Surprise?       @relation(fields: [surpriseId], references: [id], onDelete: SetNull)
+  createdAt    DateTime        @default(now())
+  updatedAt    DateTime        @updatedAt
+  deletedAt    DateTime?
+
+  attendees EventAttendee[]
+  reminders EventReminder[]
+
+  @@index([coupleId, startAt])
+  @@index([ownerUserId, startAt])
+  @@index([calendarId, externalId])
+  @@index([iCalUid])
+}
+
+enum AttendeeStatus {
+  PENDING
+  ACCEPTED
+  DECLINED
+}
+
+model EventAttendee {
+  id          String         @id @default(uuid(7)) @db.Uuid
+  eventId     String         @db.Uuid
+  event       CalendarEvent  @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  userId      String         @db.Uuid
+  user        User           @relation(fields: [userId], references: [id], onDelete: Cascade)
+  status      AttendeeStatus @default(PENDING)
+  respondedAt DateTime?
+
+  @@unique([eventId, userId])
+}
+
+model EventReminder {
+  id            String        @id @default(uuid(7)) @db.Uuid
+  eventId       String        @db.Uuid
+  event         CalendarEvent @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  minutesBefore Int
+  channel       String        @default("push")
+  sentAt        DateTime?
+
+  @@index([eventId])
+}
+
+enum CalendarProvider {
+  GOOGLE
+  MICROSOFT
+  ICS
+}
+
+enum ConnectionStatus {
+  ACTIVE
+  ERROR
+  REVOKED
+}
+
+model CalendarConnection {
+  id              String           @id @default(uuid(7)) @db.Uuid
+  userId          String           @db.Uuid
+  user            User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  coupleId        String?          @db.Uuid
+  couple          Couple?          @relation(fields: [coupleId], references: [id], onDelete: Cascade)
+  provider        CalendarProvider
+  accountEmail    String?
+  accessTokenEnc  String?
+  refreshTokenEnc String?
+  tokenExpiresAt  DateTime?
+  syncToken       String?
+  status          ConnectionStatus @default(ACTIVE)
+  lastSyncAt      DateTime?
+  lastError       String?
+  settings        Json             @default("{}")
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+
+  calendars Calendar[]
+  syncLogs  CalendarSyncLog[]
+
+  @@index([userId])
+}
+
+model CalendarSyncLog {
+  id           String             @id @default(uuid(7)) @db.Uuid
+  connectionId String             @db.Uuid
+  connection   CalendarConnection @relation(fields: [connectionId], references: [id], onDelete: Cascade)
+  startedAt    DateTime           @default(now())
+  finishedAt   DateTime?
+  created      Int                @default(0)
+  updated      Int                @default(0)
+  deleted      Int                @default(0)
+  conflicts    Int                @default(0)
+  error        String?
+
+  @@index([connectionId, startedAt])
+}
+
+// =====================================================================
+// QUOTIDIEN
+// =====================================================================
+
+model ShoppingList {
+  id        String    @id @default(uuid(7)) @db.Uuid
+  coupleId  String    @db.Uuid
+  couple    Couple    @relation(fields: [coupleId], references: [id], onDelete: Cascade)
+  name      String
+  archivedAt DateTime?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  items ShoppingItem[]
+
+  @@index([coupleId])
+}
+
+model ShoppingItem {
+  id              String       @id @default(uuid(7)) @db.Uuid
+  listId          String       @db.Uuid
+  list            ShoppingList @relation(fields: [listId], references: [id], onDelete: Cascade)
+  name            String
+  quantity        String?
+  category        String?
+  position        Int          @default(0)
+  checkedAt       DateTime?
+  checkedByUserId String?      @db.Uuid
+  checkedBy       User?        @relation("ItemChecker", fields: [checkedByUserId], references: [id], onDelete: SetNull)
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+
+  @@index([listId, position])
+}
+
+enum TaskPriority {
+  LOW
+  MEDIUM
+  HIGH
+}
+
+enum TaskStatus {
+  OPEN
+  DONE
+  CANCELED
+}
+
+model Task {
+  id              String       @id @default(uuid(7)) @db.Uuid
+  coupleId        String       @db.Uuid
+  couple          Couple       @relation(fields: [coupleId], references: [id], onDelete: Cascade)
+  creatorUserId   String       @db.Uuid
+  creator         User         @relation("TaskCreator", fields: [creatorUserId], references: [id], onDelete: Cascade)
+  assigneeUserId  String?      @db.Uuid
+  assignee        User?        @relation("TaskAssignee", fields: [assigneeUserId], references: [id], onDelete: SetNull)
+  projectId       String?      @db.Uuid
+  project         Project?     @relation(fields: [projectId], references: [id], onDelete: SetNull)
+  title           String
+  description     String?
+  priority        TaskPriority @default(MEDIUM)
+  status          TaskStatus   @default(OPEN)
+  dueAt           DateTime?
+  rrule           String?
+  completedAt     DateTime?
+  createdAt       DateTime     @default(now())
+  updatedAt       DateTime     @updatedAt
+
+  comments TaskComment[]
+
+  @@index([coupleId, status, dueAt])
+}
+
+model TaskComment {
+  id        String   @id @default(uuid(7)) @db.Uuid
+  taskId    String   @db.Uuid
+  task      Task     @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  userId    String   @db.Uuid
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  body      String
+  createdAt DateTime @default(now())
+
+  @@index([taskId])
+}
+
+model FamilyMember {
+  id        String    @id @default(uuid(7)) @db.Uuid
+  coupleId  String    @db.Uuid
+  couple    Couple    @relation(fields: [coupleId], references: [id], onDelete: Cascade)
+  firstName String
+  birthDate DateTime? @db.Date
+  color     String?
+  createdAt DateTime  @default(now())
+
+  @@index([coupleId])
+}
+
+enum ProjectStatus {
+  ACTIVE
+  COMPLETED
+  ARCHIVED
+}
+
+model Project {
+  id            String        @id @default(uuid(7)) @db.Uuid
+  coupleId      String        @db.Uuid
+  couple        Couple        @relation(fields: [coupleId], references: [id], onDelete: Cascade)
+  templateCode  String?
+  title         String
+  goal          String?
+  description   String?
+  status        ProjectStatus @default(ACTIVE)
+  startAt       DateTime?     @db.Date
+  targetAt      DateTime?     @db.Date
+  budgetCents   Int?
+  currency      String        @default("EUR")
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  steps     ProjectStep[]
+  notes     ProjectNote[]
+  documents ProjectDocument[]
+  tasks     Task[]
+
+  @@index([coupleId, status])
+}
+
+model ProjectStep {
+  id          String    @id @default(uuid(7)) @db.Uuid
+  projectId   String    @db.Uuid
+  project     Project   @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  title       String
+  position    Int       @default(0)
+  dueAt       DateTime? @db.Date
+  completedAt DateTime?
+
+  @@index([projectId, position])
+}
+
+model ProjectNote {
+  id        String   @id @default(uuid(7)) @db.Uuid
+  projectId String   @db.Uuid
+  project   Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  body      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([projectId])
+}
+
+model ProjectDocument {
+  id         String   @id @default(uuid(7)) @db.Uuid
+  projectId  String   @db.Uuid
+  project    Project  @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  name       String
+  storageKey String
+  mimeType   String
+  sizeBytes  Int
+  createdAt  DateTime @default(now())
+
+  @@index([projectId])
+}
+
+// =====================================================================
+// JEUX
+// =====================================================================
+
+enum GameType {
+  SECRET_ANSWERS
+  WHO_KNOWS_BEST
+  DILEMMA
+  WHICH_OF_US
+  CHALLENGE
+  CONFESSIONS
+  MEMORY_QUIZ
+}
+
+enum ContentTier {
+  FREE
+  PREMIUM
+  PACK
+}
+
+enum ContentStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+}
+
+model ContentCategory {
+  id          String        @id @default(uuid(7)) @db.Uuid
+  code        String        @unique
+  name        String
+  description String?
+  icon        String?
+  gameTypes   GameType[]    @default([])
+  sortOrder   Int           @default(0)
+  status      ContentStatus @default(PUBLISHED)
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  questions  Question[]
+  challenges Challenge[]
+}
+
+model ContentPack {
+  id          String        @id @default(uuid(7)) @db.Uuid
+  code        String        @unique
+  name        String
+  description String?
+  coverKey    String?
+  productId   String?       @unique @db.Uuid
+  product     Product?      @relation(fields: [productId], references: [id], onDelete: SetNull)
+  status      ContentStatus @default(DRAFT)
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  questions   Question[]
+  challenges  Challenge[]
+  desireItems DesireItem[]
+  missions    Mission[]
+}
+
+model Question {
+  id         String          @id @default(uuid(7)) @db.Uuid
+  gameType   GameType
+  categoryId String?         @db.Uuid
+  category   ContentCategory? @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  packId     String?         @db.Uuid
+  pack       ContentPack?    @relation(fields: [packId], references: [id], onDelete: SetNull)
+  locale     String          @default("fr")
+  level      Int             @default(1)
+  tier       ContentTier     @default(FREE)
+  status     ContentStatus   @default(PUBLISHED)
+  text       String
+  /// Options (dilemmes), variantes de formulation, réponses attendues, etc.
+  payload    Json            @default("{}")
+  tags       String[]        @default([])
+  createdAt  DateTime        @default(now())
+  updatedAt  DateTime        @updatedAt
+
+  rounds         GameRound[]
+  dailyQuestions DailyQuestion[]
+
+  @@index([gameType, locale, status, tier])
+  @@index([categoryId])
+}
+
+enum GameSessionStatus {
+  OPEN
+  COMPLETED
+  ABANDONED
+}
+
+model GameSession {
+  id              String            @id @default(uuid(7)) @db.Uuid
+  coupleId        String            @db.Uuid
+  couple          Couple            @relation(fields: [coupleId], references: [id], onDelete: Cascade)
+  createdByUserId String            @db.Uuid
+  createdBy       User              @relation(fields: [createdByUserId], references: [id], onDelete: Cascade)
+  gameType        GameType
+  status          GameSessionStatus @default(OPEN)
+  config          Json              @default("{}")
+  summary         Json?
+  completedAt     DateTime?
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+
+  participants GameParticipant[]
+  rounds       GameRound[]
+
+  @@index([coupleId, status, createdAt])
+}
+
+model GameParticipant {
+  id        String      @id @default(uuid(7)) @db.Uuid
+  sessionId String      @db.Uuid
+  session   GameSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  userId    String      @db.Uuid
+  user      User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  joinedAt  DateTime    @default(now())
+
+  @@unique([sessionId, userId])
+}
+
+model GameRound {
+  id         String      @id @default(uuid(7)) @db.Uuid
+  sessionId  String      @db.Uuid
+  session    GameSession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  index      Int
+  questionId String?     @db.Uuid
+  question   Question?   @relation(fields: [questionId], references: [id], onDelete: SetNull)
+  /// Copie du texte/payload au moment du jeu (le catalogue peut évoluer).
+  prompt     Json
+  revealedAt DateTime?
+  createdAt  DateTime    @default(now())
+
+  answers Answer[]
+
+  @@unique([sessionId, index])
+}
+
+model Answer {
+  id        String    @id @default(uuid(7)) @db.Uuid
+  roundId   String    @db.Uuid
+  round     GameRound @relation(fields: [roundId], references: [id], onDelete: Cascade)
+  userId    String    @db.Uuid
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  /// Réponse structurée (texte, choix, vote). Jamais exposée au partenaire avant revealedAt.
+  payload   Json
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  @@unique([roundId, userId])
+}
+
+model DailyQuestion {
+  id         String   @id @default(uuid(7)) @db.Uuid
+  coupleId   String   @db.Uuid
+  couple     Couple   @relation(fields: [coupleId], references: [id], onDelete: Cascade)
+  date       DateTime @db.Date
+  questionId String   @db.Uuid
+  question   Question @relation(fields: [questionId], references: [id])
+  revealedAt DateTime?
+  createdAt  DateTime @default(now())
+
+  answers DailyQuestionAnswer[]
+
+  @@unique([coupleId, date])
+}
+
+model DailyQuestionAnswer {
+  id              String        @id @default(uuid(7)) @db.Uuid
+  dailyQuestionId String        @db.Uuid
+  dailyQuestion   DailyQuestion @relation(fields: [dailyQuestionId], references: [id], onDelete: Cascade)
+  userId          String        @db.Uuid
+  user            User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  text            String
+  createdAt       DateTime      @default(now())
+
+  @@unique([dailyQuestionId, userId])
+}
+
+enum ChallengeDifficulty {
+  EASY
+  MEDIUM
+  HARD
+}
+
+enum BudgetLevel {
+  FREE
+  LOW
+  MEDIUM
+  HIGH
+}
+
+model Challenge {
+  id              String              @id @default(uuid(7)) @db.Uuid
+  categoryId      String?             @db.Uuid
+  category        ContentCategory?    @relation(fields: [categoryId], references: [id], onDelete: SetNull)
+  packId          String?             @db.Uuid
+  pack            ContentPack?        @relation(fields: [packId], references: [id], onDelete: SetNull)
+  locale          String              @default("fr")
+  tier            ContentTier         @default(FREE)
+  status          ContentStatus       @default(PUBLISHED)
+  title           String
+  description     String
+  instructions    String[]            @default([])
+  durationMinutes Int?
+  difficulty      ChallengeDifficulty @default(EASY)
+  budget          BudgetLevel         @default(FREE)
+  materials       String[]            @default([])
+  intimate        Boolean             @default(false)
+  tags            String[]            @default([])
+  createdAt       DateTime            @default(now())
+  updatedAt       DateTime            @updatedAt
+
+  progress ChallengeProgress[]
+
+  @@index([locale, status, tier, intimate])
+}
+
+enum ChallengeProgressStatus {
+  PROPOSED
+  ACCEPTED
+  SKIPPED
+  COMPLETED
+}
+
+model ChallengeProgress {
+  id                 String                  @id @default(uuid(7)) @db.Uuid
+  coupleId           String                  @db.Uuid
+  couple             Couple                  @relation(fields: [coupleId], references: [id], onDelete: Cascade)
+  challengeId        String                  @db.Uuid
+  challenge          Challenge               @relation(fields: [challengeId], references: [id], onDelete: Cascade)
+  status             ChallengeProgressStatus @default(PROPOSED)
+  proposedByUserId   String?                 @db.Uuid
+  completedByUserIds String[]                @default([]) @db.Uuid
+  note               String?
+  completedAt        DateTime?
+  createdAt          DateTime                @default(now())
+  updatedAt          DateTime                @updatedAt
+
+  @@index([coupleId, status])
+}
+
+// =====================================================================
+// INTIMITÉ
+// =====================================================================
+
+model IntimacySetting {
+  id                String    @id @default(uuid(7)) @db.Uuid
+  coupleId          String    @db.Uuid
+  couple            Couple    @relation(fields: [coupleId], references: [id], onDelete: Cascade)
+  userId            String    @db.Uuid
+  user              User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  enabledAt         DateTime?
+  disabledAt        DateTime?
+  enabledCategories String[]  @default([])
+  maxIntensity      Int       @default(2)
+  updatedAt         DateTime  @updatedAt
+
+  @@unique([coupleId, userId])
+}
+
+model DesireItem {
+  id        String        @id @default(uuid(7)) @db.Uuid
+  packId    String?       @db.Uuid
+  pack      ContentPack?  @relation(fields: [packId], references: [id], onDelete: SetNull)
+  locale    String        @default("fr")
+  category  String
+  intensity Int           @default(1)
+  tier      ContentTier   @default(FREE)
+  status    ContentStatus @default(PUBLISHED)
+  text      String
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+
+  responses DesireResponse[]
+  reveals   DesireReveal[]
+
+  @@index([locale, status, category, intensity])
+}
+
+enum DesireChoice {
+  YES
+  NO
+  MAYBE
+}
+
+model DesireResponse {
+  id        String       @id @default(uuid(7)) @db.Uuid
+  coupleId  String       @db.Uuid
+  couple    Couple       @relation(fields: [coupleId], references: [id], onDelete: Cascade)
+  userId    String       @db.Uuid
+  user      User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  itemId    String       @db.Uuid
+  item      DesireItem   @relation(fields: [itemId], references: [id], onDelete: Cascade)
+  choice    DesireChoice
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
+
+  @@unique([coupleId, userId, itemId])
+  @@index([coupleId, itemId])
+}
+
+model DesireReveal {
+  id                 String     @id @default(uuid(7)) @db.Uuid
+  coupleId           String     @db.Uuid
+  couple             Couple     @relation(fields: [coupleId], references: [id], onDelete: Cascade)
+  itemId             String     @db.Uuid
+  item               DesireItem @relation(fields: [itemId], references: [id], onDelete: Cascade)
+  requestedByUserIds String[]   @default([]) @db.Uuid
+  revealedAt         DateTime?
+  createdAt          DateTime   @default(now())
+  updatedAt          DateTime   @updatedAt
+
+  @@unique([coupleId, itemId])
+}
+
+// =====================================================================
+// EXPÉRIENCES, SURPRISES, MISSIONS
+// =====================================================================
+
+enum Mood {
+  ROMANTIC
+  FUNNY
+  RELAX
+  ADVENTURE
+  CULTURE
+  FOOD
+  SPICY
+}
+
+enum Moment {
+  NOW
+  TONIGHT
+  WEEKEND
+  DATE
+}
+
+enum Company {
+  COUPLE
+  FAMILY
+}
+
+model ActivityIdea {
+  id              String        @id @default(uuid(7)) @db.Uuid
+  locale          String        @default("fr")
+  title           String
+  description     String
+  moods           Mood[]        @default([])
+  moments         Moment[]      @default([])
+  company         Company[]     @default([])
+  budget          BudgetLevel   @default(FREE)
+  durationMinutes Int?
+  indoor          Boolean       @default(true)
+  intimate        Boolean       @default(false)
+  tier            ContentTier   @default(FREE)
+  status          ContentStatus @default(PUBLISHED)
+  tags            String[]      @default([])
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+
+  @@index([locale, status, budget])
+}
+
+enum ExperienceSource {
+  CATALOG
+  AI
+}
+
+model Experience {
+  id              String           @id @default(uuid(7)) @db.Uuid
+  coupleId        String           @db.Uuid
+  couple          Couple           @relation(fields: [coupleId], references: [id], onDelete: Cascade)
+  createdByUserId String           @db.Uuid
+  createdBy       User             @relation(fields: [createdByUserId], references: [id], onDelete: Cascade)
+  kind            String
+  source          ExperienceSource
+  params          Json
+  result          Json
+  savedAt         DateTime?
+  scheduledEventId String?         @db.Uuid
+  createdAt       DateTime         @default(now())
+
+  @@index([coupleId, createdAt])
+}
+
+enum SurpriseStatus {
+  DRAFT
+  INVITED
+  ACCEPTED
+  DECLINED
+  REVEALED
+  CANCELED
+}
+
+model Surprise {
+  id            String         @id @default(uuid(7)) @db.Uuid
+  coupleId      String         @db.Uuid
+  couple        Couple         @relation(fields: [coupleId], references: [id], onDelete: Cascade)
+  creatorUserId String         @db.Uuid
+  creator       User           @relation(fields: [creatorUserId], references: [id], onDelete: Cascade)
+  status        SurpriseStatus @default(DRAFT)
+  scheduledAt   DateTime?
+  durationMinutes Int?
+  budget        BudgetLevel?
+  mood          Mood?
+  /// Chiffré (AES-256-GCM) : titre, description, lieu, idée retenue.
+  detailsEnc    String?
+  /// Indices visibles par le partenaire, avec date de publication.
+  hints         Json           @default("[]")
+  teaser        String?
+  showCountdown Boolean        @default(false)
+  revealAt      DateTime?
+  revealedAt    DateTime?
+  respondedAt   DateTime?
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+
+  event CalendarEvent?
+
+  @@index([coupleId, status])
+}
+
+model Mission {
+  id          String        @id @default(uuid(7)) @db.Uuid
+  code        String        @unique
+  packId      String?       @db.Uuid
+  pack        ContentPack?  @relation(fields: [packId], references: [id], onDelete: SetNull)
+  locale      String        @default("fr")
+  title       String
+  description String
+  coverKey    String?
+  tier        ContentTier   @default(FREE)
+  status      ContentStatus @default(PUBLISHED)
+  intimate    Boolean       @default(false)
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  steps    MissionStep[]
+  progress MissionProgress[]
+}
+
+model MissionStep {
+  id        String  @id @default(uuid(7)) @db.Uuid
+  missionId String  @db.Uuid
+  mission   Mission @relation(fields: [missionId], references: [id], onDelete: Cascade)
+  position  Int
+  title     String
+  body      String
+  kind      String  @default("challenge")
+  payload   Json    @default("{}")
+
+  @@unique([missionId, position])
+}
+
+model MissionProgress {
+  id             String    @id @default(uuid(7)) @db.Uuid
+  coupleId       String    @db.Uuid
+  couple         Couple    @relation(fields: [coupleId], references: [id], onDelete: Cascade)
+  missionId      String    @db.Uuid
+  mission        Mission   @relation(fields: [missionId], references: [id], onDelete: Cascade)
+  currentStep    Int       @default(0)
+  completedSteps Int[]     @default([])
+  startedAt      DateTime  @default(now())
+  completedAt    DateTime?
+  pausedAt       DateTime?
+
+  @@unique([coupleId, missionId])
+}
+
+// =====================================================================
+// SOUVENIRS
+// =====================================================================
+
+model Album {
+  id        String   @id @default(uuid(7)) @db.Uuid
+  coupleId  String   @db.Uuid
+  couple    Couple   @relation(fields: [coupleId], references: [id], onDelete: Cascade)
+  title     String
+  coverKey  String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  memories Memory[]
+
+  @@index([coupleId])
+}
+
+model Memory {
+  id              String    @id @default(uuid(7)) @db.Uuid
+  coupleId        String    @db.Uuid
+  couple          Couple    @relation(fields: [coupleId], references: [id], onDelete: Cascade)
+  createdByUserId String    @db.Uuid
+  createdBy       User      @relation(fields: [createdByUserId], references: [id], onDelete: Cascade)
+  albumId         String?   @db.Uuid
+  album           Album?    @relation(fields: [albumId], references: [id], onDelete: SetNull)
+  title           String
+  note            String?
+  happenedAt      DateTime? @db.Date
+  place           String?
+  tags            String[]  @default([])
+  aiAllowed       Boolean   @default(false)
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  deletedAt       DateTime?
+
+  assets MemoryAsset[]
+
+  @@index([coupleId, happenedAt])
+}
+
+enum AssetStatus {
+  PENDING
+  READY
+  FAILED
+}
+
+model MemoryAsset {
+  id          String      @id @default(uuid(7)) @db.Uuid
+  memoryId    String      @db.Uuid
+  memory      Memory      @relation(fields: [memoryId], references: [id], onDelete: Cascade)
+  storageKey  String      @unique
+  thumbKey    String?
+  mimeType    String
+  sizeBytes   Int
+  width       Int?
+  height      Int?
+  durationSec Int?
+  status      AssetStatus @default(PENDING)
+  createdAt   DateTime    @default(now())
+
+  @@index([memoryId])
+}
+
+model StorageUsage {
+  coupleId   String   @id @db.Uuid
+  couple     Couple   @relation(fields: [coupleId], references: [id], onDelete: Cascade)
+  usedBytes  BigInt   @default(0)
+  quotaBytes BigInt
+  updatedAt  DateTime @updatedAt
+}
+
+// =====================================================================
+// IA
+// =====================================================================
+
+enum AIConversationMode {
+  PERSONAL
+  SHARED
+}
+
+model AIConversation {
+  id          String             @id @default(uuid(7)) @db.Uuid
+  coupleId    String             @db.Uuid
+  couple      Couple             @relation(fields: [coupleId], references: [id], onDelete: Cascade)
+  ownerUserId String?            @db.Uuid
+  owner       User?              @relation(fields: [ownerUserId], references: [id], onDelete: Cascade)
+  mode        AIConversationMode
+  title       String?
+  archivedAt  DateTime?
+  createdAt   DateTime           @default(now())
+  updatedAt   DateTime           @updatedAt
+
+  messages AIMessage[]
+
+  @@index([coupleId, mode])
+  @@index([ownerUserId])
+}
+
+enum AIMessageRole {
+  USER
+  ASSISTANT
+  TOOL
+  SYSTEM
+}
+
+model AIMessage {
+  id             String         @id @default(uuid(7)) @db.Uuid
+  conversationId String         @db.Uuid
+  conversation   AIConversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+  authorUserId   String?        @db.Uuid
+  role           AIMessageRole
+  /// Chiffré AES-256-GCM.
+  contentEnc     String
+  toolCalls      Json?
+  createdAt      DateTime       @default(now())
+
+  @@index([conversationId, createdAt])
+}
+
+model AIUsage {
+  id           String   @id @default(uuid(7)) @db.Uuid
+  userId       String?  @db.Uuid
+  user         User?    @relation(fields: [userId], references: [id], onDelete: SetNull)
+  coupleId     String?  @db.Uuid
+  couple       Couple?  @relation(fields: [coupleId], references: [id], onDelete: SetNull)
+  feature      String
+  provider     String
+  model        String
+  inputTokens  Int
+  outputTokens Int
+  costMicros   Int
+  cached       Boolean  @default(false)
+  createdAt    DateTime @default(now())
+
+  @@index([coupleId, createdAt])
+  @@index([createdAt])
+}
+
+model AIPromptTemplate {
+  id        String   @id @default(uuid(7)) @db.Uuid
+  key       String
+  version   Int
+  locale    String   @default("fr")
+  system    String
+  template  String
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+
+  @@unique([key, version, locale])
+}
+
+// =====================================================================
+// NOTIFICATIONS
+// =====================================================================
+
+model PushDevice {
+  id         String   @id @default(uuid(7)) @db.Uuid
+  userId     String   @db.Uuid
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  token      String   @unique
+  platform   String
+  deviceName String?
+  lastSeenAt DateTime @default(now())
+  createdAt  DateTime @default(now())
+
+  @@index([userId])
+}
+
+enum NotificationCategory {
+  CALENDAR
+  INVITATION
+  GAME
+  CHALLENGE
+  SURPRISE
+  ANNIVERSARY
+  SUGGESTION
+  DAILY_QUESTION
+  SYSTEM
+  MARKETING
+}
+
+model Notification {
+  id        String               @id @default(uuid(7)) @db.Uuid
+  userId    String               @db.Uuid
+  user      User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
+  category  NotificationCategory
+  type      String
+  title     String
+  body      String
+  data      Json                 @default("{}")
+  readAt    DateTime?
+  pushedAt  DateTime?
+  createdAt DateTime             @default(now())
+
+  @@index([userId, readAt, createdAt])
+}
+
+model NotificationPreference {
+  id         String               @id @default(uuid(7)) @db.Uuid
+  userId     String               @db.Uuid
+  user       User                 @relation(fields: [userId], references: [id], onDelete: Cascade)
+  category   NotificationCategory
+  push       Boolean              @default(true)
+  inApp      Boolean              @default(true)
+  email      Boolean              @default(false)
+  quietStart String?
+  quietEnd   String?
+  maxPerDay  Int?
+  updatedAt  DateTime             @updatedAt
+
+  @@unique([userId, category])
+}
+
+// =====================================================================
+// PLATEFORME
+// =====================================================================
+
+model FeatureFlag {
+  id          String   @id @default(uuid(7)) @db.Uuid
+  key         String   @unique
+  description String?
+  enabled     Boolean  @default(false)
+  rules       Json     @default("{}")
+  updatedAt   DateTime @updatedAt
+}
+
+model AppSetting {
+  key         String   @id
+  value       Json
+  description String?
+  updatedAt   DateTime @updatedAt
+}
+
+model AuditLog {
+  id          String   @id @default(uuid(7)) @db.Uuid
+  actorUserId String?  @db.Uuid
+  actor       User?    @relation("AuditActor", fields: [actorUserId], references: [id], onDelete: SetNull)
+  actorRole   String?
+  action      String
+  targetType  String?
+  targetId    String?
+  metadata    Json     @default("{}")
+  ip          String?
+  userAgent   String?
+  createdAt   DateTime @default(now())
+
+  @@index([actorUserId, createdAt])
+  @@index([targetType, targetId])
+  @@index([createdAt])
+}
+
+enum RequestStatus {
+  PENDING
+  PROCESSING
+  COMPLETED
+  FAILED
+  CANCELED
+}
+
+model DataExportRequest {
+  id          String        @id @default(uuid(7)) @db.Uuid
+  userId      String        @db.Uuid
+  user        User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  status      RequestStatus @default(PENDING)
+  storageKey  String?
+  expiresAt   DateTime?
+  error       String?
+  createdAt   DateTime      @default(now())
+  completedAt DateTime?
+
+  @@index([userId])
+}
+
+model AccountDeletionRequest {
+  id          String        @id @default(uuid(7)) @db.Uuid
+  userId      String        @db.Uuid
+  user        User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  status      RequestStatus @default(PENDING)
+  scheduledAt DateTime
+  canceledAt  DateTime?
+  completedAt DateTime?
+  createdAt   DateTime      @default(now())
+
+  @@index([userId])
+  @@index([status, scheduledAt])
+}
+
+model Translation {
+  id        String   @id @default(uuid(7)) @db.Uuid
+  namespace String
+  key       String
+  locale    String
+  value     String
+  updatedAt DateTime @updatedAt
+
+  @@unique([namespace, key, locale])
+}

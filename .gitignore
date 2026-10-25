@@ -1,0 +1,15 @@
+node_modules/
+dist/
+.next/
+.turbo/
+.expo/
+coverage/
+*.log
+.env
+.env.*
+!.env.example
+.DS_Store
+*.tsbuildinfo
+packages/database/generated/
+apps/mobile/ios/
+apps/mobile/android/

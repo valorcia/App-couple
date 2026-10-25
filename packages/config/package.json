@@ -1,0 +1,19 @@
+{
+  "name": "@couple/config",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    "./tsconfig/base.json": "./tsconfig/base.json",
+    "./tsconfig/node.json": "./tsconfig/node.json",
+    "./tsconfig/nextjs.json": "./tsconfig/nextjs.json",
+    "./tsconfig/library.json": "./tsconfig/library.json",
+    "./eslint": "./eslint.config.js"
+  },
+  "dependencies": {
+    "@eslint/js": "^9.39.0",
+    "eslint": "^9.39.0",
+    "typescript-eslint": "^8.46.0",
+    "globals": "^16.0.0"
+  }
+}
