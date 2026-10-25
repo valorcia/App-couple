@@ -1,6 +1,6 @@
 # DEVELOPMENT_STATUS
 
-Dernière mise à jour : 2026-10-25 — Phases 1 et 2 terminées, **Phase 3 en cours (jalons 1 à 8 livrés : agenda, moteur de jeux, 5 jeux + question du jour, défis, Double Secret, « On fait quoi ? », abonnements, notifications push)**.
+Dernière mise à jour : 2026-10-25 — Phases 1 et 2 terminées, **Phase 3 en cours (jalons 1 à 9 livrés : agenda, moteur de jeux, 5 jeux + question du jour, défis, Double Secret, « On fait quoi ? », abonnements, notifications push, CMS des contenus)**.
 
 ## Fonctionnalités terminées
 
@@ -43,6 +43,16 @@ Dernière mise à jour : 2026-10-25 — Phases 1 et 2 terminées, **Phase 3 en c
 11. Phase 4 : assistant IA, surprises, expériences, projets, listes & tâches, souvenirs, synchronisations calendrier.
 12. Phase 5 : site marketing complet, OAuth Apple/Google, 2FA admin, DPIA, charge, stores.
 
+- **CMS des contenus** (API + admin) : CRUD paginé et filtrable (recherche, statut, offre, langue, jeu, catégorie) pour questions, défis, envies, idées d'activités, catégories et packs ; statut DRAFT / PUBLISHED / ARCHIVED (les brouillons ne sont jamais servis aux joueurs) ; suppression physique des brouillons seulement, archivage sinon ; import JSON en masse avec rapport d'erreurs par index ; écriture réservée au rôle ADMIN, lecture SUPPORT ; journal d'audit sur chaque écriture. Admin : pages « Contenus » par type avec compteurs, filtres, éditeur généré par type, publication/archivage, import.
+
+## En cours
+- Jalon 10 : écrans mobiles des modules MVP (agenda, jeux, défis, question du jour, Premium via RevenueCat).
+
+## Restant (ordre prévu — voir docs/ROADMAP.md)
+10. Mobile : agenda, jeux, défis, question du jour, « On fait quoi ? », Premium (RevenueCat), notifications.
+11. Phase 4 : assistant IA conversationnel (personnel / commun, outils), surprises, générateur d'expériences, projets, listes & tâches temps réel, souvenirs (S3, quotas), synchronisations calendrier Google / Microsoft / ICS.
+12. Phase 5 : site marketing complet (pages fonctionnalités, FAQ, cookies, données structurées), OAuth Apple / Google, 2FA admin, DPIA, tests de charge, runbook, préparation des stores.
+
 ## Bugs connus / limitations
 - Rappels : seule la première occurrence d'un événement récurrent déclenche un rappel (expansion des occurrences à venir en Phase 4).
 - Push : non testé sur appareil réel dans cette session (API Expo simulée dans les tests) ; nécessite un projet EAS (`extra.eas.projectId`) et un build de développement. Trois bugs trouvés par le test e2e ont été corrigés (Slot avec `asChild`, effet de vérification annulé par une dépendance instable, code d'invitation perdu après rafraîchissement).
@@ -54,10 +64,10 @@ Dernière mise à jour : 2026-10-25 — Phases 1 et 2 terminées, **Phase 3 en c
 | Unitaires `@couple/validation` | `pnpm --filter @couple/validation test` | 1 test |
 | Unitaires `@couple/game-engine` | `pnpm --filter @couple/game-engine test` | 5 tests |
 | Unitaires `@couple/ai` | `pnpm --filter @couple/ai test` | 4 tests |
-| API (unitaires + intégration sur PostgreSQL réel) | `pnpm --filter @couple/api test` | 63 tests : auth, couples, autorisations, admin, agenda, récurrence, temps réel, jeux, question du jour, défis, intimité, « On fait quoi ? », abonnements, notifications (push, préférences, heures silencieuses, plafond, rappels, question du jour) |
+| API (unitaires + intégration sur PostgreSQL réel) | `pnpm --filter @couple/api test` | 66 tests : auth, couples, autorisations, admin, agenda, récurrence, temps réel, jeux, question du jour, défis, intimité, « On fait quoi ? », abonnements, notifications, CMS des contenus |
 | Lint + typecheck (toutes apps/packages) | `pnpm turbo run lint typecheck` | OK |
 | Build Next web + admin | `pnpm --filter @couple/web --filter @couple/admin build` | OK |
-| E2E Playwright (navigateur réel, API + web production) | `pnpm --filter @couple/web test:e2e` | 9 scénarios : onboarding à deux comptes, refus de connexion, agenda (partagé / occupé / privé / invitation), dilemme à deux + question du jour, défi à deux, Double Secret (activation, confidentialité, révélation mutuelle), « On fait quoi ? » (catalogue → agenda), page Premium sans clés de paiement, notifications (centre, badge, réglages) |
+| E2E Playwright (navigateur réel, API + web production) | `pnpm --filter @couple/web test:e2e` | 10 scénarios (web + admin) : onboarding à deux comptes, refus de connexion, agenda (partagé / occupé / privé / invitation), dilemme à deux + question du jour, défi à deux, Double Secret (activation, confidentialité, révélation mutuelle), « On fait quoi ? » (catalogue → agenda), page Premium sans clés de paiement, notifications (centre, badge, réglages), admin (connexion réservée, création et publication d'une question) |
 
 ## Dépendances externes (à fournir)
 | Besoin | Variable(s) | Phase |

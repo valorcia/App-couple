@@ -18,12 +18,12 @@ pnpm test              # tout doit être vert avant de commencer
 2. `docs/DECISIONS.md` section A : arbitrages A1–A6. S'ils ont reçu une réponse du propriétaire, les appliquer d'abord.
 3. `docs/ARCHITECTURE.md` §4 (conventions API : guards, DTO de sortie, projections de confidentialité).
 
-## 3. Prochaine tâche : Phase 3, jalon 9 — CMS admin des contenus
-- API `apps/api/src/modules/admin/content/` (rôles ADMIN/SUPPORT ; écriture ADMIN) : CRUD paginé + recherche pour `Question`, `Challenge`, `DesireItem`, `ActivityIdea`, `ContentCategory`, `ContentPack`, `Mission` ; statut DRAFT/PUBLISHED/ARCHIVED ; import CSV/JSON en masse ; export ; journal d'audit sur chaque écriture ; traductions (`Translation`) pour les futures locales.
-- Admin Next : pages « Contenus » avec onglets par type, filtres (type de jeu, catégorie, tier, statut, locale), formulaire d'édition (texte, options de dilemme, niveau, tier, pack), actions publier/archiver, import.
-- Tests : autorisations (SUPPORT lecture seule), validation, import idempotent, contenu DRAFT invisible côté joueur.
+## 3. Prochaine tâche : Phase 3, jalon 10 — Écrans mobiles des modules MVP
+- `apps/mobile` (Expo Router) : onglet Accueil (question du jour, défi du moment, événements à venir, bouton « On fait quoi ? »), onglet Agenda (liste par jour + création simple avec visibilité), onglet Jouer (catalogue, lancement, écran de jeu avec révélation), Défis, Intimité (activation + Double Secret), Premium (RevenueCat : `react-native-purchases`, identification `logIn(userId)`, achats via les offerings ; l'API reçoit les webhooks), réglages de notifications.
+- Réutiliser `@couple/validation`, `@couple/types`, `@couple/shared/api-client` ; écouter les signaux Socket.IO (`socket.io-client`) pour l'agenda et les jeux.
+- Vérifier sur simulateur iOS / émulateur Android (non possible dans la session cloud) ; `pnpm --filter @couple/mobile typecheck` et `lint` au minimum.
 
-Puis jalon 10 (écrans mobiles : agenda, jeux, défis, question du jour, Premium via RevenueCat), puis Phase 4.
+Puis Phase 4 (assistant IA conversationnel, surprises, expériences, projets, listes, souvenirs, synchronisations) et Phase 5 (commercialisation).
 
 ## 4. Conventions à respecter
 - Jamais d'entité Prisma brute en sortie d'API : mapper vers un DTO explicite.

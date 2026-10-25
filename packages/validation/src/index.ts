@@ -10,3 +10,4 @@ export * from './intimacy';
 export * from './ideas';
 export * from './billing';
 export * from './notifications';
+export * from './admin-content';

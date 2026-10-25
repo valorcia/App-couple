@@ -2,6 +2,8 @@
 import * as React from 'react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
+import { useQueryClient } from '@tanstack/react-query';
+import type { MeDto } from '@couple/types';
 import { useTranslations } from 'next-intl';
 import { Alert, Button } from '@couple/ui';
 import { api } from '@/lib/api';
@@ -14,6 +16,7 @@ export function VerifyEmail() {
   const router = useRouter();
   const token = params.get('token');
   const { user, refetch } = useAuth();
+  const qc = useQueryClient();
   const [state, setState] = React.useState<'idle' | 'verifying' | 'success' | 'invalid' | 'resent'>(token ? 'verifying' : 'idle');
 
   // Références stables : l'effet ne doit pas être annulé quand le contexte d'auth se met à jour.
@@ -27,6 +30,8 @@ export function VerifyEmail() {
       .post('/auth/verify-email', { token }, { auth: false })
       .then(async () => {
         setState('success');
+        // Patch immédiat du cache (évite une redirection vers cet écran si le rechargement de /me est en retard), puis rechargement.
+        qc.setQueryData<MeDto | undefined>(['me'], (old) => (old ? { ...old, emailVerified: true } : old));
         await latest.current.refetch();
         // RequireAuth redirige vers la connexion (avec retour) si aucune session n'est restaurée.
         setTimeout(() => latest.current.router.replace('/couple'), 1200);

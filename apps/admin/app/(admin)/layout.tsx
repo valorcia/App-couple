@@ -2,13 +2,14 @@
 import * as React from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { Activity, CreditCard, Flag, LogOut, Package, ScrollText, Settings, Users } from 'lucide-react';
+import { Activity, BookOpen, CreditCard, Flag, LogOut, Package, ScrollText, Settings, Users } from 'lucide-react';
 import { Badge, Logo, Skeleton, cn } from '@couple/ui';
 import { useAuth } from '@/lib/auth';
 
 const NAV = [
   { href: '/tableau-de-bord', label: 'Tableau de bord', icon: Activity },
   { href: '/utilisateurs', label: 'Utilisateurs', icon: Users },
+  { href: '/contenus', label: 'Contenus', icon: BookOpen },
   { href: '/abonnements', label: 'Abonnements', icon: CreditCard },
   { href: '/produits', label: 'Produits & prix', icon: Package },
   { href: '/flags', label: 'Feature flags', icon: Flag },
