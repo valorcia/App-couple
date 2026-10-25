@@ -38,6 +38,8 @@ test('captures de toutes les pages en mode démo', async ({ page }) => {
     await page.waitForTimeout(1200);
     await page.screenshot({ path: `${OUT}/cartes-tiree-${theme}-desktop.png`, fullPage: true });
     await page.getByRole('button', { name: 'Terminer la soirée' }).click();
+    // Attendre que la table soit vidée avant de naviguer (sinon la mutation locale est annulée).
+    await page.getByRole('button', { name: 'Tirer une carte' }).waitFor();
   }
   await shot(page, 'cartes-mobile', '/intimite/cartes', 'dark', 390);
   for (const [name, path] of PAGES) {
