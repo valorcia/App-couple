@@ -24,6 +24,8 @@ import { RealtimeModule } from './modules/realtime/realtime.module';
 import { NotificationsModule } from './modules/notifications/notifications.module';
 import { CalendarModule } from './modules/calendar/calendar.module';
 import { GamesModule } from './modules/games/games.module';
+import { IntimacyModule } from './modules/intimacy/intimacy.module';
+import { ChallengesModule } from './modules/challenges/challenges.module';
 
 const SENSITIVE_PATHS = ['/auth', '/me/confirm-adult'];
 
@@ -64,6 +66,8 @@ const SENSITIVE_PATHS = ['/auth', '/me/confirm-adult'];
     NotificationsModule,
     CalendarModule,
     GamesModule,
+    IntimacyModule,
+    ChallengesModule,
     HealthModule,
     DevModule.register(),
   ],

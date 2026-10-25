@@ -28,7 +28,8 @@
     "features": "Fonctionnalités",
     "games": "Jeux",
     "pricing": "Tarifs",
-    "faq": "FAQ"
+    "faq": "FAQ",
+    "intimacy": "Intimité"
   },
   "marketing": {
     "hero": {
@@ -407,5 +408,112 @@
     },
     "next": "Continuer",
     "seeSummary": "Voir le résumé"
+  },
+  "challenges": {
+    "title": "Défis à deux",
+    "subtitle": "Romantiques, drôles, créatifs… Chacun valide sa part, sans pression.",
+    "active": "En cours",
+    "catalog": "Catalogue",
+    "history": "Historique",
+    "none": "Aucun défi en cours.",
+    "featured": "Défi du moment",
+    "suggestion": "Suggestion du jour",
+    "filters": {
+      "all": "Tous",
+      "budget": "Budget",
+      "difficulty": "Difficulté",
+      "duration": "Durée"
+    },
+    "budget": {
+      "FREE": "Gratuit",
+      "LOW": "Petit budget",
+      "MEDIUM": "Budget moyen",
+      "HIGH": "Budget libre"
+    },
+    "difficulty": {
+      "EASY": "Facile",
+      "MEDIUM": "Moyen",
+      "HARD": "Ambitieux"
+    },
+    "minutes": "{count} min",
+    "materials": "Matériel",
+    "instructions": "Déroulé",
+    "intimate": "Intime",
+    "status": {
+      "PROPOSED": "Proposé",
+      "ACCEPTED": "Accepté",
+      "SKIPPED": "Passé",
+      "COMPLETED": "Réussi"
+    },
+    "actions": {
+      "propose": "Proposer à {partner}",
+      "accept": "On le fait",
+      "skip": "Passer",
+      "skipHint": "Sans pénalité.",
+      "complete": "J'ai fait ma part",
+      "completed": "Validé par vous",
+      "waitingPartner": "En attente de {partner}",
+      "both": "Réussi ensemble",
+      "note": "Un mot sur ce moment (facultatif)",
+      "proposedBy": "Proposé par {name}",
+      "locked": "Réservé à Premium"
+    }
+  },
+  "intimacy": {
+    "title": "Intimité & séduction",
+    "subtitle": "Un espace facultatif, activé par chacun. Vos réponses restent les vôtres : seuls vos points communs peuvent être révélés, d'un commun accord.",
+    "unavailable": "Cet espace n'est pas disponible pour le moment.",
+    "adult": {
+      "title": "Confirmer ma majorité",
+      "body": "Cet espace est réservé aux personnes majeures. En confirmant, vous attestez avoir 18 ans ou plus.",
+      "confirm": "Je confirme avoir 18 ans ou plus"
+    },
+    "settings": {
+      "title": "Mon activation",
+      "enable": "Activer l'espace pour moi",
+      "enabled": "Activé pour vous",
+      "disabled": "Désactivé",
+      "categories": "Catégories que j'accepte",
+      "intensity": "Intensité maximale",
+      "save": "Enregistrer mes réglages",
+      "consent": "En activant, j'accepte que mes réponses soient comparées à celles de mon partenaire pour ne révéler que nos points communs. Je peux retirer mon accord ou supprimer mes réponses à tout moment.",
+      "partnerWaiting": "{partner} n'a pas encore activé l'espace. Rien n'est visible tant que vous n'êtes pas deux.",
+      "partnerEnabled": "{partner} a activé l'espace.",
+      "disable": "Désactiver pour moi",
+      "deleteResponses": "Supprimer toutes mes réponses",
+      "deleteConfirm": "Vos réponses seront définitivement supprimées."
+    },
+    "categories": {
+      "tenderness": "Tendresse",
+      "romance": "Romantisme",
+      "seduction": "Séduction",
+      "complicity": "Complicité",
+      "desires": "Désirs",
+      "fantasies": "Fantasmes",
+      "experiences": "Expériences"
+    },
+    "intensity": {
+      "1": "Douceur",
+      "2": "Complicité",
+      "3": "Désir",
+      "4": "Audace"
+    },
+    "choices": {
+      "YES": "Oui",
+      "NO": "Non",
+      "MAYBE": "Peut-être"
+    },
+    "matches": {
+      "title": "Double Secret",
+      "none": "Répondez aux envies ci-dessous : vous ne verrez que celles que vous partagez.",
+      "count": "Vous avez {count} envie(s) en commun.",
+      "pending": "{count} à découvrir, si vous le souhaitez tous les deux.",
+      "request": "Je veux les découvrir",
+      "requested": "Demande envoyée. {partner} doit aussi le souhaiter.",
+      "partnerRequested": "{partner} souhaite découvrir vos points communs.",
+      "revealed": "Vos envies communes",
+      "privacy": "Aucune réponse individuelle n'est jamais montrée. Une envie retirée disparaît aussitôt."
+    },
+    "locked": "Premium"
   }
 }

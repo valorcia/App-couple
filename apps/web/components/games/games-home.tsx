@@ -66,7 +66,17 @@ export function GamesHome() {
                 </Card>
               );
             })}
-            {(['CHALLENGE', 'MEMORY_QUIZ'] as GameType[]).map((gt) => {
+            <Card tone="champagne" className="flex flex-col gap-3 p-6">
+              {React.createElement(GAME_META.CHALLENGE.icon, { className: 'h-7 w-7', 'aria-hidden': true })}
+              <div className="flex-1"><h3 className="text-xl">{t('types.CHALLENGE.name')}</h3><p className="mt-1 text-sm opacity-80">{t('types.CHALLENGE.tagline')}</p></div>
+              <div className="flex justify-end"><Button asChild size="sm" variant="secondary"><Link href="/defis"><Play className="h-4 w-4" aria-hidden />{t('play')}</Link></Button></div>
+            </Card>
+            <Card className="flex flex-col gap-3 p-6">
+              <Lock className="h-7 w-7 text-secondary" aria-hidden />
+              <div className="flex-1"><h3 className="text-xl">Intimité & séduction</h3><p className="mt-1 text-sm text-fg-muted">Espace facultatif, activé par chacun : Double Secret, envies communes.</p></div>
+              <div className="flex justify-end"><Button asChild size="sm" variant="outline"><Link href="/intimite">Découvrir</Link></Button></div>
+            </Card>
+            {(['MEMORY_QUIZ'] as GameType[]).map((gt) => {
               const Icon = GAME_META[gt].icon;
               return (
                 <Card key={gt} className="flex flex-col gap-3 p-6 opacity-80">

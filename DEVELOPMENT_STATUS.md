@@ -1,6 +1,6 @@
 # DEVELOPMENT_STATUS
 
-Dernière mise à jour : 2026-10-25 — Phases 1 et 2 terminées, **Phase 3 en cours (jalons 1 à 3 livrés : agenda, moteur de jeux, 5 jeux + question du jour)**.
+Dernière mise à jour : 2026-10-25 — Phases 1 et 2 terminées, **Phase 3 en cours (jalons 1 à 5 livrés : agenda, moteur de jeux, 5 jeux + question du jour, défis, Double Secret)**.
 
 ## Fonctionnalités terminées
 
@@ -28,12 +28,13 @@ Dernière mise à jour : 2026-10-25 — Phases 1 et 2 terminées, **Phase 3 en c
 - **Notifications in-app** : création, liste, non lus, lecture (push et préférences au jalon 8).
 - **Robustesse** : fenêtre de grâce de 30 s sur la rotation des refresh tokens (requêtes concurrentes), association de couples sans isolation sérialisable (intégrité par contraintes SQL, erreurs mappées).
 
+- **Défis à deux** (API + web) : catalogue filtrable (budget, difficulté, durée), verrouillage gratuit (`quota.free.challengesCatalog`) et Premium, défis intimes visibles seulement si l'espace Intimité est actif des deux côtés, cycle proposer → accepter → chacun valide sa part → réussi ensemble, passer sans pénalité, note facultative, « Défi du moment » (en cours ou suggestion stable du jour) sur l'accueil, notifications.
+- **Intimité & Double Secret** (API + web) : flag `intimacy.module`, confirmation de majorité datée, activation individuelle avec `ConsentRecord` INTIMACY (révocable), catalogue commun = intersection des catégories et intensités acceptées par chacun, réponses Oui / Non / Peut-être **jamais exposées au partenaire**, intersection des « Oui » calculée en SQL, révélation uniquement après demande des deux, retrait d'un « Oui » = disparition immédiate, suppression de ses réponses, notifications sans détail, audit sans contenu. Catégories gratuites configurables (`intimacy.freeCategories`).
+
 ## En cours
-- Jalon 4 : Défis à deux.
+- Jalon 6 : « On fait quoi ? ».
 
 ## Restant (ordre prévu — voir docs/ROADMAP.md)
-4. Défis.
-5. Double Secret (consentement, intersection serveur, révélation mutuelle).
 6. « On fait quoi ? » (catalogue → agenda ; IA ensuite).
 7. Abonnements (Stripe web, RevenueCat mobile) + quotas gratuits.
 8. Notifications (préférences, heures silencieuses, push Expo).
@@ -51,10 +52,10 @@ Dernière mise à jour : 2026-10-25 — Phases 1 et 2 terminées, **Phase 3 en c
 | Unitaires `@couple/shared` | `pnpm --filter @couple/shared test` | 5 tests |
 | Unitaires `@couple/validation` | `pnpm --filter @couple/validation test` | 1 test |
 | Unitaires `@couple/game-engine` | `pnpm --filter @couple/game-engine test` | 5 tests |
-| API (unitaires + intégration sur PostgreSQL réel) | `pnpm --filter @couple/api test` | 41 tests : auth, couples, autorisations, admin, agenda, récurrence, temps réel, notifications, jeux, question du jour |
+| API (unitaires + intégration sur PostgreSQL réel) | `pnpm --filter @couple/api test` | 49 tests : auth, couples, autorisations, admin, agenda, récurrence, temps réel, notifications, jeux, question du jour, défis, intimité |
 | Lint + typecheck (toutes apps/packages) | `pnpm turbo run lint typecheck` | OK |
 | Build Next web + admin | `pnpm --filter @couple/web --filter @couple/admin build` | OK |
-| E2E Playwright (navigateur réel, API + web production) | `pnpm --filter @couple/web test:e2e` | 4 scénarios : onboarding à deux comptes, refus de connexion, agenda (partagé / occupé / privé / invitation), dilemme à deux + question du jour |
+| E2E Playwright (navigateur réel, API + web production) | `pnpm --filter @couple/web test:e2e` | 6 scénarios : onboarding à deux comptes, refus de connexion, agenda (partagé / occupé / privé / invitation), dilemme à deux + question du jour, défi à deux, Double Secret (activation, confidentialité, révélation mutuelle) |
 
 ## Dépendances externes (à fournir)
 | Besoin | Variable(s) | Phase |

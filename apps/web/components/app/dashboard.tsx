@@ -9,6 +9,7 @@ import { api } from '@/lib/api';
 import { useRealtimeInvalidation } from '@/lib/realtime';
 import { eventColor } from '@/lib/calendar-utils';
 import { DailyQuestionCard } from '@/components/games/daily-question';
+import { FeaturedChallenge } from '@/components/challenges/featured-challenge';
 import { CalendarDays, ClipboardList, Gamepad2, Gift, Sparkles } from 'lucide-react';
 import { Badge, Button, Card, CardContent, CardHeader, CardTitle, EmptyState } from '@couple/ui';
 import { useAuth } from '@/lib/auth-provider';
@@ -92,6 +93,7 @@ export function Dashboard() {
           </CardContent>
         </Card>
         <DailyQuestionCard />
+        <FeaturedChallenge />
       </div>
 
       <section aria-labelledby="shortcuts-title" className="space-y-3">
@@ -100,8 +102,8 @@ export function Dashboard() {
           {[
             { icon: CalendarDays, label: 'Agenda', href: '/agenda' },
             { icon: Gamepad2, label: 'Jouer', href: '/jouer' },
-            { icon: ClipboardList, label: 'Listes', href: '/listes' },
-            { icon: Gift, label: 'Surprise', href: '/surprises' },
+            { icon: ClipboardList, label: 'Défis', href: '/defis' },
+            { icon: Gift, label: 'Intimité', href: '/intimite' },
           ].map(({ icon: Icon, label, href }) => (
             <Link key={href} href={href} className="flex flex-col items-center gap-2 rounded-lg border border-border bg-bg-elevated p-5 text-sm font-medium transition-colors hover:bg-bg-muted">
               <Icon className="h-6 w-6 text-secondary" aria-hidden />{label}

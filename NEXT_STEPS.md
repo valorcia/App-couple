@@ -18,15 +18,13 @@ pnpm test              # tout doit être vert avant de commencer
 2. `docs/DECISIONS.md` section A : arbitrages A1–A6. S'ils ont reçu une réponse du propriétaire, les appliquer d'abord.
 3. `docs/ARCHITECTURE.md` §4 (conventions API : guards, DTO de sortie, projections de confidentialité).
 
-## 3. Prochaine tâche : Phase 3, jalon 4 — Défis à deux
-Périmètre : module `apps/api/src/modules/challenges/`
-- Catalogue (`Challenge`, seedé) filtré par locale/tier/intimate ; quota gratuit `quota.free.challengesCatalog`.
-- `ChallengeProgress` par couple : proposer (notifie le partenaire), accepter, passer (sans pénalité), marquer terminé (validation volontaire par chacun : `completedByUserIds`), note facultative.
-- Endpoints : `GET /challenges` (catalogue + état), `POST /challenges/:id/propose|accept|skip|complete`, `GET /challenges/progress`.
-- Web : onglet Défis dans « Jouer » (cartes avec durée/difficulté/budget/matériel), fiche défi avec instructions, « Défi du moment » sur l'accueil.
-- Tests d'intégration (authz cross-couple, quota, double validation).
+## 3. Prochaine tâche : Phase 3, jalon 6 — « On fait quoi ? »
+- API `apps/api/src/modules/ideas/` : `POST /ideas/suggest` {moment, company, budget, mood, date?} → 3 à 5 `ActivityIdea` du catalogue (filtre moods/moments/company/budget, exclusion des idées déjà faites via `Experience` source CATALOG, tirage stable) ; `POST /ideas/:id/schedule` {startAt, endAt} → crée l'événement partagé (via `CalendarService.create`) après confirmation explicite ; enregistre une `Experience`.
+- IA facultative : `packages/ai` (interface `AiProvider`, `generateStructured` avec zod, quotas Redis par couple, cache) ; si `AI_PROVIDER=disabled` ou quota épuisé → catalogue seul, jamais de faux résultat.
+- Web : assistant en 4 étapes (Segmented + Chips), cartes de propositions, bouton « Ajouter à l'agenda » (confirmation), écran vide honnête si rien ne correspond.
+- Tests : filtres, exclusion des idées déjà faites, création d'événement, quota IA.
 
-Ensuite : jalon 5 Double Secret (voir `docs/PRODUCT_SPEC.md` P5 et `docs/DATABASE_SCHEMA.md` Intimité), jalon 6 « On fait quoi ? », jalon 7 abonnements.
+Puis jalon 7 (abonnements Stripe/RevenueCat + entitlements), jalon 8 (push + préférences), jalon 9 (CMS admin), jalon 10 (mobile).
 
 ## 4. Conventions à respecter
 - Jamais d'entité Prisma brute en sortie d'API : mapper vers un DTO explicite.

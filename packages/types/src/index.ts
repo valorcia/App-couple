@@ -255,3 +255,80 @@ export interface DailyQuestionDto {
   revealedAt: string | null;
   partnerAnswer: string | null;
 }
+
+// ---------------------------------------------------------------- Défis
+export type ChallengeProgressStatus = 'PROPOSED' | 'ACCEPTED' | 'SKIPPED' | 'COMPLETED';
+
+export interface ChallengeDto {
+  id: string;
+  title: string;
+  description: string;
+  instructions: string[];
+  durationMinutes: number | null;
+  difficulty: 'EASY' | 'MEDIUM' | 'HARD';
+  budget: 'FREE' | 'LOW' | 'MEDIUM' | 'HIGH';
+  materials: string[];
+  intimate: boolean;
+  category: { code: string; name: string } | null;
+  tags: string[];
+  locked: boolean;
+  progress: ChallengeProgressDto | null;
+}
+
+export interface ChallengeProgressDto {
+  id: string;
+  challengeId: string;
+  status: ChallengeProgressStatus;
+  proposedByUserId: string | null;
+  completedByUserIds: string[];
+  /** J'ai validé ma part. */
+  completedByMe: boolean;
+  completedByPartner: boolean;
+  note: string | null;
+  completedAt: string | null;
+  updatedAt: string;
+}
+
+export interface ChallengeFeaturedDto {
+  /** Défi en cours (proposé/accepté) ou suggestion du jour. */
+  challenge: ChallengeDto | null;
+  kind: 'active' | 'suggestion' | null;
+}
+
+// ---------------------------------------------------------------- Intimité
+export type IntimacyCategory = 'tenderness' | 'romance' | 'seduction' | 'complicity' | 'desires' | 'fantasies' | 'experiences';
+export type DesireChoice = 'YES' | 'NO' | 'MAYBE';
+
+export interface IntimacySettingsDto {
+  adultConfirmed: boolean;
+  moduleAvailable: boolean;
+  enabled: boolean;
+  enabledCategories: IntimacyCategory[];
+  maxIntensity: number;
+  /** Le partenaire a activé l'espace (booléen uniquement, aucun autre détail). */
+  partnerEnabled: boolean;
+  bothEnabled: boolean;
+  premium: boolean;
+}
+
+export interface DesireItemDto {
+  id: string;
+  category: IntimacyCategory;
+  intensity: number;
+  text: string;
+  locked: boolean;
+  /** Mon choix. Celui du partenaire n'est JAMAIS exposé ici. */
+  myChoice: DesireChoice | null;
+}
+
+export interface DesireMatchesDto {
+  /** Nombre d'envies sélectionnées « Oui » par les deux. */
+  mutualCount: number;
+  /** Envies communes révélées d'un commun accord (et toujours « Oui » des deux côtés). */
+  revealed: { id: string; category: IntimacyCategory; intensity: number; text: string; revealedAt: string }[];
+  /** Nombre d'envies communes non encore révélées. */
+  pendingCount: number;
+  iRequested: boolean;
+  partnerRequested: boolean;
+  myAnswersCount: number;
+}

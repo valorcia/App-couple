@@ -14,6 +14,7 @@ export const APP_SETTINGS = {
   'quota.free.challengesCatalog': 5,
   'quota.free.gameSessionsPerDay': 3,
   'games.freeCategories': ['love', 'humor', 'daily'] as string[],
+  'intimacy.freeCategories': ['tenderness', 'romance'] as string[],
   'invitation.ttlHours': 72,
   'invitation.maxPerDay': 5,
   'couple.dissolutionGraceDays': 30,

@@ -5,3 +5,5 @@ export * from './couple';
 export * from './admin';
 export * from './calendar';
 export * from './games';
+export * from './challenges';
+export * from './intimacy';
