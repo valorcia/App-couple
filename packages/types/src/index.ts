@@ -405,3 +405,32 @@ export interface AdminSubscriptionDto {
   cancelAtPeriodEnd: boolean;
   createdAt: string;
 }
+
+// ---------------------------------------------------------------- Notifications
+export type NotificationCategory = 'CALENDAR' | 'INVITATION' | 'GAME' | 'CHALLENGE' | 'SURPRISE' | 'ANNIVERSARY' | 'SUGGESTION' | 'DAILY_QUESTION' | 'SYSTEM' | 'MARKETING';
+
+export interface NotificationDto {
+  id: string;
+  category: NotificationCategory;
+  type: string;
+  title: string;
+  body: string;
+  data: Record<string, unknown>;
+  readAt: string | null;
+  createdAt: string;
+}
+
+export interface NotificationPreferenceDto {
+  category: NotificationCategory;
+  push: boolean;
+  inApp: boolean;
+  email: boolean;
+  maxPerDay: number | null;
+}
+
+export interface NotificationPreferencesDto {
+  preferences: NotificationPreferenceDto[];
+  quietStart: string | null;
+  quietEnd: string | null;
+  devices: { id: string; platform: string; deviceName: string | null; lastSeenAt: string }[];
+}

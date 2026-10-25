@@ -29,6 +29,9 @@ import { ChallengesModule } from './modules/challenges/challenges.module';
 import { IdeasModule } from './modules/ideas/ideas.module';
 import { AiModule } from './common/ai/ai.module';
 import { BillingModule } from './modules/billing/billing.module';
+import { QueueModule } from './common/queue/queue.module';
+import { PushModule } from './modules/push/push.module';
+import { SchedulerModule } from './modules/scheduler/scheduler.module';
 
 const SENSITIVE_PATHS = ['/auth', '/me/confirm-adult'];
 
@@ -65,8 +68,11 @@ const SENSITIVE_PATHS = ['/auth', '/me/confirm-adult'];
     CouplesModule,
     EntitlementsModule,
     AdminModule,
+    QueueModule,
     RealtimeModule,
+    PushModule,
     NotificationsModule,
+    SchedulerModule,
     CalendarModule,
     GamesModule,
     IntimacyModule,

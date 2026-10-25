@@ -5,6 +5,7 @@ import { useTranslations } from 'next-intl';
 import { CalendarDays, Gamepad2, Home, LogOut, MoreHorizontal, Sparkles, Users } from 'lucide-react';
 import { Avatar, Button, Logo, cn } from '@couple/ui';
 import { useAuth } from '@/lib/auth-provider';
+import { NotificationBell } from '@/components/notifications/notification-bell';
 
 const NAV = [
   { href: '/accueil', key: 'home', icon: Home },
@@ -47,6 +48,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           })}
         </nav>
         <div className="mt-auto space-y-3">
+          <NotificationBell className="w-full justify-start gap-3 rounded-md px-3 text-sm font-medium" />
           <Button asChild className="w-full"><Link href="/accueil#on-fait-quoi"><Sparkles className="h-4 w-4" aria-hidden />On fait quoi ?</Link></Button>
           {user && !user.entitlements.includes('premium') ? <Button asChild variant="soft" size="sm" className="w-full"><Link href="/premium">Premium Couple</Link></Button> : null}
           {user ? (
@@ -65,7 +67,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       <div className="flex min-h-dvh flex-1 flex-col">
         <header className="flex h-14 items-center justify-between border-b border-border px-4 md:hidden">
           <Link href="/accueil" aria-label="Accueil"><Logo size={24} /></Link>
-          {user ? <Avatar name={user.profile.displayName} size={32} /> : null}
+          <div className="flex items-center gap-1"><NotificationBell />{user ? <Link href="/profil" aria-label="Profil"><Avatar name={user.profile.displayName} size={32} /></Link> : null}</div>
         </header>
         <main className="flex-1 pb-24 md:pb-0">{children}</main>
         <nav className="fixed inset-x-0 bottom-0 z-40 border-t border-border bg-bg-elevated/95 backdrop-blur md:hidden" aria-label="Navigation mobile" style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}>

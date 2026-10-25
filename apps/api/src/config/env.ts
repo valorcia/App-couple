@@ -45,6 +45,8 @@ const envSchema = z.object({
   LOG_LEVEL: z.enum(['fatal', 'error', 'warn', 'info', 'debug', 'trace', 'silent']).default('info'),
   /** Désactive le rate limiting (tests e2e locaux uniquement ; ignoré en production). */
   RATE_LIMIT_DISABLED: z.coerce.boolean().default(false),
+  /** Traite les files BullMQ dans le même processus (dev/test). En production : worker dédié (WORKER_MODE). */
+  WORKERS_INLINE: z.coerce.boolean().optional(),
 });
 
 export type Env = z.infer<typeof envSchema>;
@@ -55,6 +57,7 @@ export function loadEnv(source: NodeJS.ProcessEnv = process.env): Env {
     const issues = parsed.error.issues.map((i) => `${i.path.join('.')}: ${i.message}`).join('\n  ');
     throw new Error(`Configuration invalide :\n  ${issues}`);
   }
+  if (parsed.data.WORKERS_INLINE === undefined) parsed.data.WORKERS_INLINE = parsed.data.NODE_ENV !== 'production';
   if (parsed.data.NODE_ENV === 'production' && parsed.data.RATE_LIMIT_DISABLED) {
     throw new Error('RATE_LIMIT_DISABLED est interdit en production');
   }

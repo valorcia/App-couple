@@ -29,7 +29,8 @@
     "games": "Jeux",
     "pricing": "Tarifs",
     "faq": "FAQ",
-    "intimacy": "Intimité"
+    "intimacy": "Intimité",
+    "notifications": "Notifications"
   },
   "marketing": {
     "hero": {
@@ -630,6 +631,40 @@
       "body": "Un seul abonnement couvre votre couple.",
       "cta": "Découvrir Premium",
       "quota": "Vous avez atteint la limite de l'offre gratuite pour aujourd'hui."
+    }
+  },
+  "notifications": {
+    "title": "Notifications",
+    "subtitle": "Tout ce qui s'est passé pour vous deux.",
+    "empty": "Rien pour le moment.",
+    "markAll": "Tout marquer comme lu",
+    "bell": "Notifications",
+    "settings": {
+      "title": "Réglages des notifications",
+      "subtitle": "Choisissez ce qui vous prévient, et quand.",
+      "push": "Push",
+      "inApp": "Dans l'app",
+      "quiet": "Heures silencieuses",
+      "quietHint": "Aucun push pendant cette plage (heure locale) ; ils sont envoyés après.",
+      "from": "De",
+      "to": "À",
+      "maxPerDay": "Max / jour",
+      "saved": "Préférences enregistrées.",
+      "devices": "Appareils connectés",
+      "noDevices": "Aucun appareil mobile enregistré. Installez l'app et connectez-vous pour recevoir les push.",
+      "save": "Enregistrer"
+    },
+    "categories": {
+      "CALENDAR": "Agenda",
+      "INVITATION": "Invitations",
+      "GAME": "Jeux",
+      "CHALLENGE": "Défis",
+      "SURPRISE": "Surprises",
+      "ANNIVERSARY": "Anniversaires",
+      "SUGGESTION": "Suggestions",
+      "DAILY_QUESTION": "Question du jour",
+      "SYSTEM": "Compte et sécurité",
+      "MARKETING": "Nouveautés (facultatif)"
     }
   }
 }

@@ -1,6 +1,7 @@
 'use client';
 import * as React from 'react';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 import { useTranslations } from 'next-intl';
 import { changePasswordSchema, updateProfileSchema } from '@couple/validation';
 import type { MeDto } from '@couple/types';
@@ -19,6 +20,7 @@ export function ProfileSettings() {
   const t = useTranslations('profile');
   const tc = useTranslations('common');
   const ta = useTranslations('auth');
+  const tn = useTranslations('notifications');
   const { user, refetch, logout } = useAuth();
   const router = useRouter();
   const toMessage = useApiErrorMessage();
@@ -103,6 +105,11 @@ export function ProfileSettings() {
             <Button type="submit" loading={pending}>{tc('save')}</Button>
           </form>
         </CardContent>
+      </Card>
+
+      <Card className="flex items-center justify-between p-5">
+        <div><p className="font-medium">{tn('settings.title')}</p><p className="text-sm text-fg-muted">{tn('settings.subtitle')}</p></div>
+        <Button asChild variant="outline" size="sm"><Link href="/profil/notifications">{tc('continue')}</Link></Button>
       </Card>
 
       <Card>

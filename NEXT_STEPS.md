@@ -18,14 +18,12 @@ pnpm test              # tout doit être vert avant de commencer
 2. `docs/DECISIONS.md` section A : arbitrages A1–A6. S'ils ont reçu une réponse du propriétaire, les appliquer d'abord.
 3. `docs/ARCHITECTURE.md` §4 (conventions API : guards, DTO de sortie, projections de confidentialité).
 
-## 3. Prochaine tâche : Phase 3, jalon 8 — Notifications push et préférences
-- API : `PUT /notifications/preferences` (par catégorie : push/inApp/email, heures silencieuses, max par jour), `POST /push/devices` (enregistrement du jeton Expo, plateforme) et suppression ; `PushService` (Expo Push API, lots de 100, gestion des reçus et des jetons invalides) ; application des préférences et des heures silencieuses dans `NotificationsService.notify` (report après la fenêtre silencieuse via BullMQ `notifications` avec délai).
-- Worker BullMQ (`WORKER_MODE=true`) : file `reminders` (rappels d'événements : scan des `EventReminder` à échéance, idempotence `sentAt`), file `push`, planification de la question du jour (notification matinale selon fuseau et préférences).
-- Web : page Réglages → Notifications (préférences par catégorie, heures silencieuses), centre de notifications (cloche, liste, lecture).
-- Mobile : enregistrement du jeton (`expo-notifications`) après connexion.
-- Tests : préférences respectées, heures silencieuses, idempotence des rappels, jetons invalides retirés.
+## 3. Prochaine tâche : Phase 3, jalon 9 — CMS admin des contenus
+- API `apps/api/src/modules/admin/content/` (rôles ADMIN/SUPPORT ; écriture ADMIN) : CRUD paginé + recherche pour `Question`, `Challenge`, `DesireItem`, `ActivityIdea`, `ContentCategory`, `ContentPack`, `Mission` ; statut DRAFT/PUBLISHED/ARCHIVED ; import CSV/JSON en masse ; export ; journal d'audit sur chaque écriture ; traductions (`Translation`) pour les futures locales.
+- Admin Next : pages « Contenus » avec onglets par type, filtres (type de jeu, catégorie, tier, statut, locale), formulaire d'édition (texte, options de dilemme, niveau, tier, pack), actions publier/archiver, import.
+- Tests : autorisations (SUPPORT lecture seule), validation, import idempotent, contenu DRAFT invisible côté joueur.
 
-Puis jalon 9 (CMS admin des contenus), jalon 10 (écrans mobiles des modules MVP).
+Puis jalon 10 (écrans mobiles : agenda, jeux, défis, question du jour, Premium via RevenueCat), puis Phase 4.
 
 ## 4. Conventions à respecter
 - Jamais d'entité Prisma brute en sortie d'API : mapper vers un DTO explicite.

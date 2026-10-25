@@ -2,6 +2,7 @@ import * as React from 'react';
 import { QueryClient, QueryClientProvider, useQuery, useQueryClient } from '@tanstack/react-query';
 import type { AuthResponseDto, MeDto } from '@couple/types';
 import { api, tokenStore } from './api';
+import { unregisterPush } from './push';
 
 interface AuthContextValue {
   user: MeDto | null | undefined;
@@ -44,6 +45,7 @@ function AuthProvider({ children }: { children: React.ReactNode }) {
     [queryClient],
   );
   const logout = React.useCallback(async () => {
+    await unregisterPush();
     try {
       const refreshToken = await tokenStore.getRefreshToken();
       await api.post('/auth/logout', { refreshToken: refreshToken ?? undefined });

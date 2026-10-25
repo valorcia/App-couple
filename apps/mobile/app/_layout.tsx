@@ -4,6 +4,7 @@ import * as React from 'react';
 import { ActivityIndicator, View } from 'react-native';
 import { AppProviders, useAuth } from '@/lib/auth';
 import { useTheme } from '@/lib/theme';
+import { registerForPush } from '@/lib/push';
 
 export default function RootLayout() {
   return (
@@ -20,6 +21,16 @@ function AuthGate() {
   const segments = useSegments() as string[];
   const router = useRouter();
   const t = useTheme();
+
+  // Enregistre le jeton push une fois la session établie (silencieux si refus).
+  const registered = React.useRef(false);
+  React.useEffect(() => {
+    if (user?.emailVerified && !registered.current) {
+      registered.current = true;
+      void registerForPush();
+    }
+    if (!user) registered.current = false;
+  }, [user]);
 
   React.useEffect(() => {
     if (isLoading) return;

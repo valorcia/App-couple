@@ -9,3 +9,4 @@ export * from './challenges';
 export * from './intimacy';
 export * from './ideas';
 export * from './billing';
+export * from './notifications';

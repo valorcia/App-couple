@@ -1,6 +1,6 @@
 # DEVELOPMENT_STATUS
 
-Dernière mise à jour : 2026-10-25 — Phases 1 et 2 terminées, **Phase 3 en cours (jalons 1 à 7 livrés : agenda, moteur de jeux, 5 jeux + question du jour, défis, Double Secret, « On fait quoi ? », abonnements)**.
+Dernière mise à jour : 2026-10-25 — Phases 1 et 2 terminées, **Phase 3 en cours (jalons 1 à 8 livrés : agenda, moteur de jeux, 5 jeux + question du jour, défis, Double Secret, « On fait quoi ? », abonnements, notifications push)**.
 
 ## Fonctionnalités terminées
 
@@ -25,7 +25,6 @@ Dernière mise à jour : 2026-10-25 — Phases 1 et 2 terminées, **Phase 3 en c
 ### MVP (Phase 3) — livré
 - **Agenda partagé** (API + web) : CRUD par couple, visibilité Partagé / Occupé uniquement (bloc sans titre ni détail) / Privé (invisible), récurrence RRULE avec heure locale préservée (DST), exclusion d'occurrence, rappels, invitation du partenaire (accepter/décliner) avec notifications in-app, créneaux libres communs (sans trahir les événements privés), temps réel Socket.IO (rooms user/couple, adaptateur Redis). Web : vues jour/semaine/mois, formulaire complet, fiche événement, événements à venir sur l'accueil.
 - **Moteur de jeux** (`packages/game-engine`, logique pure testée) + API `games` : catalogue par type/catégorie avec verrouillage Premium, sessions courtes/longues, manches avec réponses **jamais exposées avant révélation** (transaction + verrou), passer une question (réponses effacées), verdict « Qui connaît le mieux » réservé au sujet, résumés de partie, quota gratuit configurable (`quota.free.gameSessionsPerDay`, `games.freeCategories`), question du jour commune (révélation quand les deux ont répondu), notifications et temps réel. Jeux livrés : Réponses secrètes, Qui connaît le mieux, Dilemmes, Lequel de nous deux, Confessions (niveaux). Web : catalogue, lancement, écran de jeu manche par manche, révélation, verdict, résumé, question du jour sur l'accueil.
-- **Notifications in-app** : création, liste, non lus, lecture (push et préférences au jalon 8).
 - **Robustesse** : fenêtre de grâce de 30 s sur la rotation des refresh tokens (requêtes concurrentes), association de couples sans isolation sérialisable (intégrité par contraintes SQL, erreurs mappées).
 
 - **Défis à deux** (API + web) : catalogue filtrable (budget, difficulté, durée), verrouillage gratuit (`quota.free.challengesCatalog`) et Premium, défis intimes visibles seulement si l'espace Intimité est actif des deux côtés, cycle proposer → accepter → chacun valide sa part → réussi ensemble, passer sans pénalité, note facultative, « Défi du moment » (en cours ou suggestion stable du jour) sur l'accueil, notifications.
@@ -35,10 +34,8 @@ Dernière mise à jour : 2026-10-25 — Phases 1 et 2 terminées, **Phase 3 en c
 
 - **Abonnements & entitlements** (API + web + admin) : produits et prix administrables (`Product`), Stripe Checkout (abonnement ou pack) et Billing Portal, webhooks Stripe signés sur corps brut (`checkout.session.completed`, `customer.subscription.*`, `invoice.payment_failed`) et RevenueCat (Bearer secret ; achats, renouvellements, annulation, expiration, packs non renouvelables), idempotence `WebhookEvent`, synchronisation des `Entitlement` du couple avec 3 jours de grâce, notifications d'échec de paiement, `GET /billing/status`, 503 `BILLING_UNAVAILABLE` sans clés (jamais de paiement simulé). Web : page Premium (offres, statut, portail), page de remerciement avec activation automatique, paywall contextuel sur les erreurs 402, statut dans le profil. Admin : liste des abonnements, abonnements actifs et MRR.
 
-## En cours
-- Jalon 8 : notifications push Expo, préférences par catégorie, heures silencieuses, rappels d'événements (worker).
+- **Notifications** (API + web + mobile) : files BullMQ (`push`, `reminders`, `daily`) consommées en ligne en dev/test ou par un worker dédié (`WORKER_MODE`), envoi push via l'API Expo par lots avec retrait des jetons invalides, préférences par catégorie (push / in-app / plafond quotidien), heures silencieuses globales avec report du push après la plage (fuseau de l'utilisateur), rappels d'événements à l'échéance (idempotents, première occurrence des récurrents), notification matinale de la question du jour à 9 h locale, enregistrement et suppression d'appareils. Web : cloche avec compteur de non-lus, centre de notifications avec liens profonds, page de réglages. Mobile : demande de permission et enregistrement du jeton Expo après connexion, retrait à la déconnexion.
 
-## Restant (ordre prévu — voir docs/ROADMAP.md)
 7. Abonnements (Stripe web, RevenueCat mobile) + quotas gratuits.
 8. Notifications (préférences, heures silencieuses, push Expo).
 9. CMS admin des contenus.
@@ -46,8 +43,9 @@ Dernière mise à jour : 2026-10-25 — Phases 1 et 2 terminées, **Phase 3 en c
 11. Phase 4 : assistant IA, surprises, expériences, projets, listes & tâches, souvenirs, synchronisations calendrier.
 12. Phase 5 : site marketing complet, OAuth Apple/Google, 2FA admin, DPIA, charge, stores.
 
-## Bugs connus
-- Aucun bug ouvert. Trois bugs trouvés par le test e2e ont été corrigés (Slot avec `asChild`, effet de vérification annulé par une dépendance instable, code d'invitation perdu après rafraîchissement).
+## Bugs connus / limitations
+- Rappels : seule la première occurrence d'un événement récurrent déclenche un rappel (expansion des occurrences à venir en Phase 4).
+- Push : non testé sur appareil réel dans cette session (API Expo simulée dans les tests) ; nécessite un projet EAS (`extra.eas.projectId`) et un build de développement. Trois bugs trouvés par le test e2e ont été corrigés (Slot avec `asChild`, effet de vérification annulé par une dépendance instable, code d'invitation perdu après rafraîchissement).
 
 ## Tests exécutés (tous verts)
 | Suite | Commande | Résultat |
@@ -56,10 +54,10 @@ Dernière mise à jour : 2026-10-25 — Phases 1 et 2 terminées, **Phase 3 en c
 | Unitaires `@couple/validation` | `pnpm --filter @couple/validation test` | 1 test |
 | Unitaires `@couple/game-engine` | `pnpm --filter @couple/game-engine test` | 5 tests |
 | Unitaires `@couple/ai` | `pnpm --filter @couple/ai test` | 4 tests |
-| API (unitaires + intégration sur PostgreSQL réel) | `pnpm --filter @couple/api test` | 57 tests : auth, couples, autorisations, admin, agenda, récurrence, temps réel, notifications, jeux, question du jour, défis, intimité, « On fait quoi ? », abonnements (webhooks Stripe signés, RevenueCat, idempotence, grâce, packs) |
+| API (unitaires + intégration sur PostgreSQL réel) | `pnpm --filter @couple/api test` | 63 tests : auth, couples, autorisations, admin, agenda, récurrence, temps réel, jeux, question du jour, défis, intimité, « On fait quoi ? », abonnements, notifications (push, préférences, heures silencieuses, plafond, rappels, question du jour) |
 | Lint + typecheck (toutes apps/packages) | `pnpm turbo run lint typecheck` | OK |
 | Build Next web + admin | `pnpm --filter @couple/web --filter @couple/admin build` | OK |
-| E2E Playwright (navigateur réel, API + web production) | `pnpm --filter @couple/web test:e2e` | 8 scénarios : onboarding à deux comptes, refus de connexion, agenda (partagé / occupé / privé / invitation), dilemme à deux + question du jour, défi à deux, Double Secret (activation, confidentialité, révélation mutuelle), « On fait quoi ? » (catalogue → agenda), page Premium sans clés de paiement |
+| E2E Playwright (navigateur réel, API + web production) | `pnpm --filter @couple/web test:e2e` | 9 scénarios : onboarding à deux comptes, refus de connexion, agenda (partagé / occupé / privé / invitation), dilemme à deux + question du jour, défi à deux, Double Secret (activation, confidentialité, révélation mutuelle), « On fait quoi ? » (catalogue → agenda), page Premium sans clés de paiement, notifications (centre, badge, réglages) |
 
 ## Dépendances externes (à fournir)
 | Besoin | Variable(s) | Phase |
