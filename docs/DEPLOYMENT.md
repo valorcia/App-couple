@@ -69,7 +69,14 @@ Clés optionnelles, à ajouter quand les comptes existent : `AI_PROVIDER` / `AI_
 
 Le refresh token web est un cookie `httpOnly` `SameSite=Lax` posé par l'API. Web et API doivent partager le même site (ex. `entre-nous.fr` et `api.entre-nous.fr`) ; en preview Vercel (`*.vercel.app`) contre une API sur un autre domaine, le cookie n'est pas conservé entre sites et il faut pointer `NEXT_PUBLIC_API_URL` vers une API de staging sur un sous-domaine du même site.
 
-## 6. Checklist avant production
+## 6. Mode démo (web)
+
+Le site web embarque un **mode démo** : depuis la page de connexion ou d'inscription, « Explorer la démo » charge l'application avec une API simulée dans le navigateur (`apps/web/lib/demo`), des données fictives stockées en `localStorage` et un partenaire simulé (« Camille »). Aucun appel réseau n'est émis en démo (vérifié par le scénario Playwright `e2e/demo.spec.ts`, qui bloque l'API). Un bandeau permanent le signale, avec « Réinitialiser » et « Quitter la démo ».
+
+Il sert à tester l'interface sans serveur. **Avant l'ouverture publique**, le masquer avec la variable d'environnement `NEXT_PUBLIC_DEMO_MODE=off` (Production) puis redéployer.
+
+## 7. Checklist avant production
+- [ ] `NEXT_PUBLIC_DEMO_MODE=off` sur le projet web Vercel (production).
 
 - [ ] `pnpm turbo run lint typecheck test` et e2e verts sur `master` (CI GitHub Actions).
 - [ ] Migrations appliquées, `GET /health/ready` répond 200.

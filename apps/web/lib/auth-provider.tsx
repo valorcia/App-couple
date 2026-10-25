@@ -3,6 +3,7 @@ import * as React from 'react';
 import { QueryClient, QueryClientProvider, useQuery, useQueryClient } from '@tanstack/react-query';
 import type { AuthResponseDto, MeDto } from '@couple/types';
 import { api, tokenStore } from './api';
+import { exitDemo, isDemo } from './demo/mode';
 
 interface AuthContextValue {
   user: MeDto | null | undefined; // undefined = en cours de résolution
@@ -37,7 +38,9 @@ function AuthProvider({ children }: { children: React.ReactNode }) {
   React.useEffect(() => {
     let cancelled = false;
     (async () => {
-      if (!tokenStore.getAccessToken()) await api.refresh();
+      // Mode démo : session locale fictive, aucun appel réseau.
+      if (isDemo()) tokenStore.setAccessToken('demo');
+      else if (!tokenStore.getAccessToken()) await api.refresh();
       if (!cancelled) setBooted(true);
     })();
     return () => {
@@ -67,7 +70,8 @@ function AuthProvider({ children }: { children: React.ReactNode }) {
   const logout = React.useCallback(
     async (everywhere = false) => {
       try {
-        await api.post('/auth/logout', { everywhere });
+        if (isDemo()) exitDemo();
+        else await api.post('/auth/logout', { everywhere });
       } finally {
         tokenStore.setAccessToken(null);
         queryClient.clear();

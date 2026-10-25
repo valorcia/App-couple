@@ -812,5 +812,12 @@
       "showArchived": "Voir les projets archivés",
       "hideArchived": "Masquer les archivés"
     }
+  },
+  "demo": {
+    "entry": "Pas de compte ? Découvrez l’application en mode démo, sans serveur : données fictives, partenaire simulé, rien n’est envoyé.",
+    "enter": "Explorer la démo",
+    "banner": "Mode démo : données fictives stockées dans ce navigateur, partenaire « Camille » simulé. Aucun compte, aucun envoi.",
+    "reset": "Réinitialiser",
+    "leave": "Quitter la démo"
   }
 }

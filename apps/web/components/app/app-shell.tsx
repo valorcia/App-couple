@@ -6,6 +6,7 @@ import { CalendarDays, Gamepad2, Home, ListChecks, LogOut, MoreHorizontal, Spark
 import { Avatar, Button, Logo, cn } from '@couple/ui';
 import { useAuth } from '@/lib/auth-provider';
 import { NotificationBell } from '@/components/notifications/notification-bell';
+import { DemoBanner } from '@/components/app/demo-banner';
 
 const NAV = [
   { href: '/accueil', key: 'home', icon: Home },
@@ -31,7 +32,9 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   };
 
   return (
-    <div className="flex min-h-dvh flex-col md:flex-row">
+    <div className="flex min-h-dvh flex-col">
+    <DemoBanner />
+    <div className="flex flex-1 flex-col md:flex-row">
       <aside className="hidden w-64 shrink-0 flex-col border-r border-border bg-bg-elevated/60 p-6 md:flex">
         <Link href="/accueil" aria-label="Accueil"><Logo /></Link>
         <nav className="mt-10 flex flex-col gap-1" aria-label="Application">
@@ -89,6 +92,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           </ul>
         </nav>
       </div>
+    </div>
     </div>
   );
 }

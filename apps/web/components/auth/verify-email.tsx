@@ -28,16 +28,29 @@ export function VerifyEmail() {
     verifiedRef.current = token;
     api
       .post('/auth/verify-email', { token }, { auth: false })
-      .then(async () => {
+      .then(() => {
         setState('success');
-        // Patch immédiat du cache (évite une redirection vers cet écran si le rechargement de /me est en retard), puis rechargement.
+        // Patch immédiat du cache si /me est déjà chargé (évite un aller-retour vers cet écran).
         qc.setQueryData<MeDto | undefined>(['me'], (old) => (old ? { ...old, emailVerified: true } : old));
-        await latest.current.refetch();
-        // RequireAuth redirige vers la connexion (avec retour) si aucune session n'est restaurée.
-        setTimeout(() => latest.current.router.replace('/couple'), 1200);
       })
       .catch(() => setState('invalid'));
   }, [token, qc]);
+
+  // Redirection déterministe : on attend que le profil chargé soit réellement vérifié. Si /me a été
+  // chargé avant la fin de la vérification (réponse périmée), on le recharge (3 tentatives max).
+  const retries = React.useRef(0);
+  const verified = user?.emailVerified ?? null;
+  React.useEffect(() => {
+    if (state !== 'success' || verified === null) return;
+    if (verified) {
+      const t = setTimeout(() => latest.current.router.replace('/couple'), 900);
+      return () => clearTimeout(t);
+    }
+    if (retries.current >= 3) return;
+    retries.current += 1;
+    const t = setTimeout(() => void latest.current.refetch(), 400);
+    return () => clearTimeout(t);
+  }, [state, verified]);
 
   const resend = async () => {
     await api.post('/auth/resend-verification');

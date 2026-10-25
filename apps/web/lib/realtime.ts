@@ -3,12 +3,13 @@ import * as React from 'react';
 import { io, type Socket } from 'socket.io-client';
 import { useQueryClient } from '@tanstack/react-query';
 import { API_URL, tokenStore } from './api';
+import { isDemo } from './demo/mode';
 
 let socket: Socket | null = null;
 
 function getSocket(): Socket | null {
   const token = tokenStore.getAccessToken();
-  if (!token) return null;
+  if (!token || isDemo()) return null;
   if (!socket) {
     socket = io(API_URL, { auth: { token }, transports: ['websocket'], autoConnect: true });
     tokenStore.subscribe(() => {

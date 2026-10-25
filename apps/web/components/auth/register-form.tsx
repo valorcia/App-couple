@@ -11,6 +11,7 @@ import { useAuth } from '@/lib/auth-provider';
 import { useApiErrorMessage } from '@/lib/use-api-error';
 import { useZodForm } from '@/lib/use-form';
 import { AuthCard } from './auth-card';
+import { DemoEntry } from './demo-entry';
 
 export function RegisterForm() {
   const t = useTranslations('auth');
@@ -70,6 +71,7 @@ export function RegisterForm() {
         </label>
         <Button type="submit" className="w-full" size="lg" loading={pending}>{t('register.submit')}</Button>
       </form>
+      <DemoEntry />
     </AuthCard>
   );
 }

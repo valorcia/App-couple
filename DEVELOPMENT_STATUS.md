@@ -48,6 +48,8 @@ Dernière mise à jour : 2026-10-25 — Phases 1, 2 et 3 terminées. **Phase 4 (
   - Isolation stricte par couple (404 hors couple, attribution limitée aux deux membres, projet lié vérifié). Web : page `/quotidien` à onglets + `/projets/[id]` ; composants réutilisables ajoutés au design system (`Checkbox`, `Progress`, `Select`). Mobile : écrans `quotidien` et `projets/[id]`, accès depuis l'accueil et « Plus ».
   - Non livré dans ce jalon : documents de projet (`ProjectDocument`, dépend du stockage S3 du jalon Souvenirs), rappels push sur l'échéance des tâches (à brancher sur la file `reminders`).
 
+- **Mode démo web** : API simulée dans le navigateur (`apps/web/lib/demo`), mêmes DTO que l'API réelle, partenaire simulé, données fictives persistées en local, règles de confidentialité reproduites (réponses cachées avant révélation, envies du partenaire jamais renvoyées, événements privés invisibles). Entrée depuis connexion/inscription, bandeau permanent, réinitialisation et sortie. Zéro appel réseau vérifié en e2e. À masquer en production publique (`NEXT_PUBLIC_DEMO_MODE=off`).
+
 ## En cours
 - Phase 4, jalon 2 : souvenirs (stockage S3) — pas encore commencé.
 
@@ -57,7 +59,7 @@ Dernière mise à jour : 2026-10-25 — Phases 1, 2 et 3 terminées. **Phase 4 (
 
 ## Bugs connus / limitations
 - Rappels : seule la première occurrence d'un événement récurrent déclenche un rappel (expansion des occurrences à venir en Phase 4).
-- Push : non testé sur appareil réel dans cette session (API Expo simulée dans les tests) ; nécessite un projet EAS (`extra.eas.projectId`) et un build de développement. Trois bugs trouvés par le test e2e ont été corrigés (Slot avec `asChild`, effet de vérification annulé par une dépendance instable, code d'invitation perdu après rafraîchissement).
+- Push : non testé sur appareil réel dans cette session (API Expo simulée dans les tests) ; nécessite un projet EAS (`extra.eas.projectId`) et un build de développement. Quatre bugs trouvés par les tests e2e ont été corrigés (Slot avec `asChild`, effet de vérification annulé par une dépendance instable, code d'invitation perdu après rafraîchissement, redirection post-vérification sur un `/me` périmé).
 
 ## Tests exécutés (tous verts)
 | Suite | Commande | Résultat |
@@ -69,7 +71,7 @@ Dernière mise à jour : 2026-10-25 — Phases 1, 2 et 3 terminées. **Phase 4 (
 | API (unitaires + intégration sur PostgreSQL réel) | `pnpm --filter @couple/api test` | 69 tests : auth, couples, autorisations, admin, agenda, récurrence, temps réel, jeux, question du jour, défis, intimité, « On fait quoi ? », abonnements, notifications, CMS des contenus, quotidien (listes, tâches, projets) |
 | Lint + typecheck (toutes apps/packages) | `pnpm turbo run lint typecheck` | OK |
 | Build Next web + admin | `pnpm --filter @couple/web --filter @couple/admin build` | OK |
-| E2E Playwright (navigateur réel, API + web production) | `pnpm --filter @couple/web test:e2e` | 11 scénarios (web + admin) : onboarding à deux comptes, refus de connexion, agenda (partagé / occupé / privé / invitation), dilemme à deux + question du jour, défi à deux, Double Secret (activation, confidentialité, révélation mutuelle), « On fait quoi ? » (catalogue → agenda), page Premium sans clés de paiement, notifications (centre, badge, réglages), admin (connexion réservée, création et publication d'une question), quotidien (liste partagée avec propagation temps réel, tâche attribuée puis terminée par le partenaire, projet depuis gabarit avec étape, note et progression vues par les deux) |
+| E2E Playwright (navigateur réel, API + web production) | `pnpm --filter @couple/web test:e2e` | 12 scénarios (web + admin) : onboarding à deux comptes, refus de connexion, agenda (partagé / occupé / privé / invitation), dilemme à deux + question du jour, défi à deux, Double Secret (activation, confidentialité, révélation mutuelle), « On fait quoi ? » (catalogue → agenda), page Premium sans clés de paiement, notifications (centre, badge, réglages), admin (connexion réservée, création et publication d'une question), quotidien (liste partagée avec propagation temps réel, tâche attribuée puis terminée par le partenaire, projet depuis gabarit avec étape, note et progression vues par les deux), mode démo (parcours complet, API bloquée, zéro requête) |
 
 ## Dépendances externes (à fournir)
 | Besoin | Variable(s) | Phase |

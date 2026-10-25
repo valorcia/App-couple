@@ -11,6 +11,7 @@ import { useAuth } from '@/lib/auth-provider';
 import { useApiErrorMessage } from '@/lib/use-api-error';
 import { useZodForm } from '@/lib/use-form';
 import { AuthCard } from './auth-card';
+import { DemoEntry } from './demo-entry';
 
 export function LoginForm() {
   const t = useTranslations('auth');
@@ -59,6 +60,7 @@ export function LoginForm() {
         </div>
         <Button type="submit" className="w-full" size="lg" loading={pending}>{t('login.submit')}</Button>
       </form>
+      <DemoEntry />
     </AuthCard>
   );
 }
