@@ -232,7 +232,7 @@ h3 { font-weight: 600; line-height: 1.12; }
 @keyframes en-bloom { from { opacity: 0; transform: scale(0.96); filter: blur(4px); } to { opacity: 1; transform: none; filter: blur(0); } }
 @keyframes en-curtain { from { clip-path: inset(0 0 100% 0); opacity: 0.4; } to { clip-path: inset(0 0 0 0); opacity: 1; } }
 @keyframes en-float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-6px); } }
-@keyframes en-pulse-glow { 0%, 100% { transform: translate(0, 0); } 50% { transform: translate(-1px, -1px); } }
+@keyframes en-pulse-glow { 0%, 100% { box-shadow: 4px 4px 0 0 var(--ink); } 50% { box-shadow: 6px 6px 0 0 var(--ink); } }
 @keyframes en-shimmer { from { background-position: 200% 0; } to { background-position: -200% 0; } }
 .animate-fade-up { animation: en-fade-up var(--dur-slow) var(--ease) both; }
 .animate-rise { animation: en-rise var(--dur-slow) var(--ease) both; animation-delay: calc(var(--i, 0) * 70ms); }
