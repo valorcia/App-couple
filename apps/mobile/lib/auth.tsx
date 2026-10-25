@@ -3,6 +3,7 @@ import { QueryClient, QueryClientProvider, useQuery, useQueryClient } from '@tan
 import type { AuthResponseDto, MeDto } from '@couple/types';
 import { api, tokenStore } from './api';
 import { unregisterPush } from './push';
+import { logoutPurchases } from './purchases';
 
 interface AuthContextValue {
   user: MeDto | null | undefined;
@@ -46,6 +47,7 @@ function AuthProvider({ children }: { children: React.ReactNode }) {
   );
   const logout = React.useCallback(async () => {
     await unregisterPush();
+    await logoutPurchases();
     try {
       const refreshToken = await tokenStore.getRefreshToken();
       await api.post('/auth/logout', { refreshToken: refreshToken ?? undefined });

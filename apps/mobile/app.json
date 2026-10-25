@@ -12,6 +12,6 @@
     "web": { "bundler": "metro", "output": "static" },
     "plugins": ["expo-router", "expo-secure-store", "expo-localization", ["expo-splash-screen", { "backgroundColor": "#F8F3EC" }]],
     "experiments": { "typedRoutes": true },
-    "extra": { "apiUrl": "http://localhost:4000" }
+    "extra": { "apiUrl": "http://localhost:4000", "revenuecat": { "ios": "", "android": "" } }
   }
 }

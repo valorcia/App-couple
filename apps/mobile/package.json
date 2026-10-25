@@ -38,7 +38,10 @@
     "react-native-web": "~0.21.0",
     "zod": "^4.1.0",
     "expo-notifications": "~0.32.17",
-    "expo-device": "~8.0.9"
+    "expo-device": "~8.0.9",
+    "socket.io-client": "^4.8.4",
+    "date-fns": "^4.1.0",
+    "react-native-purchases": "^10.15.1"
   },
   "devDependencies": {
     "@babel/core": "^7.26.0",

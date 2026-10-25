@@ -18,12 +18,16 @@ pnpm test              # tout doit être vert avant de commencer
 2. `docs/DECISIONS.md` section A : arbitrages A1–A6. S'ils ont reçu une réponse du propriétaire, les appliquer d'abord.
 3. `docs/ARCHITECTURE.md` §4 (conventions API : guards, DTO de sortie, projections de confidentialité).
 
-## 3. Prochaine tâche : Phase 3, jalon 10 — Écrans mobiles des modules MVP
-- `apps/mobile` (Expo Router) : onglet Accueil (question du jour, défi du moment, événements à venir, bouton « On fait quoi ? »), onglet Agenda (liste par jour + création simple avec visibilité), onglet Jouer (catalogue, lancement, écran de jeu avec révélation), Défis, Intimité (activation + Double Secret), Premium (RevenueCat : `react-native-purchases`, identification `logIn(userId)`, achats via les offerings ; l'API reçoit les webhooks), réglages de notifications.
-- Réutiliser `@couple/validation`, `@couple/types`, `@couple/shared/api-client` ; écouter les signaux Socket.IO (`socket.io-client`) pour l'agenda et les jeux.
-- Vérifier sur simulateur iOS / émulateur Android (non possible dans la session cloud) ; `pnpm --filter @couple/mobile typecheck` et `lint` au minimum.
-
-Puis Phase 4 (assistant IA conversationnel, surprises, expériences, projets, listes, souvenirs, synchronisations) et Phase 5 (commercialisation).
+## 3. Prochaine tâche : Phase 4 — fonctions avancées
+Ordre conseillé (chaque jalon = API + tests + web, mobile ensuite) :
+1. **QA mobile réelle** (bloquant avant stores) : lancer `apps/mobile` sur simulateur iOS et émulateur Android (`pnpm --filter @couple/mobile dev`), corriger les écarts, remplir `extra.eas.projectId` et les clés RevenueCat.
+2. **Listes de courses & tâches** (modèle prêt : `ShoppingList`, `ShoppingItem`, `Task`, `TaskComment`) : CRUD par couple, temps réel (`shopping.changed`, `task.changed`), récurrence des tâches, sans classement ni score.
+3. **Projets** (`Project`, `ProjectStep`, `ProjectNote`, `ProjectDocument`) : gabarits (maison, voyage, mariage, naissance, déménagement), progression, budget indicatif, documents via S3.
+4. **Souvenirs** : stockage S3 (URL présignées, quotas `quota.*.storageBytes`, traitement asynchrone des miniatures via BullMQ `media`, strip EXIF), albums, frise, recherche, export ; quiz « Nos souvenirs » (MEMORY_QUIZ) à partir des souvenirs marqués `aiAllowed`.
+5. **Surprises** (`Surprise` + événement agenda SURPRISE au titre masqué, `detailsEnc` chiffré) : flux date → budget → ambiance → idées → créneau → invitation mystérieuse, indices programmés, compte à rebours, révélation.
+6. **Générateur d'expériences** : étendre `IdeasService` + `packages/ai` (schémas de sortie soirée romantique / humoristique / week-end / intime), historique `Experience`, exclusion des activités déjà réalisées.
+7. **Assistant « Notre Complice »** : `AIConversation` / `AIMessage` (contenu chiffré), modes personnel / commun, outils (disponibilités via `CalendarService.freeSlots`, proposition d'événement avec validation explicite, création de tâche), quotas, jamais d'écriture partagée sans confirmation.
+8. **Synchronisations calendrier** : OAuth Google / Microsoft (`CalendarConnection`, jetons chiffrés), sync incrémentale bidirectionnelle, dédoublonnage `iCalUid`, import/export ICS, flux ICS en lecture pour Apple.
 
 ## 4. Conventions à respecter
 - Jamais d'entité Prisma brute en sortie d'API : mapper vers un DTO explicite.

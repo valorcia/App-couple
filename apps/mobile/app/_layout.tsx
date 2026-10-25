@@ -5,6 +5,7 @@ import { ActivityIndicator, View } from 'react-native';
 import { AppProviders, useAuth } from '@/lib/auth';
 import { useTheme } from '@/lib/theme';
 import { registerForPush } from '@/lib/push';
+import { configurePurchases } from '@/lib/purchases';
 
 export default function RootLayout() {
   return (
@@ -28,6 +29,7 @@ function AuthGate() {
     if (user?.emailVerified && !registered.current) {
       registered.current = true;
       void registerForPush();
+      void configurePurchases(user.id);
     }
     if (!user) registered.current = false;
   }, [user]);
@@ -53,6 +55,11 @@ function AuthGate() {
       <Stack.Screen name="(auth)" />
       <Stack.Screen name="(tabs)" />
       <Stack.Screen name="couple" options={{ headerShown: true, title: 'Nous', headerTintColor: t.secondary, headerStyle: { backgroundColor: t.bg } }} />
+      <Stack.Screen name="jouer/[id]" />
+      <Stack.Screen name="defis" />
+      <Stack.Screen name="intimite" />
+      <Stack.Screen name="premium" />
+      <Stack.Screen name="notifications-reglages" />
     </Stack>
   );
 }

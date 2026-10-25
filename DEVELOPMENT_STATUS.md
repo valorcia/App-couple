@@ -1,6 +1,6 @@
 # DEVELOPMENT_STATUS
 
-Dernière mise à jour : 2026-10-25 — Phases 1 et 2 terminées, **Phase 3 en cours (jalons 1 à 9 livrés : agenda, moteur de jeux, 5 jeux + question du jour, défis, Double Secret, « On fait quoi ? », abonnements, notifications push, CMS des contenus)**.
+Dernière mise à jour : 2026-10-25 — Phases 1 et 2 terminées, **Phase 3 (MVP commercial) terminée : 10 jalons livrés**. Phase 4 à démarrer.
 
 ## Fonctionnalités terminées
 
@@ -45,11 +45,12 @@ Dernière mise à jour : 2026-10-25 — Phases 1 et 2 terminées, **Phase 3 en c
 
 - **CMS des contenus** (API + admin) : CRUD paginé et filtrable (recherche, statut, offre, langue, jeu, catégorie) pour questions, défis, envies, idées d'activités, catégories et packs ; statut DRAFT / PUBLISHED / ARCHIVED (les brouillons ne sont jamais servis aux joueurs) ; suppression physique des brouillons seulement, archivage sinon ; import JSON en masse avec rapport d'erreurs par index ; écriture réservée au rôle ADMIN, lecture SUPPORT ; journal d'audit sur chaque écriture. Admin : pages « Contenus » par type avec compteurs, filtres, éditeur généré par type, publication/archivage, import.
 
+- **Mobile (Expo)** : écrans des modules MVP — Accueil (question du jour, « On fait quoi ? » en 4 étapes avec ajout à l'agenda, événements à venir, défi du moment), Agenda (30 jours, création avec visibilité et invitation, réponse aux invitations), Jouer (catalogue, lancement, parties en cours), écran de partie (manches, réponses texte/choix/vote, révélation, verdict, résumé), Défis, Intimité & Double Secret, Premium (RevenueCat avec chargement dynamique et repli honnête sans clés ; restauration ; liens de gestion des stores), réglages de notifications, Nous, Plus. Temps réel via Socket.IO. **Non exécuté sur appareil ou simulateur dans cette session** (typecheck + lint uniquement) : une passe de QA sur iOS/Android est indispensable avant toute soumission.
+
 ## En cours
-- Jalon 10 : écrans mobiles des modules MVP (agenda, jeux, défis, question du jour, Premium via RevenueCat).
+- Rien : fin de la Phase 3.
 
 ## Restant (ordre prévu — voir docs/ROADMAP.md)
-10. Mobile : agenda, jeux, défis, question du jour, « On fait quoi ? », Premium (RevenueCat), notifications.
 11. Phase 4 : assistant IA conversationnel (personnel / commun, outils), surprises, générateur d'expériences, projets, listes & tâches temps réel, souvenirs (S3, quotas), synchronisations calendrier Google / Microsoft / ICS.
 12. Phase 5 : site marketing complet (pages fonctionnalités, FAQ, cookies, données structurées), OAuth Apple / Google, 2FA admin, DPIA, tests de charge, runbook, préparation des stores.
 
