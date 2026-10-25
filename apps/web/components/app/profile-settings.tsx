@@ -11,6 +11,9 @@ import { useApiErrorMessage } from '@/lib/use-api-error';
 import { useZodForm } from '@/lib/use-form';
 import { useTheme, type ThemePref } from '@/lib/theme';
 import { PageHeader } from './page-header';
+import { useQuery } from '@tanstack/react-query';
+import type { BillingStatusDto } from '@couple/types';
+import { SubscriptionStatusCard } from '@/components/billing/premium-page';
 
 export function ProfileSettings() {
   const t = useTranslations('profile');
@@ -66,10 +69,12 @@ export function ProfileSettings() {
     }
   };
 
+  const billing = useQuery({ queryKey: ['billing', 'status'], queryFn: () => api.get<BillingStatusDto>('/billing/status'), enabled: user?.couple?.status === 'ACTIVE' });
   if (!user) return null;
   return (
     <div className="container-page max-w-2xl space-y-8 py-10">
       <PageHeader title={t('title')} subtitle={t('subtitle')} />
+      {user.couple?.status === 'ACTIVE' ? <SubscriptionStatusCard status={billing.data} /> : null}
 
       <Card>
         <CardContent className="pt-6">

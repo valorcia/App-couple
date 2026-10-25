@@ -8,3 +8,4 @@ export * from './games';
 export * from './challenges';
 export * from './intimacy';
 export * from './ideas';
+export * from './billing';

@@ -579,5 +579,57 @@
       "done": "C'est noté dans votre agenda.",
       "seeCalendar": "Voir l'agenda"
     }
+  },
+  "billing": {
+    "title": "Premium Couple",
+    "subtitle": "Un seul abonnement pour vous deux. Résiliable à tout moment.",
+    "current": "Votre abonnement",
+    "none": "Vous utilisez l'offre gratuite.",
+    "premiumActive": "Premium actif pour votre couple.",
+    "perMonth": "/ mois",
+    "perYear": "/ an",
+    "yearlyNote": "soit {monthly} / mois",
+    "choose": "Choisir cette offre",
+    "unavailable": "Paiement en ligne bientôt disponible.",
+    "mobileHint": "Sur mobile, l'abonnement passe par l'App Store ou Google Play.",
+    "includes": {
+      "title": "Premium comprend",
+      "items": [
+        "Tous les jeux et toutes les catégories",
+        "Questions illimitées dans le catalogue",
+        "Double Secret complet",
+        "Défis, missions et surprises",
+        "Générateur de rendez-vous et expériences",
+        "Assistant IA avec quotas élargis",
+        "Souvenirs interactifs et projets avancés",
+        "Personnalisation de l'application"
+      ]
+    },
+    "status": {
+      "ACTIVE": "Actif",
+      "TRIALING": "Période d'essai",
+      "PAST_DUE": "Paiement en attente",
+      "CANCELED": "Résilié",
+      "EXPIRED": "Expiré",
+      "PAUSED": "En pause"
+    },
+    "renews": "Renouvellement le {date}",
+    "endsOn": "Accès jusqu'au {date}",
+    "manage": "Gérer mon abonnement",
+    "manageApple": "Géré via l'App Store (Réglages › Abonnements).",
+    "manageGoogle": "Géré via Google Play (Abonnements).",
+    "manageManual": "Abonnement accordé par l'équipe.",
+    "thanks": {
+      "title": "Merci !",
+      "body": "Votre paiement est en cours de confirmation. Premium s'active automatiquement dans quelques instants.",
+      "active": "Premium est actif. Bonne découverte à deux !",
+      "back": "Retour à l'accueil"
+    },
+    "paywall": {
+      "title": "Réservé à Premium",
+      "body": "Un seul abonnement couvre votre couple.",
+      "cta": "Découvrir Premium",
+      "quota": "Vous avez atteint la limite de l'offre gratuite pour aujourd'hui."
+    }
   }
 }

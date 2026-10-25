@@ -18,14 +18,14 @@ pnpm test              # tout doit être vert avant de commencer
 2. `docs/DECISIONS.md` section A : arbitrages A1–A6. S'ils ont reçu une réponse du propriétaire, les appliquer d'abord.
 3. `docs/ARCHITECTURE.md` §4 (conventions API : guards, DTO de sortie, projections de confidentialité).
 
-## 3. Prochaine tâche : Phase 3, jalon 7 — Abonnements & entitlements
-- `apps/api/src/modules/billing/` : `GET /billing/products` (produits actifs), `POST /billing/checkout` (Stripe Checkout Session, mode subscription, `client_reference_id = coupleId`, URL succès/annulation web), `POST /billing/portal` (Stripe Billing Portal), `POST /webhooks/stripe` (signature vérifiée, idempotence `WebhookEvent`, `checkout.session.completed`, `customer.subscription.updated|deleted`, `invoice.payment_failed` → `Subscription` + `Entitlement` du couple), `POST /webhooks/revenuecat` (signature, `INITIAL_PURCHASE`, `RENEWAL`, `CANCELLATION`, `EXPIRATION` → idem), `GET /billing/status`.
-- Règles : un abonnement couvre le couple ; le body brut de la requête Stripe est nécessaire pour la signature (middleware `raw` sur la route) ; jamais de paiement simulé ; en l'absence de clés, `/billing/checkout` répond 503 `BILLING_UNAVAILABLE` et le web affiche l'état « paiement non configuré ».
-- Web : page `/premium` (offres depuis `/billing/products`, bouton Stripe), paywall contextuel (composant `PaywallCard` déclenché par les erreurs 402 `ENTITLEMENT_REQUIRED` / `QUOTA_EXCEEDED`), gestion de l'abonnement dans Profil.
-- Admin : vue abonnements (table `Subscription`), MRR simple.
-- Tests : webhooks signés (clé de test), idempotence, mise à jour des entitlements, expiration.
+## 3. Prochaine tâche : Phase 3, jalon 8 — Notifications push et préférences
+- API : `PUT /notifications/preferences` (par catégorie : push/inApp/email, heures silencieuses, max par jour), `POST /push/devices` (enregistrement du jeton Expo, plateforme) et suppression ; `PushService` (Expo Push API, lots de 100, gestion des reçus et des jetons invalides) ; application des préférences et des heures silencieuses dans `NotificationsService.notify` (report après la fenêtre silencieuse via BullMQ `notifications` avec délai).
+- Worker BullMQ (`WORKER_MODE=true`) : file `reminders` (rappels d'événements : scan des `EventReminder` à échéance, idempotence `sentAt`), file `push`, planification de la question du jour (notification matinale selon fuseau et préférences).
+- Web : page Réglages → Notifications (préférences par catégorie, heures silencieuses), centre de notifications (cloche, liste, lecture).
+- Mobile : enregistrement du jeton (`expo-notifications`) après connexion.
+- Tests : préférences respectées, heures silencieuses, idempotence des rappels, jetons invalides retirés.
 
-Puis jalon 8 (push Expo + préférences + heures silencieuses), jalon 9 (CMS admin), jalon 10 (mobile).
+Puis jalon 9 (CMS admin des contenus), jalon 10 (écrans mobiles des modules MVP).
 
 ## 4. Conventions à respecter
 - Jamais d'entité Prisma brute en sortie d'API : mapper vers un DTO explicite.

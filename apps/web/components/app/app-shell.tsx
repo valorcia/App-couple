@@ -48,6 +48,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         </nav>
         <div className="mt-auto space-y-3">
           <Button asChild className="w-full"><Link href="/accueil#on-fait-quoi"><Sparkles className="h-4 w-4" aria-hidden />On fait quoi ?</Link></Button>
+          {user && !user.entitlements.includes('premium') ? <Button asChild variant="soft" size="sm" className="w-full"><Link href="/premium">Premium Couple</Link></Button> : null}
           {user ? (
             <div className="flex items-center gap-3 rounded-md border border-border p-3">
               <Avatar name={user.profile.displayName} size={36} />

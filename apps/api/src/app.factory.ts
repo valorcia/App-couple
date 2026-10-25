@@ -11,7 +11,7 @@ import { ENV, type Env } from './config/env';
 /** Construit l'application Nest avec la même configuration en dev, prod et tests. */
 export async function createApp(): Promise<NestExpressApplication> {
   // abortOnError:false → une erreur d'initialisation est levée (lisible dans les tests) au lieu de process.exit.
-  const app = await NestFactory.create<NestExpressApplication>(AppModule, { bufferLogs: true, abortOnError: false });
+  const app = await NestFactory.create<NestExpressApplication>(AppModule, { bufferLogs: true, abortOnError: false, rawBody: true });
   const env = app.get<Env>(ENV);
   app.useLogger(app.get(Logger));
   app.set('trust proxy', 1);

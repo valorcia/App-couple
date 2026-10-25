@@ -13,6 +13,7 @@ import { useApiErrorMessage } from '@/lib/use-api-error';
 import { useRealtimeInvalidation } from '@/lib/realtime';
 import { PageHeader } from '@/components/app/page-header';
 import { GAME_META } from './game-meta';
+import { PaywallHint } from '@/components/billing/paywall-hint';
 
 export function GamesHome() {
   const t = useTranslations('games');
@@ -42,7 +43,7 @@ export function GamesHome() {
         <div className="flex flex-wrap items-center justify-between gap-2">
           <h2 className="text-xl">{t('start')}</h2>
           {catalog.data ? (
-            catalog.data.premium ? <Badge tone="champagne">{t('premiumAll')}</Badge> : <Badge tone="neutral">{t('sessionsLeft', { count: catalog.data.sessionsLeftToday ?? 0 })}</Badge>
+            catalog.data.premium ? <Badge tone="champagne">{t('premiumAll')}</Badge> : <Link href="/premium" className="text-sm text-fg-muted hover:text-fg"><Badge tone="neutral">{t('sessionsLeft', { count: catalog.data.sessionsLeftToday ?? 0 })}</Badge></Link>
           ) : null}
         </div>
         {catalog.isPending ? (
@@ -132,17 +133,19 @@ function StartDialog({ entry, premium, onClose }: { entry: GameCatalogEntryDto |
   const [length, setLength] = React.useState<'short' | 'long'>('short');
   const [maxLevel, setMaxLevel] = React.useState(2);
   const [error, setError] = React.useState<string | null>(null);
-  React.useEffect(() => { setCodes([]); setError(null); }, [entry?.gameType]);
+  const [rawError, setRawError] = React.useState<unknown>(null);
+  React.useEffect(() => { setCodes([]); setError(null); setRawError(null); }, [entry?.gameType]);
   const start = useMutation({
     mutationFn: () => api.post<GameSessionDto>('/games/sessions', { gameType: entry!.gameType, categoryCodes: codes, length, maxLevel }),
     onSuccess: (s) => { onClose(); router.push(`/jouer/${s.id}`); },
-    onError: (e) => setError(toMessage(e)),
+    onError: (e) => { setError(toMessage(e)); setRawError(e); },
   });
   if (!entry) return null;
   return (
     <Dialog open={!!entry} onOpenChange={(o) => !o && onClose()}>
       <DialogContent title={t(`types.${entry.gameType}.name`)} description={t(`types.${entry.gameType}.tagline`)}>
         {error ? <Alert tone="danger">{error}</Alert> : null}
+        {rawError ? <PaywallHint error={rawError} /> : null}
         <div className="space-y-2">
           <p className="text-sm font-medium">{t('categories')}</p>
           <div className="flex flex-wrap gap-2">

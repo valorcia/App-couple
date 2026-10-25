@@ -10,6 +10,7 @@ import { useAuth } from '@/lib/auth-provider';
 import { useApiErrorMessage } from '@/lib/use-api-error';
 import { useRealtimeInvalidation } from '@/lib/realtime';
 import { PageHeader } from '@/components/app/page-header';
+import Link from 'next/link';
 
 type Budget = 'FREE' | 'LOW' | 'MEDIUM' | 'HIGH';
 type Difficulty = 'EASY' | 'MEDIUM' | 'HARD';
@@ -121,7 +122,7 @@ export function ChallengeDialog({ c: initial, onClose }: { c: ChallengeDto | nul
           {c.intimate ? <Badge tone="blush">{t('intimate')}</Badge> : null}
           {p ? <Badge tone={p.status === 'COMPLETED' ? 'success' : 'coral'}>{t(`status.${p.status}`)}</Badge> : null}
         </div>
-        {c.locked ? <Alert tone="info">{t('actions.locked')}</Alert> : (
+        {c.locked ? <Alert tone="info">{t('actions.locked')} · <Link href="/premium" className="underline">Premium</Link></Alert> : (
           <>
             {c.instructions.length ? (
               <div><p className="mb-1 text-sm font-medium">{t('instructions')}</p><ol className="list-decimal space-y-1 pl-5 text-sm">{c.instructions.map((s, i) => <li key={i}>{s}</li>)}</ol></div>

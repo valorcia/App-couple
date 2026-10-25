@@ -1,6 +1,6 @@
 # DEVELOPMENT_STATUS
 
-Dernière mise à jour : 2026-10-25 — Phases 1 et 2 terminées, **Phase 3 en cours (jalons 1 à 6 livrés : agenda, moteur de jeux, 5 jeux + question du jour, défis, Double Secret, « On fait quoi ? »)**.
+Dernière mise à jour : 2026-10-25 — Phases 1 et 2 terminées, **Phase 3 en cours (jalons 1 à 7 livrés : agenda, moteur de jeux, 5 jeux + question du jour, défis, Double Secret, « On fait quoi ? », abonnements)**.
 
 ## Fonctionnalités terminées
 
@@ -33,8 +33,10 @@ Dernière mise à jour : 2026-10-25 — Phases 1 et 2 terminées, **Phase 3 en c
 
 - **« On fait quoi ? »** (API + web) : assistant en 4 étapes (quand / avec qui / budget / ambiance), propositions du catalogue `ActivityIdea` (filtres, idées intimes seulement si l'espace Intimité est actif, idées déjà réalisées signalées), enrichissement IA facultatif via `packages/ai` (fournisseur Anthropic ou OpenAI-compatible, sorties JSON validées, règles de sécurité anti-injection, quotas mensuels par couple, cache Redis, journal `AIUsage` sans contenu) avec repli honnête sur le catalogue (raison affichée : désactivé / quota / erreur), ajout à l'agenda partagé par confirmation explicite (événement DATE + invitation du partenaire) et trace `Experience`.
 
+- **Abonnements & entitlements** (API + web + admin) : produits et prix administrables (`Product`), Stripe Checkout (abonnement ou pack) et Billing Portal, webhooks Stripe signés sur corps brut (`checkout.session.completed`, `customer.subscription.*`, `invoice.payment_failed`) et RevenueCat (Bearer secret ; achats, renouvellements, annulation, expiration, packs non renouvelables), idempotence `WebhookEvent`, synchronisation des `Entitlement` du couple avec 3 jours de grâce, notifications d'échec de paiement, `GET /billing/status`, 503 `BILLING_UNAVAILABLE` sans clés (jamais de paiement simulé). Web : page Premium (offres, statut, portail), page de remerciement avec activation automatique, paywall contextuel sur les erreurs 402, statut dans le profil. Admin : liste des abonnements, abonnements actifs et MRR.
+
 ## En cours
-- Jalon 7 : abonnements et entitlements (Stripe web, RevenueCat mobile).
+- Jalon 8 : notifications push Expo, préférences par catégorie, heures silencieuses, rappels d'événements (worker).
 
 ## Restant (ordre prévu — voir docs/ROADMAP.md)
 7. Abonnements (Stripe web, RevenueCat mobile) + quotas gratuits.
@@ -54,10 +56,10 @@ Dernière mise à jour : 2026-10-25 — Phases 1 et 2 terminées, **Phase 3 en c
 | Unitaires `@couple/validation` | `pnpm --filter @couple/validation test` | 1 test |
 | Unitaires `@couple/game-engine` | `pnpm --filter @couple/game-engine test` | 5 tests |
 | Unitaires `@couple/ai` | `pnpm --filter @couple/ai test` | 4 tests |
-| API (unitaires + intégration sur PostgreSQL réel) | `pnpm --filter @couple/api test` | 51 tests : auth, couples, autorisations, admin, agenda, récurrence, temps réel, notifications, jeux, question du jour, défis, intimité, « On fait quoi ? » |
+| API (unitaires + intégration sur PostgreSQL réel) | `pnpm --filter @couple/api test` | 57 tests : auth, couples, autorisations, admin, agenda, récurrence, temps réel, notifications, jeux, question du jour, défis, intimité, « On fait quoi ? », abonnements (webhooks Stripe signés, RevenueCat, idempotence, grâce, packs) |
 | Lint + typecheck (toutes apps/packages) | `pnpm turbo run lint typecheck` | OK |
 | Build Next web + admin | `pnpm --filter @couple/web --filter @couple/admin build` | OK |
-| E2E Playwright (navigateur réel, API + web production) | `pnpm --filter @couple/web test:e2e` | 7 scénarios : onboarding à deux comptes, refus de connexion, agenda (partagé / occupé / privé / invitation), dilemme à deux + question du jour, défi à deux, Double Secret (activation, confidentialité, révélation mutuelle), « On fait quoi ? » (catalogue → agenda) |
+| E2E Playwright (navigateur réel, API + web production) | `pnpm --filter @couple/web test:e2e` | 8 scénarios : onboarding à deux comptes, refus de connexion, agenda (partagé / occupé / privé / invitation), dilemme à deux + question du jour, défi à deux, Double Secret (activation, confidentialité, révélation mutuelle), « On fait quoi ? » (catalogue → agenda), page Premium sans clés de paiement |
 
 ## Dépendances externes (à fournir)
 | Besoin | Variable(s) | Phase |

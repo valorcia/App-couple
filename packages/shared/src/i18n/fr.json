@@ -31,6 +31,8 @@
     "CONSENT_REQUIRED": "Votre consentement est nécessaire pour cette fonctionnalité.",
     "GAME_ALREADY_ANSWERED": "Vous avez déjà répondu.",
     "GAME_NOT_REVEALED": "En attente de la réponse de votre partenaire.",
-    "GAME_SESSION_CLOSED": "Cette partie est terminée."
+    "GAME_SESSION_CLOSED": "Cette partie est terminée.",
+    "BILLING_UNAVAILABLE": "Le paiement n'est pas encore disponible.",
+    "BILLING_NO_CUSTOMER": "Aucun abonnement web à gérer pour ce couple."
   }
 }

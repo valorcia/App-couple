@@ -48,6 +48,11 @@ export class AdminController {
     await this.admin.unsuspendUser({ id: actor.id, role: actor.role, ip: req.ip }, id);
   }
 
+  @Get('subscriptions')
+  subscriptions(@ZodQuery(auditQuery) q: z.infer<typeof auditQuery>) {
+    return this.admin.listSubscriptions(q.limit, q.cursor);
+  }
+
   @Get('audit')
   auditLogs(@ZodQuery(auditQuery) q: z.infer<typeof auditQuery>) {
     return this.admin.listAudit(q.limit, q.cursor);

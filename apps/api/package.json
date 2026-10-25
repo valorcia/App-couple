@@ -43,7 +43,8 @@
     "rrule": "^2.8.1",
     "@socket.io/redis-adapter": "^8.3.0",
     "@couple/game-engine": "workspace:*",
-    "@couple/ai": "workspace:*"
+    "@couple/ai": "workspace:*",
+    "stripe": "^23.0.0"
   },
   "devDependencies": {
     "@couple/config": "workspace:*",

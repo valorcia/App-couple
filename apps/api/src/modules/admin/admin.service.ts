@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import type { Prisma } from '@couple/database';
-import type { AdminStatsDto, AdminUserDto, FeatureFlagDto, Page, ProductDto } from '@couple/types';
+import type { AdminStatsDto, AdminSubscriptionDto, AdminUserDto, FeatureFlagDto, Page, ProductDto } from '@couple/types';
 import type { z } from 'zod';
 import type { adminUserSearchSchema, upsertFeatureFlagSchema, upsertProductSchema } from '@couple/validation';
 import { AppError } from '@couple/shared';
@@ -35,7 +35,16 @@ export class AdminService {
       this.prisma.entitlement.count({ where: { key: 'premium', OR: [{ expiresAt: null }, { expiresAt: { gt: new Date() } }] } }),
       this.prisma.user.count({ where: { createdAt: { gt: d7 } } }),
     ]);
-    return { users, activeUsers30d, couplesActive, premiumCouples, signups7d };
+    const active = await this.prisma.subscription.findMany({ where: { status: { in: ['ACTIVE', 'TRIALING', 'PAST_DUE'] } }, include: { product: true } });
+    const mrrCents = active.reduce((sum, s) => sum + (s.product ? (s.product.interval === 'YEAR' ? Math.round(s.product.priceCents / 12) : s.product.priceCents) : 0), 0);
+    return { users, activeUsers30d, couplesActive, premiumCouples, signups7d, mrrCents, activeSubscriptions: active.length };
+  }
+
+  async listSubscriptions(limit = 50, cursor?: string): Promise<Page<AdminSubscriptionDto>> {
+    const rows = await this.prisma.subscription.findMany({ orderBy: { id: 'desc' }, take: limit + 1, ...(cursor ? { cursor: { id: cursor }, skip: 1 } : {}), include: { product: { select: { code: true } } } });
+    const hasMore = rows.length > limit;
+    const items = rows.slice(0, limit).map((s) => ({ id: s.id, coupleId: s.coupleId, provider: s.provider, status: s.status, productCode: s.product?.code ?? null, currentPeriodEnd: s.currentPeriodEnd?.toISOString() ?? null, cancelAtPeriodEnd: s.cancelAtPeriodEnd, createdAt: s.createdAt.toISOString() }));
+    return { items, nextCursor: hasMore ? items[items.length - 1]!.id : null };
   }
 
   async searchUsers(input: z.infer<typeof adminUserSearchSchema>): Promise<Page<AdminUserDto>> {

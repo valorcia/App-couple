@@ -122,6 +122,8 @@ export interface AdminStatsDto {
   couplesActive: number;
   premiumCouples: number;
   signups7d: number;
+  mrrCents: number;
+  activeSubscriptions: number;
 }
 
 // ---------------------------------------------------------------- Agenda
@@ -364,4 +366,42 @@ export interface IdeaSuggestionsDto {
 export interface ScheduledIdeaDto {
   eventId: string;
   experienceId: string;
+}
+
+// ---------------------------------------------------------------- Abonnements
+export type SubscriptionStatus = 'TRIALING' | 'ACTIVE' | 'PAST_DUE' | 'CANCELED' | 'EXPIRED' | 'PAUSED';
+export type PaymentProvider = 'STRIPE' | 'APPLE' | 'GOOGLE' | 'MANUAL';
+
+export interface BillingProductDto extends ProductDto {
+  checkoutAvailable: boolean;
+}
+
+export interface BillingStatusDto {
+  premium: boolean;
+  entitlements: string[];
+  subscription: {
+    provider: PaymentProvider;
+    status: SubscriptionStatus;
+    productCode: string | null;
+    currentPeriodEnd: string | null;
+    cancelAtPeriodEnd: boolean;
+    /** Où gérer l'abonnement : Stripe (web), App Store, Play Store, ou manuel (admin). */
+    manageVia: 'stripe' | 'apple' | 'google' | 'manual';
+  } | null;
+  checkoutAvailable: boolean;
+}
+
+export interface CheckoutSessionDto {
+  url: string;
+}
+
+export interface AdminSubscriptionDto {
+  id: string;
+  coupleId: string;
+  provider: PaymentProvider;
+  status: SubscriptionStatus;
+  productCode: string | null;
+  currentPeriodEnd: string | null;
+  cancelAtPeriodEnd: boolean;
+  createdAt: string;
 }

@@ -28,6 +28,7 @@ import { IntimacyModule } from './modules/intimacy/intimacy.module';
 import { ChallengesModule } from './modules/challenges/challenges.module';
 import { IdeasModule } from './modules/ideas/ideas.module';
 import { AiModule } from './common/ai/ai.module';
+import { BillingModule } from './modules/billing/billing.module';
 
 const SENSITIVE_PATHS = ['/auth', '/me/confirm-adult'];
 
@@ -72,6 +73,7 @@ const SENSITIVE_PATHS = ['/auth', '/me/confirm-adult'];
     ChallengesModule,
     AiModule,
     IdeasModule,
+    BillingModule,
     HealthModule,
     DevModule.register(),
   ],
