@@ -84,7 +84,7 @@ Dernière mise à jour : 2026-10-25 — Phases 1, 2 et 3 terminées. **Phase 4 (
 | Nom de domaine, hébergement UE | — | 5 |
 
 ## Déploiement
-Voir `docs/DEPLOYMENT.md` : web et admin sur Vercel (deux projets, racines `apps/web` et `apps/admin`), API sur un hébergeur à processus persistant, Postgres et Redis managés en UE. Au 2026-10-25, le connecteur Vercel de la session n'avait pas le droit de créer des projets (403) : la création reste à faire depuis le tableau de bord.
+Voir `docs/DEPLOYMENT.md` : web et admin sur Vercel (deux projets, racines `apps/web` et `apps/admin`), API sur un hébergeur à processus persistant, Postgres et Redis managés en UE. Web déployé en production le 2026-10-25 sur le projet Vercel `app-couple` (https://app-couple-dun.vercel.app, accès protégé par Vercel Authentication). Restent à faire dans le tableau de bord Vercel : variables `NEXT_PUBLIC_API_URL` et `ENABLE_EXPERIMENTAL_COREPACK`, et un second projet (racine `apps/admin`) pour le back-office. L'API n'est pas encore hébergée : inscription et connexion échouent sur le site tant qu'elle ne l'est pas.
 
 ## Décisions techniques
 Voir `docs/DECISIONS.md` (ADR-001 à ADR-015).

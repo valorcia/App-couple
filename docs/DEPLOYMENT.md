@@ -15,6 +15,8 @@ L'API expose `Dockerfile` dans `apps/api` ; `docker-compose.yml` à la racine d�
 
 ## 2. Vercel — `apps/web`
 
+**État au 2026-10-25** : projet Vercel `app-couple` (équipe « loicchristina-2381's projects ») lié à `valorcia/App-couple`, racine `apps/web`, production sur `master`. Premier déploiement réussi : https://app-couple-dun.vercel.app (protégé par Vercel Authentication tant qu'aucun domaine personnalisé n'est attaché). Variables d'environnement **non encore renseignées** (le connecteur n'a pas le droit de les écrire) : à saisir dans le tableau de bord, puis redéployer.
+
 Créer le projet depuis le tableau de bord Vercel (**Add New → Project → Import** `valorcia/App-couple`) avec ces réglages :
 
 | Réglage | Valeur |
