@@ -83,6 +83,9 @@ Dernière mise à jour : 2026-10-25 — Phases 1, 2 et 3 terminées. **Phase 4 (
 | OAuth Google / Microsoft (calendriers) | à ajouter | 4 |
 | Nom de domaine, hébergement UE | — | 5 |
 
+## Déploiement
+Voir `docs/DEPLOYMENT.md` : web et admin sur Vercel (deux projets, racines `apps/web` et `apps/admin`), API sur un hébergeur à processus persistant, Postgres et Redis managés en UE. Au 2026-10-25, le connecteur Vercel de la session n'avait pas le droit de créer des projets (403) : la création reste à faire depuis le tableau de bord.
+
 ## Décisions techniques
 Voir `docs/DECISIONS.md` (ADR-001 à ADR-015).
 
