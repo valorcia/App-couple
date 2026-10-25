@@ -59,8 +59,12 @@ export default function PlayScreen() {
           <Text style={{ fontSize: 18, fontWeight: '600', color: t.fg }}>Défis à deux</Text><Muted>Romantiques, drôles, créatifs…</Muted>
           <View style={{ height: spacing(3) }} /><Button title="Voir les défis" variant="secondary" onPress={() => router.push('/defis')} />
         </Card>
+        <Card tone="night" style={{ marginTop: spacing(3) }}>
+          <Text style={{ fontSize: 18, fontWeight: '600', color: t.nightFg }}>Les cartes du soir</Text><Text style={{ color: t.nightFg, opacity: 0.75, marginTop: 4 }}>Une carte, un geste, à tour de rôle. Réservé à l’espace Intimité, activé par vous deux.</Text>
+          <View style={{ height: spacing(3) }} /><Button title="Jouer" onPress={() => router.push('/intimite-cartes')} />
+        </Card>
         <Card style={{ marginTop: spacing(3) }}>
-          <Text style={{ fontSize: 18, fontWeight: '600', color: t.fg }}>Intimité & séduction</Text><Muted>Espace facultatif, activé par chacun : Double Secret.</Muted>
+          <Text style={{ fontSize: 18, fontWeight: '600', color: t.fg }}>Intimité & séduction</Text><Muted>Espace facultatif, activé par chacun : « Ce soir ? », Double Secret.</Muted>
           <View style={{ height: spacing(3) }} /><Button title="Découvrir" variant="ghost" onPress={() => router.push('/intimite')} />
         </Card>
       </ScrollView>

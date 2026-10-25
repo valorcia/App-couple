@@ -541,7 +541,26 @@
       "waiting": "Réponse envoyée. On attend {partner}.",
       "partnerFirst": "{partner} a déjà répondu, à vous !",
       "revealed": "Révélé",
-      "none": "Pas de question aujourd'hui."
+      "none": "Pas de question aujourd'hui.",
+      "settings": {
+        "open": "Régler",
+        "title": "Régler la question du jour",
+        "description": "Un seul réglage pour vous deux : {partner} verra le changement. Chaque matin, une notification vous prévient tous les deux qu’une question vous attend.",
+        "themes": "Thèmes",
+        "themesHint": "Choisissez un ou plusieurs thèmes, ou laissez la surprise décider.",
+        "surprise": "Surprise",
+        "intensity": "Intensité",
+        "intensityHint": "Jusqu’à « {max} », le plus bas de vos deux réglages Intimité.",
+        "intensityLocked": "« Osée » et « Feu » s’ouvrent quand l’espace Intimité est activé par vous deux.",
+        "levels": { "1": "Douce", "2": "Complice", "3": "Osée", "4": "Feu" },
+        "hour": "Heure de la notification",
+        "hourHint": "En heure locale de chacun.",
+        "at": "{hour} h",
+        "save": "Enregistrer",
+        "close": "Fermer",
+        "redrawn": "Réglage enregistré. La question du jour a été retirée : personne n’avait encore répondu.",
+        "fromTomorrow": "Réglage enregistré. Il s’applique dès la question de demain."
+      }
     },
     "next": "Continuer",
     "seeSummary": "Voir le résumé"
@@ -669,6 +688,8 @@
       "title": "Les cartes du soir",
       "subtitle": "Tirez une carte : elle s’affiche sur vos deux téléphones. Celui ou celle qui tire réalise la carte pour l’autre, sauf mention contraire. Tout se refuse d’un geste, sans explication.",
       "open": "Ouvrir les cartes du soir",
+      "lockedMe": "Activez l’espace pour vous, ci-dessus, pour ouvrir la table.",
+      "lockedPartner": "La table s’ouvre quand {partner} aura aussi activé l’espace.",
       "back": "Retour à l’espace Intimité",
       "levels": {
         "1": "Douceur",

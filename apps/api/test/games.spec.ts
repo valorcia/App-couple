@@ -7,6 +7,8 @@ async function seedCatalog(ctx: TestContext) {
   const love = await cat('love', 'Amour', ['SECRET_ANSWERS', 'CONFESSIONS']);
   const humor = await cat('humor', 'Humour', ['DILEMMA', 'WHICH_OF_US']);
   const personality = await cat('personality', 'Personnalité', ['WHO_KNOWS_BEST']);
+  const daily = await cat('daily', 'Quotidien', ['SECRET_ANSWERS']);
+  const intimacy = await cat('intimacy', 'Intimité', ['SECRET_ANSWERS']);
   await ctx.prisma.question.deleteMany();
   await ctx.prisma.question.createMany({
     data: [
@@ -22,6 +24,10 @@ async function seedCatalog(ctx: TestContext) {
       { gameType: 'WHO_KNOWS_BEST', categoryId: personality.id, text: 'Mon super-pouvoir ?' },
       { gameType: 'CONFESSIONS', categoryId: love.id, text: 'Confession légère', level: 1 },
       { gameType: 'CONFESSIONS', categoryId: love.id, text: 'Confession profonde', level: 3 },
+      { gameType: 'SECRET_ANSWERS', categoryId: daily.id, text: 'Q quotidien 1' },
+      { gameType: 'SECRET_ANSWERS', categoryId: daily.id, text: 'Q quotidien 2' },
+      { gameType: 'SECRET_ANSWERS', categoryId: intimacy.id, text: 'Q intime osée', level: 3 },
+      { gameType: 'SECRET_ANSWERS', categoryId: intimacy.id, text: 'Q intime feu', level: 4 },
     ],
   });
 }
@@ -186,7 +192,8 @@ describe('Jeux', () => {
     const fresh = await createCouple(ctx);
     const d1 = await ctx.http().get('/games/daily').set(auth(fresh.a.accessToken));
     expect(d1.status).toBe(200);
-    expect(d1.body.text).toMatch(/^Q amour/);
+    expect(d1.body.text).toMatch(/^Q (amour|quotidien)/); // jamais une question intime par défaut
+    expect(d1.body.level).toBe(1);
     const d2 = await ctx.http().get('/games/daily').set(auth(fresh.b.accessToken));
     expect(d2.body.id).toBe(d1.body.id);
 
@@ -203,5 +210,49 @@ describe('Jeux', () => {
     expect(b.body.partnerAnswer).toBe('Ma réponse secrète');
     expect((await ctx.http().get('/games/daily').set(auth(fresh.a.accessToken))).body.partnerAnswer).toBe('La mienne');
     expect((await ctx.http().post('/games/daily/answer').set(auth(fresh.a.accessToken)).send({ text: 'encore' })).status).toBe(409);
+  });
+
+  it('règle la question du jour : thèmes, intensité plafonnée, intimité seulement si l’espace est actif à deux', async () => {
+    const fresh = await createCouple(ctx);
+    const defaults = (await ctx.http().get('/games/daily/settings').set(auth(fresh.a.accessToken))).body;
+    expect(defaults).toMatchObject({ themes: [], intensity: 2, hour: 9, maxIntensity: 2 });
+    expect(defaults.availableThemes.map((t: { code: string }) => t.code)).toEqual(expect.arrayContaining(['love', 'daily']));
+    expect(defaults.availableThemes.some((t: { code: string }) => t.code === 'intimacy')).toBe(false);
+
+    // Une question est tirée, personne n'a répondu : changer de thème la retire tout de suite.
+    const before = (await ctx.http().get('/games/daily').set(auth(fresh.a.accessToken))).body;
+    const set = await ctx.http().put('/games/daily/settings').set(auth(fresh.b.accessToken)).send({ themes: ['daily'], hour: 20 });
+    expect(set.status).toBe(200);
+    expect(set.body).toMatchObject({ themes: ['daily'], hour: 20, redrawn: true });
+    const after = (await ctx.http().get('/games/daily').set(auth(fresh.a.accessToken))).body;
+    expect(after.id).not.toBe(before.id);
+    expect(after.text).toMatch(/^Q quotidien/);
+    expect(after.categoryCode).toBe('daily');
+
+    // Sans espace Intimité actif à deux : l'intensité est plafonnée à 2 et le thème intime ignoré.
+    const capped = (await ctx.http().put('/games/daily/settings').set(auth(fresh.a.accessToken)).send({ themes: ['intimacy'], intensity: 4 })).body;
+    expect(capped).toMatchObject({ intensity: 2, themes: [], maxIntensity: 2 });
+    expect((await ctx.http().get('/games/daily').set(auth(fresh.a.accessToken))).body.categoryCode).not.toBe('intimacy');
+
+    // Les deux activent l'espace Intimité (intensité maximale 3 pour l'un) : plafond 3, thème intime autorisé.
+    await ctx.prisma.featureFlag.upsert({ where: { key: 'intimacy.module' }, create: { key: 'intimacy.module', enabled: true }, update: { enabled: true } });
+    await ctx.prisma.user.updateMany({ where: { id: { in: [fresh.a.userId, fresh.b.userId] } }, data: { adultConfirmedAt: new Date() } });
+    await ctx.prisma.intimacySetting.createMany({ data: [
+      { coupleId: fresh.coupleId, userId: fresh.a.userId, enabledAt: new Date(), maxIntensity: 4 },
+      { coupleId: fresh.coupleId, userId: fresh.b.userId, enabledAt: new Date(), maxIntensity: 3 },
+    ] });
+    const hot = (await ctx.http().put('/games/daily/settings').set(auth(fresh.a.accessToken)).send({ themes: ['intimacy'], intensity: 4 })).body;
+    expect(hot).toMatchObject({ intensity: 3, themes: ['intimacy'], maxIntensity: 3, redrawn: true });
+    expect(hot.availableThemes.some((t: { code: string; intimate: boolean }) => t.code === 'intimacy' && t.intimate)).toBe(true);
+    const intimate = (await ctx.http().get('/games/daily').set(auth(fresh.b.accessToken))).body;
+    expect(intimate.text).toBe('Q intime osée'); // niveau 4 exclu par le plafond
+    expect(intimate.level).toBe(3);
+
+    // Une fois une réponse donnée, changer le réglage ne retire plus la question du jour.
+    await ctx.http().post('/games/daily/answer').set(auth(fresh.b.accessToken)).send({ text: 'ok' });
+    const kept = (await ctx.http().put('/games/daily/settings').set(auth(fresh.a.accessToken)).send({ themes: ['love'] })).body;
+    expect(kept.redrawn).toBe(false);
+    expect((await ctx.http().get('/games/daily').set(auth(fresh.a.accessToken))).body.id).toBe(intimate.id);
+    expect((await ctx.http().put('/games/daily/settings').set(auth(fresh.a.accessToken)).send({ hour: 3 })).status).toBe(400);
   });
 });

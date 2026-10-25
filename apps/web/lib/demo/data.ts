@@ -20,7 +20,8 @@ export interface DemoState {
   couple: { name: string | null; metAt: string | null; anniversaryAt: string | null };
   events: CalendarEventDto[];
   sessions: DemoSession[];
-  daily: { text: string; myAnswer: string | null; partnerAnswer: string; revealedAt: string | null };
+  daily: { text: string; category: string; level: number; myAnswer: string | null; partnerAnswer: string; revealedAt: string | null };
+  dailySettings: { themes: string[]; intensity: number; hour: number };
   challengeProgress: Record<string, ChallengeDto['progress']>;
   intimacy: { enabled: boolean; enabledCategories: DesireItemDto['category'][]; maxIntensity: number; myChoices: Record<string, 'YES' | 'NO' | 'MAYBE'>; iRequested: boolean; revealedAt: string | null; tonightMine: boolean; tonightPartner: boolean; cardsSeen: string[]; cardsDone: number; currentCard: { id: string; drawnByUserId: string; drawnAt: string } | null };
   notifications: NotificationDto[];
@@ -182,7 +183,8 @@ export function initialState(displayName: string): DemoState {
       event({ title: 'Anniversaire de Camille', startAt: day(20, 0), endAt: day(21, 0), allDay: true, type: 'BIRTHDAY', ownerUserId: PARTNER_ID }),
     ],
     sessions: [],
-    daily: { text: 'Quel petit détail de ce matin t’a fait sourire ?', myAnswer: null, partnerAnswer: 'Ton message avant ma réunion.', revealedAt: null },
+    daily: { text: 'Quel petit détail de ce matin t’a fait sourire ?', category: 'daily', level: 1, myAnswer: null, partnerAnswer: 'Ton message avant ma réunion.', revealedAt: null },
+    dailySettings: { themes: [], intensity: 2, hour: 9 },
     challengeProgress: {},
     intimacy: { enabled: false, enabledCategories: ['tenderness', 'romance', 'seduction', 'complicity', 'desires', 'fantasies', 'experiences'], maxIntensity: 4, myChoices: {}, iRequested: false, revealedAt: null, tonightMine: false, tonightPartner: false, cardsSeen: [], cardsDone: 0, currentCard: null },
     notifications: [

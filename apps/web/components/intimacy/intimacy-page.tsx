@@ -41,7 +41,7 @@ export function IntimacyPage() {
         <>
           <SettingsCard s={s} partner={partner} />
           {s.bothEnabled ? <Tonight partner={partner} /> : null}
-          {s.bothEnabled ? <CardsTeaser /> : null}
+          <CardsTeaser locked={s.bothEnabled ? null : s.enabled ? 'partner' : 'me'} partner={partner} />
           {s.bothEnabled ? <DoubleSecret partner={partner} premium={s.premium} /> : null}
         </>
       )}
@@ -226,10 +226,10 @@ function Tonight({ partner }: { partner: string }) {
   );
 }
 
-function CardsTeaser() {
+function CardsTeaser({ locked, partner }: { locked: 'me' | 'partner' | null; partner: string }) {
   const t = useTranslations('intimacy.cards');
-  return (
-    <Link href="/intimite/cartes" className="card-table hover-lift relative block overflow-hidden rounded-lg p-6 sm:p-8" data-testid="cards-teaser">
+  const body = (
+    <>
       <div className="relative flex items-center gap-5">
         <div className="relative hidden h-24 w-16 shrink-0 sm:block" aria-hidden>
           <div className="card-back-pattern absolute inset-0 -rotate-6 rounded-[10px] opacity-70" />
@@ -242,7 +242,10 @@ function CardsTeaser() {
         </div>
         <span className="wax-seal shrink-0"><Spade className="h-5 w-5" aria-hidden /></span>
       </div>
-      <p className="relative mt-4 text-sm font-medium text-primary">{t('open')} →</p>
-    </Link>
+      <p className="relative mt-4 text-sm font-medium text-primary">{locked === null ? `${t('open')} →` : locked === 'me' ? t('lockedMe') : t('lockedPartner', { partner })}</p>
+    </>
   );
+  const className = 'card-table relative block overflow-hidden rounded-lg p-6 sm:p-8';
+  if (locked) return <div className={cn(className, 'opacity-80')} data-testid="cards-teaser" aria-disabled>{body}</div>;
+  return <Link href="/intimite/cartes" className={cn(className, 'hover-lift')} data-testid="cards-teaser">{body}</Link>;
 }

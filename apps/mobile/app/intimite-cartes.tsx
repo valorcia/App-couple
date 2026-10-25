@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { Pressable, ScrollView, Text, View } from 'react-native';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { Stack } from 'expo-router';
+import { Stack, router } from 'expo-router';
 import type { CardTableDto } from '@couple/types';
 import { Button, Card, ErrorBanner, Muted, Screen } from '@/components/ui';
 import { api, errorCode } from '@/lib/api';
@@ -48,6 +48,13 @@ export default function CardsScreen() {
         <Text style={{ color: t.nightFg, fontSize: 30, fontWeight: '600', marginTop: spacing(1) }}>Les cartes du soir</Text>
         <Text style={{ color: t.nightFg, opacity: 0.75, marginTop: spacing(2) }}>La carte tirée s’affiche sur vos deux téléphones. Un « non » ne se discute pas : on repose la carte.</Text>
         <ErrorBanner message={error} />
+        {table.isError ? (
+          <Card style={{ marginTop: spacing(4) }}>
+            <Text style={{ color: t.fg, fontWeight: '600' }}>La table est fermée.</Text>
+            <Muted>Les cartes du soir s’ouvrent quand l’espace Intimité est activé par vous deux.</Muted>
+            <View style={{ height: spacing(3) }} /><Button title="Aller à l’espace Intimité" variant="secondary" onPress={() => router.replace('/intimite')} />
+          </Card>
+        ) : null}
         <View style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: spacing(5) }}>
           {(d?.levels ?? []).map((l) => {
             const active = l.level === activeLevel;

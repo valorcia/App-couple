@@ -46,7 +46,7 @@ export function CardsTable() {
   if (!settings.data?.bothEnabled) {
     return (
       <div className="container-page max-w-3xl space-y-6 py-8">
-        <Alert tone="info">{settings.data?.partnerEnabled ? t('subtitle') : t('subtitle')}</Alert>
+        <Alert tone="info" title={t('title')}>{!settings.data?.adultConfirmed || !settings.data?.enabled ? t('lockedMe') : t('lockedPartner', { partner: partner?.profile.displayName ?? '' })}</Alert>
         <Button asChild variant="outline"><Link href="/intimite"><ArrowLeft className="h-4 w-4" aria-hidden />{t('back')}</Link></Button>
       </div>
     );

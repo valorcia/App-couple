@@ -1,5 +1,5 @@
 import { ApiClientError } from '@couple/shared/api-client';
-import type { AuthResponseDto, BillingStatusDto, CardTableDto, CalendarEventDto, ChallengeDto, CoupleDto, DailyQuestionDto, DesireItemDto, DesireMatchesDto, GameCatalogDto, GameSessionDto, GameSessionListItemDto, GameType, IdeaSuggestionsDto, IntimacySettingsDto, MeDto, NotificationPreferencesDto, Page, ProjectDto, ShoppingListDto, TaskDto } from '@couple/types';
+import type { DailyQuestionSettingsDto, AuthResponseDto, BillingStatusDto, CardTableDto, CalendarEventDto, ChallengeDto, CoupleDto, DailyQuestionDto, DesireItemDto, DesireMatchesDto, GameCatalogDto, GameSessionDto, GameSessionListItemDto, GameType, IdeaSuggestionsDto, IntimacySettingsDto, MeDto, NotificationPreferencesDto, Page, ProjectDto, ShoppingListDto, TaskDto } from '@couple/types';
 import { DEMO_STATE_KEY } from './mode';
 import { CARDS, CATEGORIES, CHALLENGES, COUPLE_ID, DESIRES, IDEAS, ME_ID, PARTNER_DESIRE_YES, PARTNER_ID, PARTNER_TEXTS, PRODUCTS, QUESTIONS, type DemoRound, type DemoSession, type DemoState, initialState, nid } from './data';
 
@@ -181,7 +181,8 @@ export class DemoApi {
       });
       return { games, premium: true, sessionsLeftToday: null } satisfies GameCatalogDto;
     }
-    if (m === 'GET' && s[1] === 'daily') return this.daily();
+    if (m === 'GET' && s[1] === 'daily' && s.length === 2) return this.daily();
+    if (s[1] === 'daily' && s[2] === 'settings') return this.dailySettings(m, b);
     if (m === 'POST' && s[1] === 'daily' && s[2] === 'answer') {
       this.state.daily.myAnswer = String(b.text ?? '').trim();
       this.state.daily.revealedAt = now();
@@ -293,7 +294,46 @@ export class DemoApi {
   }
   private daily(): DailyQuestionDto {
     const d = this.state.daily;
-    return { id: 'daily-demo', date: now().slice(0, 10), text: d.text, categoryCode: 'daily', myAnswer: d.myAnswer, partnerAnswered: true, revealedAt: d.revealedAt, partnerAnswer: d.revealedAt ? d.partnerAnswer : null };
+    const cat = CATEGORIES.find((c) => c.code === (d.category ?? 'daily'));
+    return { id: 'daily-demo', date: now().slice(0, 10), text: d.text, categoryCode: cat?.code ?? 'daily', categoryName: cat?.name ?? 'Quotidien', level: d.level ?? 1, myAnswer: d.myAnswer, partnerAnswered: true, revealedAt: d.revealedAt, partnerAnswer: d.revealedAt ? d.partnerAnswer : null };
+  }
+
+  /** Réglage partagé de la question du jour : même règle que l'API (plafond 2 sans espace Intimité à deux). */
+  private dailySettings(m: string, b: Body): DailyQuestionSettingsDto {
+    const st = (this.state.dailySettings ??= { themes: [], intensity: 2, hour: 9 });
+    const both = this.state.intimacy.enabled;
+    const maxIntensity = both ? this.state.intimacy.maxIntensity : 2;
+    const intimacyOk = (intensity: number) => both && intensity > 2;
+    let redrawn = false;
+    if (m === 'PUT') {
+      const before = { themes: [...st.themes], intensity: st.intensity };
+      if (typeof b.intensity === 'number') st.intensity = Math.min(Math.max(1, Math.floor(b.intensity)), maxIntensity);
+      if (Array.isArray(b.themes)) st.themes = (b.themes as string[]).filter((c) => CATEGORIES.some((x) => x.code === c) && (c !== 'intimacy' || intimacyOk(st.intensity)));
+      if (typeof b.hour === 'number') {
+        if (b.hour < 6 || b.hour > 22) fail(400, 'VALIDATION_ERROR', 'Heure entre 6 h et 22 h.');
+        st.hour = Math.floor(b.hour);
+      }
+      const changed = before.intensity !== st.intensity || before.themes.join() !== st.themes.join();
+      if (changed && !this.state.daily.myAnswer) {
+        const allowed = st.themes.length ? st.themes : CATEGORIES.map((c) => c.code).filter((c) => c !== 'intimacy');
+        const bank = QUESTIONS.SECRET_ANSWERS.filter((q) => allowed.includes(q.category) && (q.level ?? 1) <= st.intensity && q.text !== this.state.daily.text);
+        const pick = bank[Math.floor(Math.random() * bank.length)];
+        if (pick) {
+          this.state.daily = { ...this.state.daily, text: pick.text, category: pick.category, level: pick.level ?? 1, revealedAt: null };
+          redrawn = true;
+        }
+      }
+      if (changed || typeof b.hour === 'number') this.notify('DAILY_QUESTION', 'daily.settings_changed', 'Question du jour', 'Camille voit votre réglage : thème, intensité ou heure.', '/');
+    }
+    const intensity = Math.min(st.intensity, maxIntensity);
+    return {
+      themes: st.themes.filter((c) => c !== 'intimacy' || intimacyOk(intensity)),
+      intensity,
+      hour: st.hour,
+      maxIntensity,
+      availableThemes: CATEGORIES.filter((c) => (c.gameTypes as readonly string[]).includes('SECRET_ANSWERS') && (c.code !== 'intimacy' || intimacyOk(intensity))).map((c) => ({ code: c.code, name: c.name, description: c.description, icon: c.icon, questionCount: QUESTIONS.SECRET_ANSWERS.filter((q) => q.category === c.code).length, intimate: c.code === 'intimacy' })),
+      ...(m === 'PUT' ? { redrawn } : {}),
+    };
   }
 
   // ------------------------------------------------------------------ défis

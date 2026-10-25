@@ -110,4 +110,14 @@ describe('Notifications, push et planification', () => {
     const tenUtc = new Date(nineUtc.getTime() + 3_600_000);
     expect(await scheduler.processDailyQuestionPrompts(tenUtc)).toBe(0);
   });
+
+  it('respecte l’heure de notification réglée par le couple', async () => {
+    await ctx.prisma.couple.update({ where: { id: couple.coupleId }, data: { settings: { dailyQuestion: { themes: [], intensity: 2, hour: 20 } } } });
+    const tomorrow = new Date(Date.now() + 86_400_000);
+    tomorrow.setUTCHours(9, 15, 0, 0);
+    expect(await scheduler.processDailyQuestionPrompts(tomorrow)).toBe(0);
+    tomorrow.setUTCHours(20, 5, 0, 0);
+    expect(await scheduler.processDailyQuestionPrompts(tomorrow)).toBe(2);
+    await ctx.prisma.couple.update({ where: { id: couple.coupleId }, data: { settings: {} } });
+  });
 });

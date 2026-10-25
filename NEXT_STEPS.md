@@ -26,7 +26,8 @@ Ordre conseillé (chaque jalon = API + tests + web, mobile ensuite) :
 4. **Générateur d'expériences** : étendre `IdeasService` + `packages/ai` (schémas de sortie soirée romantique / humoristique / week-end / intime), historique `Experience`, exclusion des activités déjà réalisées.
 5. **Assistant « Notre Complice »** : `AIConversation` / `AIMessage` (contenu chiffré), modes personnel / commun, outils (disponibilités via `CalendarService.freeSlots`, proposition d'événement avec validation explicite, création de tâche via `DailyLifeService.createTask`), quotas, jamais d'écriture partagée sans confirmation.
 6. **Synchronisations calendrier** : OAuth Google / Microsoft (`CalendarConnection`, jetons chiffrés), sync incrémentale bidirectionnelle, dédoublonnage `iCalUid`, import/export ICS, flux ICS en lecture pour Apple.
-7. **QA mobile réelle** (bloquant avant stores) : lancer `apps/mobile` sur simulateur iOS et émulateur Android (`pnpm --filter @couple/mobile dev`), corriger les écarts, remplir `extra.eas.projectId` et les clés RevenueCat. À faire dès qu'un poste avec Xcode / Android Studio est disponible ; aucun écran mobile n'a encore été exécuté.
+7. **Question du jour** : le réglage partagé (thèmes, intensité, heure) est livré (`GET/PUT /games/daily/settings`). Pistes : rotation « thème de la semaine » automatique, badge sur la cloche quand le partenaire change le réglage, question « Feu » réservée aux soirs où le signal « Ce soir ? » est allumé des deux côtés.
+8. **QA mobile réelle** (bloquant avant stores) : lancer `apps/mobile` sur simulateur iOS et émulateur Android (`pnpm --filter @couple/mobile dev`), corriger les écarts, remplir `extra.eas.projectId` et les clés RevenueCat. À faire dès qu'un poste avec Xcode / Android Studio est disponible ; aucun écran mobile n'a encore été exécuté.
 
 ## 4. Conventions à respecter
 - Jamais d'entité Prisma brute en sortie d'API : mapper vers un DTO explicite.

@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { useTranslations } from 'next-intl';
-import { Lock, Play } from 'lucide-react';
+import { Lock, Play, Spade } from 'lucide-react';
 import type { GameCatalogDto, GameCatalogEntryDto, GameSessionDto, GameSessionListItemDto, GameType, Page } from '@couple/types';
 import { Alert, Badge, Button, Card, Chip, Dialog, DialogContent, Segmented, Skeleton, cn } from '@couple/ui';
 import { api } from '@/lib/api';
@@ -72,9 +72,14 @@ export function GamesHome() {
               <div className="flex-1"><h3 className="text-xl">{t('types.CHALLENGE.name')}</h3><p className="mt-1 text-sm opacity-80">{t('types.CHALLENGE.tagline')}</p></div>
               <div className="flex justify-end"><Button asChild size="sm" variant="secondary"><Link href="/defis"><Play className="h-4 w-4" aria-hidden />{t('play')}</Link></Button></div>
             </Card>
+            <Card tone="night" className="card-table flex flex-col gap-3 p-6" data-testid="games-cards-entry">
+              <Spade className="h-7 w-7 text-primary" aria-hidden />
+              <div className="flex-1"><h3 className="text-xl">Les cartes du soir</h3><p className="mt-1 text-sm opacity-80">Une carte, un geste, à tour de rôle. Réservé à l’espace Intimité, activé par vous deux.</p></div>
+              <div className="flex justify-end"><Button asChild size="sm" variant="primary"><Link href="/intimite/cartes"><Play className="h-4 w-4" aria-hidden />{t('play')}</Link></Button></div>
+            </Card>
             <Card className="flex flex-col gap-3 p-6">
               <Lock className="h-7 w-7 text-secondary" aria-hidden />
-              <div className="flex-1"><h3 className="text-xl">Intimité & séduction</h3><p className="mt-1 text-sm text-fg-muted">Espace facultatif, activé par chacun : Double Secret, envies communes.</p></div>
+              <div className="flex-1"><h3 className="text-xl">Intimité & séduction</h3><p className="mt-1 text-sm text-fg-muted">Espace facultatif, activé par chacun : « Ce soir ? », Double Secret, envies communes.</p></div>
               <div className="flex justify-end"><Button asChild size="sm" variant="outline"><Link href="/intimite">Découvrir</Link></Button></div>
             </Card>
             {(['MEMORY_QUIZ'] as GameType[]).map((gt) => {

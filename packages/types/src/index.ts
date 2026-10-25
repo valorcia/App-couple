@@ -252,10 +252,29 @@ export interface DailyQuestionDto {
   date: string;
   text: string;
   categoryCode: string | null;
+  categoryName: string | null;
+  /** Intensité de la question (1 douce … 4 feu). */
+  level: number;
   myAnswer: string | null;
   partnerAnswered: boolean;
   revealedAt: string | null;
   partnerAnswer: string | null;
+}
+
+/** Réglage partagé de la question du jour (un seul pour le couple). */
+export interface DailyQuestionSettingsDto {
+  /** Codes de thèmes choisis ; vide = surprise (tous les thèmes autorisés). */
+  themes: string[];
+  /** Intensité maximale (1 douce, 2 complice, 3 osée, 4 feu). */
+  intensity: number;
+  /** Heure locale (de chaque partenaire) de la notification quotidienne. */
+  hour: number;
+  /** Plafond d'intensité autorisé : 2 tant que l'espace Intimité n'est pas actif pour les deux, sinon le minimum des deux réglages. */
+  maxIntensity: number;
+  /** Les thèmes proposables, avec le nombre de questions disponibles. */
+  availableThemes: { code: string; name: string; description: string; icon: string; questionCount: number; intimate: boolean }[];
+  /** Si vrai, la question du jour a été retirée suite au réglage (personne n'avait encore répondu). */
+  redrawn?: boolean;
 }
 
 // ---------------------------------------------------------------- Défis

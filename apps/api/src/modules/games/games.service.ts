@@ -19,14 +19,15 @@ import {
   summarizeSession,
   validateAnswer,
 } from '@couple/game-engine';
-import type { DailyQuestionDto, GameCatalogDto, GameRoundDto, GameSessionDto, GameSessionListItemDto } from '@couple/types';
-import type { CreateGameSessionInput } from '@couple/validation';
+import type { DailyQuestionDto, DailyQuestionSettingsDto, GameCatalogDto, GameRoundDto, GameSessionDto, GameSessionListItemDto } from '@couple/types';
+import type { CreateGameSessionInput, DailyQuestionSettingsInput } from '@couple/validation';
 import { PrismaService } from '@/common/prisma/prisma.service';
 import { SettingsService } from '@/common/settings/settings.service';
 import type { CoupleContext } from '@/common/decorators/auth.decorators';
 import { EntitlementsService } from '@/modules/entitlements/entitlements.service';
 import { RealtimeGateway } from '@/modules/realtime/realtime.gateway';
 import { NotificationsService } from '@/modules/notifications/notifications.service';
+import { IntimacyService } from '@/modules/intimacy/intimacy.service';
 
 interface Viewer {
   userId: string;
@@ -43,6 +44,26 @@ type RoundRow = SessionRow['rounds'][number];
 const SESSION_GAMES: GameType[] = ['SECRET_ANSWERS', 'WHO_KNOWS_BEST', 'DILEMMA', 'WHICH_OF_US', 'CONFESSIONS'];
 const RECENT_DAYS = 60;
 
+/** Réglage de la question du jour, rangé dans `Couple.settings.dailyQuestion`. */
+export interface DailyQuestionSettings {
+  themes: string[];
+  intensity: number;
+  hour: number;
+}
+export const DAILY_DEFAULTS: DailyQuestionSettings = { themes: [], intensity: 2, hour: 9 };
+/** Plafond d'intensité tant que l'espace Intimité n'est pas actif pour les deux. */
+const DAILY_SOFT_MAX = 2;
+const INTIMACY_CODE = 'intimacy';
+
+export function readDailySettings(settings: Prisma.JsonValue | null | undefined): DailyQuestionSettings {
+  const raw = settings && typeof settings === 'object' && !Array.isArray(settings) ? (settings as Record<string, unknown>).dailyQuestion : null;
+  const obj = raw && typeof raw === 'object' && !Array.isArray(raw) ? (raw as Record<string, unknown>) : {};
+  const themes = Array.isArray(obj.themes) ? obj.themes.filter((t): t is string => typeof t === 'string') : DAILY_DEFAULTS.themes;
+  const intensity = typeof obj.intensity === 'number' && obj.intensity >= 1 && obj.intensity <= 4 ? Math.floor(obj.intensity) : DAILY_DEFAULTS.intensity;
+  const hour = typeof obj.hour === 'number' && obj.hour >= 0 && obj.hour <= 23 ? Math.floor(obj.hour) : DAILY_DEFAULTS.hour;
+  return { themes, intensity, hour };
+}
+
 /**
  * Jeux de couple. Invariant : la réponse d'un partenaire n'est jamais sérialisée pour l'autre
  * avant `GameRound.revealedAt` (posé en transaction lorsque les deux ont répondu).
@@ -55,6 +76,7 @@ export class GamesService {
     private readonly entitlements: EntitlementsService,
     private readonly realtime: RealtimeGateway,
     private readonly notifications: NotificationsService,
+    private readonly intimacy: IntimacyService,
   ) {}
 
   // ------------------------------------------------------------------ catalogue
@@ -248,10 +270,7 @@ export class GamesService {
     const today = dateOnly(new Date());
     let row = await this.prisma.dailyQuestion.findUnique({ where: { coupleId_date: { coupleId: viewer.couple.coupleId, date: today } }, include: { question: { include: { category: true } }, answers: true } });
     if (!row) {
-      const premium = await this.entitlements.isPremium(viewer.couple.coupleId);
-      const recent = await this.prisma.dailyQuestion.findMany({ where: { coupleId: viewer.couple.coupleId, date: { gt: new Date(Date.now() - 180 * 86_400_000) } }, select: { questionId: true } });
-      const pool = await this.prisma.question.findMany({ where: { gameType: 'SECRET_ANSWERS', status: 'PUBLISHED', locale, ...(premium ? {} : { tier: 'FREE' }) } });
-      const [picked] = pickRandom(pool, 1, new Set(recent.map((r) => r.questionId)));
+      const picked = await this.pickDailyQuestion(viewer, locale);
       if (!picked) return null;
       try {
         row = await this.prisma.dailyQuestion.create({ data: { coupleId: viewer.couple.coupleId, date: today, questionId: picked.id }, include: { question: { include: { category: true } }, answers: true } });
@@ -262,6 +281,100 @@ export class GamesService {
       }
     }
     return this.toDailyDto(row, viewer);
+  }
+
+  /**
+   * Tire la question du jour selon le réglage du couple : thèmes choisis (ou surprise), intensité
+   * plafonnée, et jamais une question « Intimité » si l'espace n'est pas actif pour les deux.
+   * Les questions des 180 derniers jours sont évitées ; on élargit si le vivier est vide.
+   */
+  private async pickDailyQuestion(viewer: Viewer, locale: string) {
+    const [ctx, premium, recent] = await Promise.all([
+      this.dailyContext(viewer),
+      this.entitlements.isPremium(viewer.couple.coupleId),
+      this.prisma.dailyQuestion.findMany({ where: { coupleId: viewer.couple.coupleId, date: { gt: new Date(Date.now() - 180 * 86_400_000) } }, select: { questionId: true } }),
+    ]);
+    const seen = new Set(recent.map((r) => r.questionId));
+    const base: Prisma.QuestionWhereInput = { gameType: 'SECRET_ANSWERS', status: 'PUBLISHED', locale, ...(premium ? {} : { tier: 'FREE' }) };
+    const themes = ctx.effectiveThemes;
+    const attempts: Prisma.QuestionWhereInput[] = [
+      { ...base, level: { lte: ctx.intensity }, ...(themes.length ? { category: { code: { in: themes } } } : { OR: [{ categoryId: null }, { category: { code: { not: INTIMACY_CODE } } }] }) },
+      { ...base, level: { lte: ctx.intensity }, OR: [{ categoryId: null }, { category: { code: { not: INTIMACY_CODE } } }] },
+      { ...base, OR: [{ categoryId: null }, { category: { code: { not: INTIMACY_CODE } } }] },
+    ];
+    for (const where of attempts) {
+      const pool = await this.prisma.question.findMany({ where });
+      const [picked] = pickRandom(pool, 1, seen);
+      if (picked) return picked;
+    }
+    return null;
+  }
+
+  /** Réglage effectif : plafond d'intensité et thèmes réellement autorisés. */
+  private async dailyContext(viewer: Viewer) {
+    const couple = await this.prisma.couple.findUniqueOrThrow({ where: { id: viewer.couple.coupleId }, select: { settings: true } });
+    const stored = readDailySettings(couple.settings);
+    const both = await this.intimacy.bothEnabled(viewer.couple);
+    let maxIntensity = DAILY_SOFT_MAX;
+    if (both) {
+      const rows = await this.prisma.intimacySetting.findMany({ where: { coupleId: viewer.couple.coupleId }, select: { maxIntensity: true } });
+      maxIntensity = Math.max(DAILY_SOFT_MAX, Math.min(...rows.map((r) => r.maxIntensity)));
+    }
+    const intensity = Math.min(stored.intensity, maxIntensity);
+    const intimacyAllowed = both && intensity > DAILY_SOFT_MAX;
+    // Thèmes choisis : « intimacy » est retiré tant qu'il n'est pas autorisé. Surprise (aucun thème) :
+    // tous les thèmes sauf « intimacy » (le tirage l'exclut explicitement).
+    const effectiveThemes = stored.themes.filter((t) => t !== INTIMACY_CODE || intimacyAllowed);
+    return { stored, maxIntensity, intensity, intimacyAllowed, effectiveThemes };
+  }
+
+  async dailySettings(viewer: Viewer, locale: string): Promise<DailyQuestionSettingsDto> {
+    const [ctx, premium] = await Promise.all([this.dailyContext(viewer), this.entitlements.isPremium(viewer.couple.coupleId)]);
+    const categories = await this.prisma.contentCategory.findMany({ where: { gameTypes: { has: 'SECRET_ANSWERS' } }, orderBy: { sortOrder: 'asc' } });
+    const counts = await this.prisma.question.groupBy({ by: ['categoryId'], where: { gameType: 'SECRET_ANSWERS', status: 'PUBLISHED', locale, ...(premium ? {} : { tier: 'FREE' }) }, _count: { _all: true } });
+    const countOf = (id: string) => counts.find((c) => c.categoryId === id)?._count._all ?? 0;
+    return {
+      themes: ctx.stored.themes.filter((t) => t !== INTIMACY_CODE || ctx.intimacyAllowed),
+      intensity: ctx.intensity,
+      hour: ctx.stored.hour,
+      maxIntensity: ctx.maxIntensity,
+      availableThemes: categories
+        .filter((c) => c.code !== INTIMACY_CODE || ctx.intimacyAllowed)
+        .map((c) => ({ code: c.code, name: c.name, description: c.description ?? '', icon: c.icon ?? '', questionCount: countOf(c.id), intimate: c.code === INTIMACY_CODE })),
+    };
+  }
+
+  /**
+   * Enregistre le réglage partagé. Si personne n'a encore répondu à la question du jour, elle est
+   * retirée pour que le changement se voie tout de suite ; sinon il s'applique dès demain.
+   */
+  async updateDailySettings(viewer: Viewer, input: DailyQuestionSettingsInput, locale: string): Promise<DailyQuestionSettingsDto> {
+    const couple = await this.prisma.couple.findUniqueOrThrow({ where: { id: viewer.couple.coupleId }, select: { settings: true } });
+    const current = readDailySettings(couple.settings);
+    const ctx = await this.dailyContext(viewer);
+    const intensity = Math.min(input.intensity ?? current.intensity, ctx.maxIntensity);
+    const next: DailyQuestionSettings = { themes: input.themes ?? current.themes, intensity, hour: input.hour ?? current.hour };
+    if (next.themes.length) {
+      const known = await this.prisma.contentCategory.findMany({ where: { code: { in: next.themes }, gameTypes: { has: 'SECRET_ANSWERS' } }, select: { code: true } });
+      const allowed = new Set(known.map((k) => k.code));
+      const intimacyOk = ctx.maxIntensity > DAILY_SOFT_MAX && intensity > DAILY_SOFT_MAX;
+      next.themes = next.themes.filter((t) => allowed.has(t) && (t !== INTIMACY_CODE || intimacyOk));
+    }
+    const base = couple.settings && typeof couple.settings === 'object' && !Array.isArray(couple.settings) ? (couple.settings as Prisma.JsonObject) : {};
+    await this.prisma.couple.update({ where: { id: viewer.couple.coupleId }, data: { settings: { ...base, dailyQuestion: { ...next } } } });
+
+    let redrawn = false;
+    const changedPick = next.intensity !== current.intensity || next.themes.join(',') !== current.themes.join(',');
+    if (changedPick) {
+      const today = dateOnly(new Date());
+      const removed = await this.prisma.dailyQuestion.deleteMany({ where: { coupleId: viewer.couple.coupleId, date: today, answers: { none: {} } } });
+      redrawn = removed.count > 0;
+    }
+    this.realtime.emitToCouple(viewer.couple.coupleId, 'daily.changed', { settings: true });
+    if (viewer.couple.partnerUserId && (changedPick || next.hour !== current.hour)) {
+      await this.notifications.notify({ userId: viewer.couple.partnerUserId, category: 'DAILY_QUESTION', type: 'daily.settings_changed', title: 'Question du jour', body: 'Votre partenaire a réglé la question du jour : thème, intensité ou heure.', data: {} });
+    }
+    return { ...(await this.dailySettings(viewer, locale)), redrawn };
   }
 
   async answerDaily(viewer: Viewer, text: string, locale: string): Promise<DailyQuestionDto> {
@@ -369,6 +482,8 @@ export class GamesService {
       date: row.date.toISOString().slice(0, 10),
       text: row.question.text,
       categoryCode: row.question.category?.code ?? null,
+      categoryName: row.question.category?.name ?? null,
+      level: row.question.level,
       myAnswer: mine?.text ?? null,
       partnerAnswered: !!partner,
       revealedAt: row.revealedAt?.toISOString() ?? null,

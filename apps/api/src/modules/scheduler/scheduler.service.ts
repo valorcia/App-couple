@@ -4,10 +4,11 @@ import { RedisService } from '@/common/redis/redis.service';
 import { QUEUES, QueueService } from '@/common/queue/queue.service';
 import { NotificationsService } from '@/modules/notifications/notifications.service';
 import { localMinutes } from '@/modules/notifications/quiet-hours';
+import { readDailySettings } from '@/modules/games/games.service';
 
 /**
  * Tâches planifiées : rappels d'événements (toutes les minutes) et notification matinale de la
- * question du jour (toutes les heures, à 9 h locale de chaque utilisateur).
+ * question du jour (toutes les heures, à l'heure réglée par le couple, 9 h par défaut, en heure locale de chaque utilisateur).
  * Limitation connue : les rappels portent sur la première occurrence des événements récurrents.
  */
 @Injectable()
@@ -58,13 +59,15 @@ export class SchedulerService implements OnModuleInit {
   }
 
   /** À 9 h locale : « Votre question du jour vous attend » (une fois par jour et par utilisateur). */
-  async processDailyQuestionPrompts(now = new Date(), targetHour = 9): Promise<number> {
-    const members = await this.prisma.coupleMembership.findMany({ where: { leftAt: null, couple: { status: 'ACTIVE' } }, include: { user: { select: { id: true, timezone: true, status: true } } } });
+  async processDailyQuestionPrompts(now = new Date(), targetHour?: number): Promise<number> {
+    const members = await this.prisma.coupleMembership.findMany({ where: { leftAt: null, couple: { status: 'ACTIVE' } }, include: { user: { select: { id: true, timezone: true, status: true } }, couple: { select: { settings: true } } } });
     let sent = 0;
     for (const m of members) {
       if (m.user.status !== 'ACTIVE') continue;
       const minutes = localMinutes(now, m.user.timezone);
-      if (Math.floor(minutes / 60) !== targetHour) continue;
+      // L'heure est celle réglée par le couple (9 h par défaut), en heure locale de chaque partenaire.
+      const hour = targetHour ?? readDailySettings(m.couple.settings).hour;
+      if (Math.floor(minutes / 60) !== hour) continue;
       const dayKey = new Intl.DateTimeFormat('en-CA', { timeZone: m.user.timezone }).format(now);
       const ok = await this.redis.client.set(`daily:prompted:${m.user.id}:${dayKey}`, '1', 'EX', 2 * 86_400, 'NX');
       if (!ok) continue;

@@ -15,6 +15,19 @@ test('mode démo : parcours complet sans aucun appel à l’API', async ({ page 
   await expect(page.getByRole('status')).toContainText('Mode démo');
   await expect(page.getByText('Camille').first()).toBeVisible();
 
+  // Réglage de la question du jour : thème « Humour », intensité plafonnée tant que l'espace Intimité n'est pas actif.
+  await expect(page.getByTestId('daily-settings-line')).toContainText('Surprise · Complice · 9 h');
+  await page.getByTestId('daily-settings-open').click();
+  const dialog = page.getByRole('dialog', { name: 'Régler la question du jour' });
+  await expect(dialog.getByRole('radio', { name: '🔒 Feu' })).toBeVisible();
+  await dialog.getByRole('button', { name: 'Humour' }).click();
+  await dialog.getByLabel('Heure de la notification').selectOption('20');
+  await dialog.getByRole('button', { name: 'Enregistrer' }).click();
+  await expect(dialog.getByText('La question du jour a été retirée')).toBeVisible();
+  await dialog.getByRole('button', { name: 'Fermer' }).last().click();
+  await expect(page.getByTestId('daily-settings-line')).toContainText('Humour · Complice · 20 h');
+  await expect(page.getByText('Humour', { exact: true })).toBeVisible();
+
   // Question du jour : réponse puis révélation du partenaire simulé.
   await page.getByRole('textbox', { name: 'Question du jour' }).fill('Le soleil sur la table du petit-déjeuner.');
   await page.getByRole('button', { name: 'Répondre' }).click();

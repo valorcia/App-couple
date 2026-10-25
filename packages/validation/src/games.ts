@@ -27,3 +27,12 @@ export const listGameSessionsSchema = paginationSchema.extend({
 });
 
 export const dailyAnswerSchema = z.object({ text: z.string().trim().min(1).max(1000) });
+
+export const DAILY_HOUR_MIN = 6;
+export const DAILY_HOUR_MAX = 22;
+export const dailyQuestionSettingsSchema = z.object({
+  themes: z.array(z.string().trim().min(1).max(40)).max(12).optional(),
+  intensity: z.number().int().min(1).max(4).optional(),
+  hour: z.number().int().min(DAILY_HOUR_MIN).max(DAILY_HOUR_MAX).optional(),
+});
+export type DailyQuestionSettingsInput = z.infer<typeof dailyQuestionSettingsSchema>;

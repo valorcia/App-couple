@@ -45,6 +45,13 @@ export default function IntimacyScreen() {
               <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' }}><Text style={{ color: t.fg, fontWeight: '600', fontSize: 18 }}>{s.enabled ? 'Activé pour vous' : "Activer l'espace pour moi"}</Text><Switch value={s.enabled} onValueChange={(v) => toggle.mutate(v)} /></View>
               <Muted>{s.partnerEnabled ? `${partner} a activé l'espace.` : `${partner} n'a pas encore activé l'espace. Rien n'est visible tant que vous n'êtes pas deux.`}</Muted>
             </Card>
+            {!s.bothEnabled ? (
+              <Card tone="night" style={{ marginTop: spacing(3), opacity: 0.8 }}>
+                <Text style={{ color: t.primary, fontSize: 11, fontWeight: '700', letterSpacing: 2, textTransform: 'uppercase' }}>Une carte, un geste, à tour de rôle</Text>
+                <Text style={{ color: t.nightFg, fontSize: 22, fontWeight: '600', marginTop: spacing(1) }}>Les cartes du soir</Text>
+                <Text style={{ color: t.nightFg, opacity: 0.75, marginTop: spacing(1) }}>{s.enabled ? `La table s’ouvre quand ${partner} aura aussi activé l’espace.` : 'Activez l’espace pour vous, ci-dessus, pour ouvrir la table.'}</Text>
+              </Card>
+            ) : null}
             {s.bothEnabled ? (
               <>
                 <Card tone={tonight.data?.mutual ? 'night' : 'honey'} style={{ marginTop: spacing(3) }}>

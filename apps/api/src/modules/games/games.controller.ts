@@ -1,8 +1,8 @@
-import { Controller, Delete, Get, HttpCode, Post } from '@nestjs/common';
+import { Controller, Delete, Get, HttpCode, Post, Put } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { z } from 'zod';
-import { createGameSessionSchema, dailyAnswerSchema, listGameSessionsSchema, submitAnswerSchema, uuidSchema, verdictSchema } from '@couple/validation';
-import type { DailyQuestionDto, GameCatalogDto, GameSessionDto } from '@couple/types';
+import { createGameSessionSchema, dailyAnswerSchema, dailyQuestionSettingsSchema, listGameSessionsSchema, submitAnswerSchema, uuidSchema, verdictSchema } from '@couple/validation';
+import type { DailyQuestionDto, DailyQuestionSettingsDto, GameCatalogDto, GameSessionDto } from '@couple/types';
 import { ZodBody, ZodParam, ZodQuery } from '@/common/decorators/zod.decorators';
 import { type AuthUser, type CoupleContext, CurrentCouple, CurrentUser, RequireCouple } from '@/common/decorators/auth.decorators';
 import { PrismaService } from '@/common/prisma/prisma.service';
@@ -34,6 +34,17 @@ export class GamesController {
   @ApiOperation({ summary: 'Question du jour du couple (créée à la première consultation)' })
   async daily(@CurrentUser() user: AuthUser, @CurrentCouple() couple: CoupleContext): Promise<DailyQuestionDto | { daily: null }> {
     return (await this.games.daily({ userId: user.id, couple }, await this.locale(user.id))) ?? { daily: null };
+  }
+
+  @Get('daily/settings')
+  @ApiOperation({ summary: 'Réglage partagé de la question du jour (thèmes, intensité, heure)' })
+  async dailySettings(@CurrentUser() user: AuthUser, @CurrentCouple() couple: CoupleContext): Promise<DailyQuestionSettingsDto> {
+    return this.games.dailySettings({ userId: user.id, couple }, await this.locale(user.id));
+  }
+
+  @Put('daily/settings')
+  async updateDailySettings(@CurrentUser() user: AuthUser, @CurrentCouple() couple: CoupleContext, @ZodBody(dailyQuestionSettingsSchema) body: typeof dailyQuestionSettingsSchema._output): Promise<DailyQuestionSettingsDto> {
+    return this.games.updateDailySettings({ userId: user.id, couple }, body, await this.locale(user.id));
   }
 
   @Post('daily/answer')
