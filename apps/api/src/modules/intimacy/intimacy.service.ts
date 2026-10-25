@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { AppError, ErrorCode } from '@couple/shared';
-import type { DesireItemDto, DesireMatchesDto, IntimacyCategory, IntimacySettingsDto } from '@couple/types';
+import type { CardTableDto, DesireItemDto, DesireMatchesDto, IntimacyCardDto, IntimacyCategory, IntimacySettingsDto, TonightDto } from '@couple/types';
 import type { z } from 'zod';
 import type { updateIntimacySettingsSchema } from '@couple/validation';
 import { PrismaService } from '@/common/prisma/prisma.service';
@@ -10,6 +10,7 @@ import type { CoupleContext } from '@/common/decorators/auth.decorators';
 import { EntitlementsService } from '@/modules/entitlements/entitlements.service';
 import { NotificationsService } from '@/modules/notifications/notifications.service';
 import { RealtimeGateway } from '@/modules/realtime/realtime.gateway';
+import { RedisService } from '@/common/redis/redis.service';
 
 interface Viewer {
   userId: string;
@@ -34,6 +35,7 @@ export class IntimacyService {
     private readonly entitlements: EntitlementsService,
     private readonly notifications: NotificationsService,
     private readonly realtime: RealtimeGateway,
+    private readonly redis: RedisService,
   ) {}
 
   async moduleAvailable(): Promise<boolean> {
@@ -219,6 +221,129 @@ export class IntimacyService {
       await this.notifications.notify({ userId: partnerId, category: 'SYSTEM', type: 'intimacy.reveal_requested', title: 'Une proposition vous attend', body: 'Votre partenaire souhaite découvrir vos points communs.', data: {} });
     }
     return this.matches(viewer);
+  }
+
+  // ------------------------------------------------------------------ « Ce soir ? »
+  private tonightKey(coupleId: string, userId: string) {
+    return `en:tonight:${coupleId}:${userId}`;
+  }
+
+  /** Secondes jusqu'au prochain 05:00 dans le fuseau de l'utilisateur (le signal ne survit pas à la nuit). */
+  private secondsUntilMorning(timezone: string): number {
+    const now = new Date();
+    const parts = new Intl.DateTimeFormat('en-US', { timeZone: timezone, hour: 'numeric', minute: 'numeric', hourCycle: 'h23' }).formatToParts(now);
+    const h = Number(parts.find((p) => p.type === 'hour')?.value ?? 0);
+    const m = Number(parts.find((p) => p.type === 'minute')?.value ?? 0);
+    const elapsed = h * 3600 + m * 60;
+    const target = 5 * 3600;
+    const remaining = elapsed < target ? target - elapsed : 24 * 3600 - elapsed + target;
+    return Math.max(60, remaining);
+  }
+
+  /**
+   * Signal discret « Ce soir ? » : chacun l'allume pour soi. Le partenaire n'apprend rien tant qu'il n'a pas
+   * allumé le sien ; quand les deux sont allumés, les deux le voient (et reçoivent une notification sans détail).
+   */
+  async tonight(viewer: Viewer): Promise<TonightDto> {
+    await this.requireBothEnabled(viewer);
+    const key = this.tonightKey(viewer.couple.coupleId, viewer.userId);
+    const [mine, partner, ttl] = await Promise.all([
+      this.redis.client.get(key),
+      this.redis.client.get(this.tonightKey(viewer.couple.coupleId, viewer.couple.partnerUserId!)),
+      this.redis.client.ttl(key),
+    ]);
+    const on = mine === '1';
+    return { mine: on, mutual: on && partner === '1', expiresAt: on && ttl > 0 ? new Date(Date.now() + ttl * 1000).toISOString() : null };
+  }
+
+  async setTonight(viewer: Viewer, on: boolean): Promise<TonightDto> {
+    await this.requireBothEnabled(viewer);
+    const key = this.tonightKey(viewer.couple.coupleId, viewer.userId);
+    const partnerId = viewer.couple.partnerUserId!;
+    const wasMutual = (await this.redis.client.get(key)) === '1' && (await this.redis.client.get(this.tonightKey(viewer.couple.coupleId, partnerId))) === '1';
+    if (on) {
+      const user = await this.prisma.user.findUniqueOrThrow({ where: { id: viewer.userId }, select: { timezone: true } });
+      await this.redis.client.set(key, '1', 'EX', this.secondsUntilMorning(user.timezone));
+    } else {
+      await this.redis.client.del(key);
+    }
+    const state = await this.tonight(viewer);
+    if (state.mutual && !wasMutual) {
+      // Notification volontairement muette : aucun détail sur écran verrouillé.
+      for (const userId of [viewer.userId, partnerId]) {
+        await this.notifications.notify({ userId, category: 'SUGGESTION', type: 'intimacy.tonight', title: 'Un signal partagé', body: 'Vous avez quelque chose en commun ce soir. À retrouver dans votre espace.', data: {} });
+      }
+    }
+    this.realtime.emitToCouple(viewer.couple.coupleId, 'intimacy.changed', {});
+    return state;
+  }
+
+  // ------------------------------------------------------------------ « Les cartes du soir »
+  private cardKeys(coupleId: string) {
+    return { current: `en:cards:${coupleId}:current`, seen: `en:cards:${coupleId}:seen`, done: `en:cards:${coupleId}:done` };
+  }
+
+  /** Intensité maximale commune (réglages des deux) et offre : décident des niveaux disponibles. */
+  private async cardContext(viewer: Viewer) {
+    const settings = await this.requireBothEnabled(viewer);
+    const partner = await this.prisma.intimacySetting.findUniqueOrThrow({ where: { coupleId_userId: { coupleId: viewer.couple.coupleId, userId: viewer.couple.partnerUserId! } } });
+    const user = await this.prisma.user.findUniqueOrThrow({ where: { id: viewer.userId }, select: { locale: true, timezone: true } });
+    return { maxLevel: Math.min(settings.maxIntensity, partner.maxIntensity), premium: settings.premium, locale: user.locale, timezone: user.timezone };
+  }
+
+  async cardsTable(viewer: Viewer): Promise<CardTableDto> {
+    const ctx = await this.cardContext(viewer);
+    const keys = this.cardKeys(viewer.couple.coupleId);
+    const [currentRaw, seen, doneRaw, ttl] = await Promise.all([this.redis.client.get(keys.current), this.redis.client.smembers(keys.seen), this.redis.client.get(keys.done), this.redis.client.ttl(keys.seen)]);
+    const counts = await this.prisma.intimacyCard.groupBy({ by: ['level', 'tier'], where: { status: 'PUBLISHED', locale: ctx.locale, id: { notIn: seen } }, _count: { _all: true } });
+    const levels = [1, 2, 3, 4].map((level) => {
+      const rows = counts.filter((c) => c.level === level && (ctx.premium || c.tier === 'FREE'));
+      const remaining = rows.reduce((n, c) => n + c._count._all, 0);
+      const anyAtLevel = counts.some((c) => c.level === level);
+      const reason: 'intensity' | 'premium' | null = level > ctx.maxLevel ? 'intensity' : !ctx.premium && anyAtLevel && remaining === 0 ? 'premium' : null;
+      return { level, available: reason === null && remaining > 0, reason, remaining };
+    });
+    const current = currentRaw ? (JSON.parse(currentRaw) as CardTableDto['current']) : null;
+    return { levels, current, doneCount: Number(doneRaw ?? 0), expiresAt: ttl > 0 ? new Date(Date.now() + ttl * 1000).toISOString() : null };
+  }
+
+  async drawCard(viewer: Viewer, level: number): Promise<CardTableDto> {
+    const ctx = await this.cardContext(viewer);
+    if (level > ctx.maxLevel) throw new AppError(ErrorCode.FORBIDDEN, 'Ce niveau dépasse l’intensité acceptée par l’un de vous deux.', 403);
+    const keys = this.cardKeys(viewer.couple.coupleId);
+    const seen = await this.redis.client.smembers(keys.seen);
+    const pool = await this.prisma.intimacyCard.findMany({ where: { status: 'PUBLISHED', locale: ctx.locale, level, id: { notIn: seen }, ...(ctx.premium ? {} : { tier: 'FREE' }) }, select: { id: true, level: true, role: true, text: true, durationSec: true } });
+    if (pool.length === 0) {
+      const locked = !ctx.premium && (await this.prisma.intimacyCard.count({ where: { status: 'PUBLISHED', locale: ctx.locale, level, tier: { not: 'FREE' } } })) > 0;
+      if (locked) throw new AppError(ErrorCode.ENTITLEMENT_REQUIRED, 'Ce niveau est réservé à Premium Couple.', 402, { required: 'premium' });
+      throw new AppError(ErrorCode.CONFLICT, 'Plus de carte à ce niveau ce soir.', 409);
+    }
+    const picked = pool[Math.floor(Math.random() * pool.length)]!;
+    const card: IntimacyCardDto = { id: picked.id, level: picked.level, role: picked.role as IntimacyCardDto['role'], text: picked.text, durationSec: picked.durationSec };
+    const ttl = this.secondsUntilMorning(ctx.timezone);
+    const current = { card, drawnByUserId: viewer.userId, drawnAt: new Date().toISOString() };
+    await this.redis.client.multi().set(keys.current, JSON.stringify(current), 'EX', ttl).sadd(keys.seen, picked.id).expire(keys.seen, ttl).expire(keys.done, ttl).exec();
+    // Signal muet : le partenaire rafraîchit sa table (le contenu transite par l'API, jamais par le socket).
+    this.realtime.emitToCouple(viewer.couple.coupleId, 'intimacy.changed', {});
+    return this.cardsTable(viewer);
+  }
+
+  async cardDone(viewer: Viewer): Promise<CardTableDto> {
+    const ctx = await this.cardContext(viewer);
+    const keys = this.cardKeys(viewer.couple.coupleId);
+    if (await this.redis.client.get(keys.current)) {
+      await this.redis.client.multi().del(keys.current).incr(keys.done).expire(keys.done, this.secondsUntilMorning(ctx.timezone)).exec();
+    }
+    this.realtime.emitToCouple(viewer.couple.coupleId, 'intimacy.changed', {});
+    return this.cardsTable(viewer);
+  }
+
+  async resetCards(viewer: Viewer): Promise<CardTableDto> {
+    await this.requireBothEnabled(viewer);
+    const keys = this.cardKeys(viewer.couple.coupleId);
+    await this.redis.client.del(keys.current, keys.seen, keys.done);
+    this.realtime.emitToCouple(viewer.couple.coupleId, 'intimacy.changed', {});
+    return this.cardsTable(viewer);
   }
 
   private async requireBothEnabled(viewer: Viewer): Promise<IntimacySettingsDto> {

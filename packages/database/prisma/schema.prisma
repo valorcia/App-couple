@@ -1033,6 +1033,24 @@ model IntimacySetting {
   @@unique([coupleId, userId])
 }
 
+/// Cartes du jeu « Les cartes du soir » (espace Intimité) : un défi/geste par carte, niveaux 1 (douceur) à 4 (feu).
+model IntimacyCard {
+  id          String        @id @default(uuid(7)) @db.Uuid
+  locale      String        @default("fr")
+  level       Int           @default(1)
+  /// Qui réalise la carte : DRAWER (celui qui tire), PARTNER (l'autre), BOTH.
+  role        String        @default("DRAWER")
+  text        String
+  durationSec Int?
+  tier        ContentTier   @default(PREMIUM)
+  status      ContentStatus @default(PUBLISHED)
+  tags        String[]      @default([])
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  @@index([locale, level, status])
+}
+
 model DesireItem {
   id        String        @id @default(uuid(7)) @db.Uuid
   packId    String?       @db.Uuid

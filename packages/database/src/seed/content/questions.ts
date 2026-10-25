@@ -128,5 +128,9 @@ export const questions: SeedQuestion[] = [
   ...confession('love', 1, ['Quelle est la première chose que tu as remarquée chez moi ?', 'Quel est ton souvenir le plus drôle de nos débuts ?']),
   ...confession('love', 2, ['Y a-t-il quelque chose que tu aimerais que je fasse plus souvent ?', 'Quand te sens-tu le plus aimé·e ?']),
   ...confession('future', 3, ['Quelle peur as-tu pour nous que tu n’as jamais dite ?', 'Qu’est-ce que tu aimerais que je comprenne mieux de toi ?'], 'PREMIUM'),
-  ...confession('intimacy', 4, ['Qu’est-ce qui te fait te sentir désiré·e ?', 'Y a-t-il un moment intime que tu aimerais revivre ?'], 'PREMIUM'),
+  ...confession('intimacy', 3, ['Qu’est-ce qui te fait te sentir désiré·e ?', 'Y a-t-il un moment intime que tu aimerais revivre ?', 'Quel moment de nos nuits te revient le plus souvent en tête ?', 'Où as-tu envie que je t’embrasse, là, maintenant ?'], 'PREMIUM'),
+  ...confession('intimacy', 4, ['Décris-moi le fantasme que tu n’as jamais osé me dire.', 'Qu’est-ce que tu aimerais que je te fasse ce soir, précisément ?', 'Quel endroit insolite te tente pour faire l’amour ?', 'Qu’est-ce qui t’excite le plus chez moi, sans filtre ?', 'Qu’est-ce que j’ai fait une fois et que tu rêves que je refasse ?'], 'PREMIUM'),
+  // ---------------- Réponses secrètes « Feu » (catégorie intimité, Premium)
+  ...secret('intimacy', ['Le mot que tu aimerais que je te murmure à l’oreille ce soir ?', 'La tenue dans laquelle tu me préfères… ou sans ?', 'Le geste qui te fait chavirer à tous les coups ?'], 'PREMIUM', 3),
+  ...secret('intimacy', ['Si on avait toute la nuit et aucune limite, on commencerait par quoi ?', 'Le fantasme que tu réaliserais demain si je disais oui ?'], 'PREMIUM', 4),
 ];

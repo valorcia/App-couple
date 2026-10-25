@@ -2,10 +2,11 @@
 import * as React from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useTranslations } from 'next-intl';
-import { Eye, Lock, ShieldCheck, Trash2 } from 'lucide-react';
-import type { DesireChoice, DesireItemDto, DesireMatchesDto, IntimacyCategory, IntimacySettingsDto, MeDto } from '@couple/types';
+import Link from 'next/link';
+import { Eye, Flame, Lock, ShieldCheck, Spade, Trash2 } from 'lucide-react';
+import type { DesireChoice, DesireItemDto, DesireMatchesDto, IntimacyCategory, IntimacySettingsDto, MeDto, TonightDto } from '@couple/types';
 import { INTIMACY_CATEGORIES } from '@couple/validation';
-import { Alert, Badge, Button, Card, CardContent, CardDescription, CardHeader, CardTitle, Chip, Dialog, DialogClose, DialogContent, DialogTrigger, EmptyState, Skeleton, Switch, cn } from '@couple/ui';
+import { Alert, Badge, Button, Card, CardContent, CardDescription, CardHeader, CardTitle, Chip, Dialog, DialogClose, DialogContent, DialogTrigger, Doodle, EmptyState, Glow, Skeleton, Switch, cn } from '@couple/ui';
 import { api } from '@/lib/api';
 import { useAuth } from '@/lib/auth-provider';
 import { useApiErrorMessage } from '@/lib/use-api-error';
@@ -39,6 +40,8 @@ export function IntimacyPage() {
       ) : (
         <>
           <SettingsCard s={s} partner={partner} />
+          {s.bothEnabled ? <Tonight partner={partner} /> : null}
+          {s.bothEnabled ? <CardsTeaser /> : null}
           {s.bothEnabled ? <DoubleSecret partner={partner} premium={s.premium} /> : null}
         </>
       )}
@@ -77,7 +80,8 @@ function SettingsCard({ s, partner }: { s: IntimacySettingsDto; partner: string 
         </div>
         <div className="space-y-2">
           <p className="text-sm font-medium">{t('settings.intensity')}</p>
-          <div className="flex flex-wrap gap-2">{[1, 2, 3, 4].map((l) => <Chip key={l} active={intensity === l} onClick={() => setIntensity(l)}>{t(`intensity.${l}`)}</Chip>)}</div>
+          <div className="flex flex-wrap gap-2">{[1, 2, 3, 4].map((l) => <Chip key={l} active={intensity === l} onClick={() => setIntensity(l)}>{l === 4 ? <Flame className="h-3.5 w-3.5" aria-hidden /> : null}{t(`intensity.${l}`)}</Chip>)}</div>
+          <p className="text-xs text-fg-muted">{t('intensityHint')}</p>
         </div>
         {s.enabled ? <Button variant="outline" size="sm" onClick={() => save.mutate(true)} loading={save.isPending}>{t('settings.save')}</Button> : null}
         <Alert tone={s.partnerEnabled ? 'success' : 'info'}>{s.partnerEnabled ? t('settings.partnerEnabled', { partner }) : t('settings.partnerWaiting', { partner })}</Alert>
@@ -120,10 +124,12 @@ function DoubleSecret({ partner, premium }: { partner: string; premium: boolean 
 
   return (
     <>
-      <Card tone="plum" className="p-6">
-        <div className="flex items-start justify-between gap-4">
+      <Card tone="night" className="overflow-hidden p-6 sm:p-8">
+        <Glow tone="primary" size={300} className="-right-24 -top-24" />
+        <div className="relative flex items-start justify-between gap-4">
           <div>
-            <h2 className="flex items-center gap-2 text-2xl"><Lock className="h-5 w-5" aria-hidden />{t('matches.title')}</h2>
+            <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-primary">{t('matches.eyebrow')}</p>
+            <h2 className="mt-1 flex items-center gap-2 font-display-soft text-3xl"><Lock className="h-5 w-5" aria-hidden />{t('matches.title')}</h2>
             <p className="mt-1 text-sm opacity-80">{t('matches.privacy')}</p>
           </div>
         </div>
@@ -142,9 +148,9 @@ function DoubleSecret({ partner, premium }: { partner: string; premium: boolean 
                 </div>
               ) : null}
               {m.revealed.length > 0 ? (
-                <div className="rounded-lg bg-white/10 p-4" data-testid="revealed-list">
+                <div className="animate-curtain rounded-lg bg-white/10 p-4" data-testid="revealed-list">
                   <p className="text-xs uppercase tracking-wider opacity-70">{t('matches.revealed')}</p>
-                  <ul className="mt-2 space-y-1">{m.revealed.map((r) => <li key={r.id} className="font-display text-lg">{r.text}</li>)}</ul>
+                  <ul className="mt-2 space-y-2">{m.revealed.map((r) => <li key={r.id} className="flex items-start gap-2 font-display-italic text-xl leading-snug">{r.intensity >= 3 ? <Flame className="mt-1 h-4 w-4 shrink-0 text-primary" aria-hidden /> : <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-primary" aria-hidden />}{r.text}</li>)}</ul>
                 </div>
               ) : null}
             </>
@@ -159,11 +165,11 @@ function DoubleSecret({ partner, premium }: { partner: string; premium: boolean 
               <h3 className="text-lg">{t(`categories.${category}`)}</h3>
               <ul className="space-y-2">
                 {list.map((item) => (
-                  <li key={item.id} className={cn('flex flex-col gap-3 rounded-lg border border-border bg-bg-elevated p-4 sm:flex-row sm:items-center sm:justify-between', item.locked && 'opacity-70')}>
+                  <li key={item.id} className={cn('flex flex-col gap-3 rounded-lg border border-border bg-bg-elevated p-4 shadow-card sm:flex-row sm:items-center sm:justify-between', item.intensity >= 4 && 'border-primary/30 bg-[linear-gradient(135deg,var(--bg-elevated),var(--bg-blush))]', item.locked && 'opacity-70')}>
                     <div className="flex items-center gap-2">
                       {item.locked ? <Lock className="h-4 w-4 text-fg-muted" aria-hidden /> : null}
                       <span>{item.text}</span>
-                      <Badge tone="neutral" className="ml-1">{t(`intensity.${item.intensity}`)}</Badge>
+                      <Badge tone={item.intensity >= 4 ? 'coral' : item.intensity === 3 ? 'honey' : 'neutral'} className="ml-1">{item.intensity >= 4 ? <Flame className="h-3 w-3" aria-hidden /> : null}{t(`intensity.${item.intensity}`)}</Badge>
                       {item.locked && !premium ? <Badge tone="champagne">{t('locked')}</Badge> : null}
                     </div>
                     <div className="flex gap-2" role="radiogroup" aria-label={item.text}>
@@ -189,5 +195,54 @@ function DoubleSecret({ partner, premium }: { partner: string; premium: boolean 
         </div>
       )}
     </>
+  );
+}
+
+function Tonight({ partner }: { partner: string }) {
+  const t = useTranslations('intimacy.tonight');
+  const qc = useQueryClient();
+  const toMessage = useApiErrorMessage();
+  const [error, setError] = React.useState<string | null>(null);
+  const state = useQuery({ queryKey: ['intimacy', 'tonight'], queryFn: () => api.get<TonightDto>('/intimacy/tonight') });
+  const set = useMutation({ mutationFn: (on: boolean) => api.put<TonightDto>('/intimacy/tonight', { on }), onSuccess: (d) => { qc.setQueryData(['intimacy', 'tonight'], d); qc.invalidateQueries({ queryKey: ['notifications'] }); }, onError: (e) => setError(toMessage(e)) });
+  const d = state.data;
+  const mutual = !!d?.mutual;
+  return (
+    <Card tone={mutual ? 'night' : 'warm'} className={cn('overflow-hidden p-6 sm:p-8 transition-colors', mutual && 'animate-bloom')} data-testid="tonight-card">
+      <Glow tone={mutual ? 'primary' : 'honey'} size={280} className="-right-20 -top-24" />
+      <Doodle name="candle" size={72} className={cn('absolute right-6 top-6 hidden sm:block', mutual ? 'text-primary' : 'text-honey/80')} />
+      <div className="relative max-w-xl">
+        <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-primary">{t('eyebrow')}</p>
+        <h2 className={cn('mt-1 flex items-center gap-2 font-display-soft text-3xl', !mutual && 'text-secondary')}><Flame className={cn('h-6 w-6', mutual ? 'text-primary' : 'text-fg-subtle')} aria-hidden />{t('title')}</h2>
+        <p className={cn('mt-2 text-sm', mutual ? 'opacity-80' : 'text-fg-muted')}>{t('hint', { partner })}</p>
+        {error ? <Alert tone="danger" className="mt-3">{error}</Alert> : null}
+        <div className="mt-5 flex flex-wrap items-center gap-4">
+          <Switch checked={!!d?.mine} onCheckedChange={(v) => set.mutate(v)} aria-label={t('toggle')} disabled={state.isPending || set.isPending} />
+          <p className={cn('font-medium', mutual && 'font-display-italic text-xl')}>{state.isPending ? '…' : mutual ? t('mutual') : d?.mine ? t('waiting', { partner }) : t('off')}</p>
+        </div>
+        {d?.mine ? <p className={cn('mt-2 text-xs', mutual ? 'opacity-70' : 'text-fg-subtle')}>{t('expires')}</p> : null}
+      </div>
+    </Card>
+  );
+}
+
+function CardsTeaser() {
+  const t = useTranslations('intimacy.cards');
+  return (
+    <Link href="/intimite/cartes" className="card-table hover-lift relative block overflow-hidden rounded-lg p-6 sm:p-8" data-testid="cards-teaser">
+      <div className="relative flex items-center gap-5">
+        <div className="relative hidden h-24 w-16 shrink-0 sm:block" aria-hidden>
+          <div className="card-back-pattern absolute inset-0 -rotate-6 rounded-[10px] opacity-70" />
+          <div className="card-back-pattern absolute inset-0 rotate-3 rounded-[10px]" />
+        </div>
+        <div className="min-w-0 flex-1">
+          <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-primary">{t('eyebrow')}</p>
+          <h2 className="mt-1 font-display-soft text-3xl text-night-fg">{t('title')}</h2>
+          <p className="mt-1 text-sm text-night-fg/75">{t('subtitle')}</p>
+        </div>
+        <span className="wax-seal shrink-0"><Spade className="h-5 w-5" aria-hidden /></span>
+      </div>
+      <p className="relative mt-4 text-sm font-medium text-primary">{t('open')} →</p>
+    </Link>
   );
 }

@@ -69,7 +69,7 @@ export function ChallengesPage() {
 export function ChallengeCard({ c, onOpen, compact = false }: { c: ChallengeDto; onOpen: () => void; compact?: boolean }) {
   const t = useTranslations('challenges');
   return (
-    <button type="button" onClick={onOpen} className={cn('flex h-full flex-col gap-3 rounded-lg border border-border bg-bg-elevated p-5 text-left transition-colors hover:bg-bg-muted', c.locked && 'opacity-75')}>
+    <button type="button" onClick={onOpen} className={cn('hover-lift flex h-full w-full flex-col gap-3 rounded-lg border border-border bg-bg-elevated p-5 text-left', c.locked && 'opacity-75')}>
       <div className="flex items-start justify-between gap-2">
         <h3 className="text-lg leading-snug">{c.title}</h3>
         {c.progress ? <Badge tone={c.progress.status === 'COMPLETED' ? 'success' : c.progress.status === 'SKIPPED' ? 'neutral' : 'coral'}>{t(`status.${c.progress.status}`)}</Badge> : c.locked ? <Badge tone="champagne"><Lock className="h-3 w-3" />{t('actions.locked')}</Badge> : null}

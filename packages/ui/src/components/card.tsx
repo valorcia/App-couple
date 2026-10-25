@@ -1,19 +1,23 @@
 import * as React from 'react';
 import { cn } from '../cn';
 
-export const Card = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement> & { tone?: 'default' | 'blush' | 'plum' | 'champagne' }>(
-  ({ className, tone = 'default', ...props }, ref) => (
-    <div
-      ref={ref}
-      className={cn(
-        'rounded-lg border border-border bg-bg-elevated shadow-card',
-        tone === 'blush' && 'bg-bg-blush border-transparent',
-        tone === 'plum' && 'bg-plum text-ivory border-transparent',
-        tone === 'champagne' && 'bg-accent text-accent-fg border-transparent',
-        className,
-      )}
-      {...props}
-    />
+export type CardTone = 'default' | 'blush' | 'plum' | 'champagne' | 'honey' | 'night' | 'sage' | 'warm';
+
+const TONES: Record<CardTone, string> = {
+  default: 'border border-border bg-bg-elevated shadow-card',
+  warm: 'surface-warm border border-border/70 shadow-card',
+  blush: 'bg-bg-blush border border-transparent',
+  champagne: 'bg-accent text-accent-fg border border-transparent',
+  honey: 'surface-honey border border-transparent',
+  sage: 'bg-bg-sage border border-transparent',
+  plum: 'bg-plum text-ivory border border-transparent shadow-soft',
+  night: 'surface-night border border-white/5 shadow-soft',
+};
+
+/** Carte « coussin » : coins généreux, ombre colorée ; `interactive` ajoute l'élévation au survol. */
+export const Card = React.forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement> & { tone?: CardTone; interactive?: boolean }>(
+  ({ className, tone = 'default', interactive = false, ...props }, ref) => (
+    <div ref={ref} className={cn('relative rounded-lg', TONES[tone], interactive && 'hover-lift cursor-pointer', className)} {...props} />
   ),
 );
 Card.displayName = 'Card';

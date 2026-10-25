@@ -16,6 +16,10 @@ describe('Intimité & Double Secret', () => {
     ] as const) {
       items[key] = (await ctx.prisma.desireItem.create({ data: { category, intensity, tier, text: `Envie ${key}` } })).id;
     }
+    await ctx.prisma.intimacyCard.deleteMany();
+    for (const [level, tier, text] of [[1, 'FREE', 'Carte douce 1'], [1, 'FREE', 'Carte douce 2'], [2, 'PREMIUM', 'Carte complice'], [4, 'PREMIUM', 'Carte feu']] as const) {
+      await ctx.prisma.intimacyCard.create({ data: { level, tier, text, role: 'DRAWER' } });
+    }
     couple = await createCouple(ctx);
   });
   afterAll(async () => ctx.close());
@@ -91,6 +95,60 @@ describe('Intimité & Double Secret', () => {
     expect((await ctx.http().get('/intimacy/matches').set(auth(couple.b.accessToken))).body).toMatchObject({ mutualCount: 0, revealed: [] });
     await respond(couple.a.accessToken, items.breakfast!, 'YES');
     expect((await ctx.http().get('/intimacy/matches').set(auth(couple.b.accessToken))).body.revealed).toHaveLength(1);
+  });
+
+  it('signal « Ce soir ? » : rien n\'est visible tant que les deux ne l\'ont pas allumé', async () => {
+    const onA = await ctx.http().put('/intimacy/tonight').set(auth(couple.a.accessToken)).send({ on: true });
+    expect(onA.status).toBe(200);
+    expect(onA.body).toMatchObject({ mine: true, mutual: false });
+    expect(onA.body.expiresAt).toBeTruthy();
+    // B ne voit rien du signal de A : seulement son propre état (éteint) et « pas mutuel ».
+    const seenB = await ctx.http().get('/intimacy/tonight').set(auth(couple.b.accessToken));
+    expect(seenB.body).toEqual({ mine: false, mutual: false, expiresAt: null });
+    const onB = await ctx.http().put('/intimacy/tonight').set(auth(couple.b.accessToken)).send({ on: true });
+    expect(onB.body).toMatchObject({ mine: true, mutual: true });
+    expect((await ctx.http().get('/intimacy/tonight').set(auth(couple.a.accessToken))).body.mutual).toBe(true);
+    const notif = await ctx.http().get('/notifications').set(auth(couple.a.accessToken));
+    const n = notif.body.items.find((x: { type: string }) => x.type === 'intimacy.tonight');
+    expect(n).toBeTruthy();
+    expect(JSON.stringify(n)).not.toMatch(/sexe|envie/i);
+    // A éteint : plus rien de mutuel, et B ne sait pas pourquoi.
+    expect((await ctx.http().put('/intimacy/tonight').set(auth(couple.a.accessToken)).send({ on: false })).body).toMatchObject({ mine: false, mutual: false });
+    expect((await ctx.http().get('/intimacy/tonight').set(auth(couple.b.accessToken))).body).toMatchObject({ mine: true, mutual: false });
+  });
+
+  it('cartes du soir : table partagée, niveaux bornés par l\'intensité commune, aucune répétition', async () => {
+    const table = await ctx.http().get('/intimacy/cards').set(auth(couple.a.accessToken));
+    expect(table.status).toBe(200);
+    expect(table.body.current).toBeNull();
+    // Intensité commune 2 (B) ; pas de Premium : niveau 1 jouable (gratuit), niveau 2 réservé, 3 et 4 hors intensité.
+    expect(table.body.levels).toEqual([
+      { level: 1, available: true, reason: null, remaining: 2 },
+      { level: 2, available: false, reason: 'premium', remaining: 0 },
+      { level: 3, available: false, reason: 'intensity', remaining: 0 },
+      { level: 4, available: false, reason: 'intensity', remaining: 0 },
+    ]);
+    expect((await ctx.http().post('/intimacy/cards/draw').set(auth(couple.a.accessToken)).send({ level: 4 })).status).toBe(403);
+    expect((await ctx.http().post('/intimacy/cards/draw').set(auth(couple.a.accessToken)).send({ level: 2 })).status).toBe(402);
+
+    const first = await ctx.http().post('/intimacy/cards/draw').set(auth(couple.a.accessToken)).send({ level: 1 });
+    expect(first.status).toBe(200);
+    expect(first.body.current).toMatchObject({ drawnByUserId: couple.a.userId, card: { level: 1, role: 'DRAWER' } });
+    expect(first.body.expiresAt).toBeTruthy();
+    // La même carte est sur la table de B.
+    const seenB = await ctx.http().get('/intimacy/cards').set(auth(couple.b.accessToken));
+    expect(seenB.body.current.card.id).toBe(first.body.current.card.id);
+
+    const second = await ctx.http().post('/intimacy/cards/draw').set(auth(couple.b.accessToken)).send({ level: 1 });
+    expect(second.body.current.card.id).not.toBe(first.body.current.card.id);
+    expect(second.body.levels[0].remaining).toBe(0);
+    expect((await ctx.http().post('/intimacy/cards/draw').set(auth(couple.a.accessToken)).send({ level: 1 })).status).toBe(409);
+
+    const done = await ctx.http().post('/intimacy/cards/done').set(auth(couple.a.accessToken));
+    expect(done.body).toMatchObject({ current: null, doneCount: 1 });
+    const reset = await ctx.http().delete('/intimacy/cards').set(auth(couple.b.accessToken));
+    expect(reset.body).toMatchObject({ current: null, doneCount: 0 });
+    expect(reset.body.levels[0].remaining).toBe(2);
   });
 
   it('permet de retirer son consentement et de supprimer ses réponses', async () => {

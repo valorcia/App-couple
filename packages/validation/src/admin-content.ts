@@ -3,7 +3,7 @@ import { paginationSchema } from './common';
 
 export const contentStatusSchema = z.enum(['DRAFT', 'PUBLISHED', 'ARCHIVED']);
 export const contentTierSchema = z.enum(['FREE', 'PREMIUM', 'PACK']);
-export const contentTypeSchema = z.enum(['questions', 'challenges', 'desires', 'activities', 'categories', 'packs']);
+export const contentTypeSchema = z.enum(['questions', 'challenges', 'desires', 'cards', 'activities', 'categories', 'packs']);
 export type ContentType = z.infer<typeof contentTypeSchema>;
 
 export const adminContentListSchema = paginationSchema.extend({
@@ -53,6 +53,17 @@ export const adminDesireSchema = z.object({
   tier: contentTierSchema.default('FREE'),
   status: contentStatusSchema.default('DRAFT'),
   text: z.string().trim().min(3).max(300),
+});
+
+export const adminCardSchema = z.object({
+  locale: z.string().min(2).max(5).default('fr'),
+  level: z.number().int().min(1).max(4).default(1),
+  role: z.enum(['DRAWER', 'PARTNER', 'BOTH']).default('DRAWER'),
+  text: z.string().trim().min(3).max(300),
+  durationSec: z.number().int().min(10).max(3600).nullable().optional(),
+  tier: contentTierSchema.default('PREMIUM'),
+  status: contentStatusSchema.default('DRAFT'),
+  tags: z.array(z.string().trim().min(1).max(30)).max(10).default([]),
 });
 
 export const adminActivitySchema = z.object({

@@ -6,6 +6,8 @@ const ADMIN_PORT = 3300;
 
 export default defineConfig({
   testDir: './e2e',
+  // Les captures de design ont leur propre configuration (playwright.design.config.ts).
+  testIgnore: ['**/design/**'],
   // Par défaut, les e2e tournent sur un build de production (déterministe). E2E_DEV=1 utilise le serveur de dev.
   timeout: 180_000,
   expect: { timeout: 30_000 },

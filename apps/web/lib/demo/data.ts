@@ -22,7 +22,7 @@ export interface DemoState {
   sessions: DemoSession[];
   daily: { text: string; myAnswer: string | null; partnerAnswer: string; revealedAt: string | null };
   challengeProgress: Record<string, ChallengeDto['progress']>;
-  intimacy: { enabled: boolean; enabledCategories: DesireItemDto['category'][]; maxIntensity: number; myChoices: Record<string, 'YES' | 'NO' | 'MAYBE'>; iRequested: boolean; revealedAt: string | null };
+  intimacy: { enabled: boolean; enabledCategories: DesireItemDto['category'][]; maxIntensity: number; myChoices: Record<string, 'YES' | 'NO' | 'MAYBE'>; iRequested: boolean; revealedAt: string | null; tonightMine: boolean; tonightPartner: boolean; cardsSeen: string[]; cardsDone: number; currentCard: { id: string; drawnByUserId: string; drawnAt: string } | null };
   notifications: NotificationDto[];
   notificationPrefs: { category: string; push: boolean; inApp: boolean; email: boolean; maxPerDay: number | null }[];
   quiet: { start: string | null; end: string | null };
@@ -55,7 +55,8 @@ export const CATEGORIES = [
   { code: 'humor', name: 'Humour', description: 'Pour rire de vous, ensemble.', icon: 'laugh', gameTypes: ['SECRET_ANSWERS', 'WHICH_OF_US', 'DILEMMA'] },
   { code: 'daily', name: 'Quotidien', description: 'Les petites choses de tous les jours.', icon: 'coffee', gameTypes: ['SECRET_ANSWERS', 'WHO_KNOWS_BEST', 'WHICH_OF_US'] },
   { code: 'travel', name: 'Vacances', description: 'Envies d’ailleurs.', icon: 'plane', gameTypes: ['SECRET_ANSWERS', 'DILEMMA', 'WHO_KNOWS_BEST'] },
-  { code: 'future', name: 'Avenir', description: 'Ce que vous construisez.', icon: 'compass', gameTypes: ['SECRET_ANSWERS', 'DILEMMA', 'CONFESSIONS'], locked: true },
+  { code: 'future', name: 'Avenir', description: 'Ce que vous construisez.', icon: 'compass', gameTypes: ['SECRET_ANSWERS', 'DILEMMA', 'CONFESSIONS'] },
+  { code: 'intimacy', name: 'Intimité', description: 'Réservé à l’espace Intimité.', icon: 'lock', gameTypes: ['SECRET_ANSWERS', 'CONFESSIONS'] },
 ] as const;
 
 export const QUESTIONS: Record<GameType, { category: string; text: string; options?: string[]; level?: number }[]> = {
@@ -89,6 +90,9 @@ export const QUESTIONS: Record<GameType, { category: string; text: string; optio
     { category: 'love', text: 'Ce que j’admire le plus chez toi, honnêtement.', level: 1 },
     { category: 'future', text: 'Une chose que j’aimerais qu’on ose ensemble cette année.', level: 2 },
     { category: 'love', text: 'Un moment où j’ai eu peur de te perdre.', level: 3 },
+    { category: 'intimacy', text: 'Où as-tu envie que je t’embrasse, là, maintenant ?', level: 3 },
+    { category: 'intimacy', text: 'Décris-moi le fantasme que tu n’as jamais osé me dire.', level: 4 },
+    { category: 'intimacy', text: 'Qu’est-ce que tu aimerais que je te fasse ce soir, précisément ?', level: 4 },
   ],
   CHALLENGE: [],
   MEMORY_QUIZ: [],
@@ -103,7 +107,10 @@ export const CHALLENGES: ChallengeDto[] = [
   { id: 'ch-voyage-sans-partir', title: 'Voyage sans partir', description: 'Choisissez un pays au hasard et vivez une soirée à ses couleurs.', instructions: ['Tirez un pays au sort.', 'Un plat, une musique, un mot appris.', 'Prenez une photo souvenir.'], durationMinutes: 120, difficulty: 'MEDIUM', budget: 'LOW', materials: [], intimate: false, category: { code: 'travel', name: 'Vacances' }, tags: ['aventure', 'cuisine'], locked: false, progress: null },
   { id: 'ch-marche', title: 'Marche sans destination', description: 'Partez marcher 30 minutes : à chaque carrefour, l’un de vous choisit la direction.', instructions: ['Téléphones en poche.', 'Alternez le choix à chaque intersection.', 'Terminez par un café ou un banc.'], durationMinutes: 40, difficulty: 'EASY', budget: 'FREE', materials: [], intimate: false, category: { code: 'daily', name: 'Quotidien' }, tags: ['plein air'], locked: false, progress: null },
   { id: 'ch-karaoke', title: 'Le karaoké de salon', description: 'Chacun choisit une chanson que l’autre devra interpréter avec conviction.', instructions: ['Choisissez une chanson pour l’autre.', 'Interprétation complète obligatoire.', 'Applaudissements obligatoires aussi.'], durationMinutes: 30, difficulty: 'EASY', budget: 'FREE', materials: [], intimate: false, category: { code: 'humor', name: 'Humour' }, tags: ['rire', 'musique'], locked: false, progress: null },
-  { id: 'ch-carte-envies', title: 'La carte de nos envies', description: 'Dessinez ensemble une carte des endroits où vous voulez aller et des projets que vous voulez vivre.', instructions: ['Grande feuille ou tableau.', 'Chacun place cinq envies.', 'Entourez celles que vous partagez.'], durationMinutes: 60, difficulty: 'MEDIUM', budget: 'FREE', materials: ['papier', 'feutres'], intimate: false, category: { code: 'future', name: 'Avenir' }, tags: ['projets'], locked: true, progress: null },
+  { id: 'ch-carte-envies', title: 'La carte de nos envies', description: 'Dessinez ensemble une carte des endroits où vous voulez aller et des projets que vous voulez vivre.', instructions: ['Grande feuille ou tableau.', 'Chacun place cinq envies.', 'Entourez celles que vous partagez.'], durationMinutes: 60, difficulty: 'MEDIUM', budget: 'FREE', materials: ['papier', 'feutres'], intimate: false, category: { code: 'future', name: 'Avenir' }, tags: ['projets'], locked: false, progress: null },
+  { id: 'ch-compte-a-rebours', title: 'Le compte à rebours', description: 'Trente minutes de préliminaires, montre en main. Interdiction d’aller plus loin avant la sonnerie.', instructions: ['Réglez un minuteur sur 30 minutes.', 'Tout est permis, sauf conclure.', 'À la sonnerie, vous faites ce que vous voulez.'], durationMinutes: 45, difficulty: 'MEDIUM', budget: 'FREE', materials: [], intimate: true, category: { code: 'intimacy', name: 'Intimité' }, tags: ['feu'], locked: false, progress: null },
+  { id: 'ch-des-du-soir', title: 'Les dés du soir', description: 'Deux dés : l’un donne le geste, l’autre la zone du corps. Dix lancers, pas un de moins.', instructions: ['Écrivez six gestes et six zones sur deux listes.', 'Lancez à tour de rôle.', 'Chaque lancer dure au moins une minute.'], durationMinutes: 40, difficulty: 'EASY', budget: 'FREE', materials: ['deux dés'], intimate: true, category: { code: 'intimacy', name: 'Intimité' }, tags: ['feu', 'jeu'], locked: false, progress: null },
+  { id: 'ch-message-qui-monte', title: 'Le message qui monte', description: 'Toute la journée, un message de plus en plus explicite. Interdiction de se toucher avant le soir.', instructions: ['Premier message à 9 h, le dernier à 21 h.', 'Chaque message va un cran plus loin que le précédent.', 'Le soir, vous tenez vos promesses.'], durationMinutes: 720, difficulty: 'HARD', budget: 'FREE', materials: [], intimate: true, category: { code: 'intimacy', name: 'Intimité' }, tags: ['feu'], locked: false, progress: null },
   { id: 'ch-massage', title: 'Le massage de cinq minutes', description: 'Cinq minutes chacun, sans parler, pour relâcher la journée.', instructions: ['Minuteur réglé sur cinq minutes.', 'Épaules, nuque, mains.', 'Échangez les rôles.'], durationMinutes: 15, difficulty: 'EASY', budget: 'FREE', materials: [], intimate: false, category: { code: 'love', name: 'Amour' }, tags: ['tendresse', 'détente'], locked: false, progress: null },
 ];
 
@@ -115,11 +122,22 @@ export const DESIRES: Omit<DesireItemDto, 'myChoice'>[] = [
   { id: 'ds-5', category: 'seduction', intensity: 2, text: 'Un rendez-vous où l’on fait semblant de se rencontrer pour la première fois', locked: false },
   { id: 'ds-6', category: 'seduction', intensity: 2, text: 'Recevoir un message séduisant en pleine journée', locked: false },
   { id: 'ds-7', category: 'complicity', intensity: 2, text: 'Un massage complet à la bougie', locked: false },
-  { id: 'ds-8', category: 'complicity', intensity: 2, text: 'Une nuit dans un hôtel de notre ville', locked: true },
-  { id: 'ds-9', category: 'desires', intensity: 3, text: 'Une soirée entière consacrée à l’autre', locked: true },
+  { id: 'ds-8', category: 'complicity', intensity: 2, text: 'Une nuit dans un hôtel de notre ville', locked: false },
+  { id: 'ds-9', category: 'desires', intensity: 3, text: 'Une soirée entière consacrée au plaisir de l’autre', locked: false },
+  { id: 'ds-10', category: 'desires', intensity: 3, text: 'Se déshabiller mutuellement, très lentement, sans se presser', locked: false },
+  { id: 'ds-11', category: 'desires', intensity: 3, text: 'Un massage érotique à l’huile chaude, de la nuque aux pieds, sans zone interdite', locked: false },
+  { id: 'ds-12', category: 'desires', intensity: 3, text: 'Une douche à deux dont on ne sort pas tout de suite', locked: false },
+  { id: 'ds-13', category: 'fantasies', intensity: 4, text: 'Jouer deux inconnus qui se séduisent dans un bar… et finir la nuit ensemble', locked: false },
+  { id: 'ds-14', category: 'fantasies', intensity: 4, text: 'Les yeux bandés : l’un guide, l’autre se laisse faire', locked: false },
+  { id: 'ds-15', category: 'fantasies', intensity: 4, text: 'Choisir un sextoy ensemble et le découvrir ensemble', locked: false },
+  { id: 'ds-16', category: 'fantasies', intensity: 4, text: 'Mains attachées avec un foulard, l’autre décide de tout', locked: false },
+  { id: 'ds-17', category: 'fantasies', intensity: 4, text: 'Une tenue ou de la lingerie choisie par l’autre, portée rien que pour lui ou elle', locked: false },
+  { id: 'ds-18', category: 'experiences', intensity: 4, text: 'Une nuit d’hôtel avec jacuzzi privatif, sans rien prévoir d’autre', locked: false },
+  { id: 'ds-19', category: 'experiences', intensity: 4, text: 'Faire l’amour en pleine nature, à l’abri des regards', locked: false },
+  { id: 'ds-20', category: 'experiences', intensity: 4, text: 'Un week-end entier sans vêtements à la maison', locked: false },
 ];
 /** Choix du partenaire : connus de la simulation seulement, jamais renvoyés tels quels (comme en réel). */
-export const PARTNER_DESIRE_YES = new Set(['ds-1', 'ds-3', 'ds-4', 'ds-6', 'ds-7']);
+export const PARTNER_DESIRE_YES = new Set(['ds-1', 'ds-3', 'ds-4', 'ds-6', 'ds-7', 'ds-10', 'ds-11', 'ds-14', 'ds-17', 'ds-18']);
 
 export const IDEAS: (Omit<IdeaDto, 'doneBefore' | 'source'> & { moments: string[]; company: string[] })[] = [
   { id: 'id-1', title: 'Pique-nique improvisé', description: 'Un plaid, ce qu’il y a dans le frigo, le parc le plus proche.', budget: 'FREE', durationMinutes: 90, indoor: false, moods: ['RELAX', 'ROMANTIC'], tags: [], moments: ['NOW', 'WEEKEND'], company: ['COUPLE', 'FAMILY'] },
@@ -166,7 +184,7 @@ export function initialState(displayName: string): DemoState {
     sessions: [],
     daily: { text: 'Quel petit détail de ce matin t’a fait sourire ?', myAnswer: null, partnerAnswer: 'Ton message avant ma réunion.', revealedAt: null },
     challengeProgress: {},
-    intimacy: { enabled: false, enabledCategories: ['tenderness', 'romance', 'seduction', 'complicity'], maxIntensity: 2, myChoices: {}, iRequested: false, revealedAt: null },
+    intimacy: { enabled: false, enabledCategories: ['tenderness', 'romance', 'seduction', 'complicity', 'desires', 'fantasies', 'experiences'], maxIntensity: 4, myChoices: {}, iRequested: false, revealedAt: null, tonightMine: false, tonightPartner: false, cardsSeen: [], cardsDone: 0, currentCard: null },
     notifications: [
       { id: nid('nt'), category: 'INVITATION', type: 'calendar.invite', title: 'Invitation à un événement', body: 'Camille vous invite : « Week-end à Honfleur ».', data: { path: '/agenda' }, readAt: null, createdAt: day(0, 8, 12) },
       { id: nid('nt'), category: 'DAILY_QUESTION', type: 'daily.prompt', title: 'Question du jour', body: 'Une nouvelle question vous attend.', data: { path: '/accueil' }, readAt: null, createdAt: day(0, 9) },
@@ -199,3 +217,21 @@ export function initialState(displayName: string): DemoState {
     doneIdeas: ['id-9'],
   };
 }
+
+export const CARDS: { id: string; level: number; role: 'DRAWER' | 'PARTNER' | 'BOTH'; text: string; durationSec: number | null }[] = [
+  { id: 'cd-1', level: 1, role: 'DRAWER', text: 'Embrasse-moi dans le cou, une minute, sans un mot.', durationSec: 60 },
+  { id: 'cd-2', level: 1, role: 'DRAWER', text: 'Dis-moi trois choses que tu aimes dans mon corps, en les touchant.', durationSec: null },
+  { id: 'cd-3', level: 1, role: 'BOTH', text: 'Front contre front, yeux fermés, une minute de silence.', durationSec: 60 },
+  { id: 'cd-4', level: 2, role: 'DRAWER', text: 'Enlève-moi un vêtement, le plus lentement possible.', durationSec: null },
+  { id: 'cd-5', level: 2, role: 'DRAWER', text: 'Embrasse-moi partout sauf sur la bouche.', durationSec: 120 },
+  { id: 'cd-6', level: 2, role: 'PARTNER', text: 'Je ferme les yeux. Fais-moi deviner avec quoi tu me touches : une plume, tes lèvres, ta langue.', durationSec: null },
+  { id: 'cd-7', level: 3, role: 'DRAWER', text: 'Caresse-moi par-dessus mes vêtements jusqu’à ce que je te demande de les enlever.', durationSec: null },
+  { id: 'cd-8', level: 3, role: 'DRAWER', text: 'Embrasse l’intérieur de mes cuisses en remontant très lentement, sans aller au bout avant la fin du temps.', durationSec: 60 },
+  { id: 'cd-9', level: 3, role: 'PARTNER', text: 'Je ne bouge pas. Tu as deux minutes pour me faire perdre mon calme avec tes mains seulement.', durationSec: 120 },
+  { id: 'cd-10', level: 4, role: 'DRAWER', text: 'À genoux, les yeux dans les miens : une minute de bouche, sans te presser.', durationSec: 60 },
+  { id: 'cd-11', level: 4, role: 'DRAWER', text: 'Allonge-toi. Je te fais jouir avec ma bouche, et tu n’as pas le droit de me toucher.', durationSec: null },
+  { id: 'cd-12', level: 4, role: 'DRAWER', text: 'Bande-moi les yeux et utilise ta bouche là où tu veux.', durationSec: 120 },
+  { id: 'cd-13', level: 4, role: 'DRAWER', text: 'Mets-toi sur moi et donne le rythme, lentement, jusqu’à ce que je te supplie d’accélérer.', durationSec: null },
+  { id: 'cd-14', level: 4, role: 'BOTH', text: 'Face à face, chacun se caresse en regardant l’autre, sans se toucher, jusqu’à ce que l’un des deux cède.', durationSec: null },
+  { id: 'cd-15', level: 4, role: 'PARTNER', text: 'Je m’allonge et je te laisse tout décider : où, comment, combien de temps.', durationSec: null },
+];

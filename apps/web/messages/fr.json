@@ -35,36 +35,169 @@
   },
   "marketing": {
     "hero": {
-      "eyebrow": "Le compagnon intelligent du couple",
-      "title": "Organisez votre quotidien. Partagez plus de moments. Redécouvrez-vous.",
-      "subtitle": "Un agenda partagé qui pense à vous, des jeux qui vous rapprochent, des surprises qui sortent de la routine, et un assistant qui propose sans jamais décider à votre place.",
-      "ctaPrimary": "Commencer gratuitement",
-      "ctaSecondary": "Découvrir les fonctionnalités",
-      "note": "Gratuit pour commencer. Un seul abonnement pour deux."
+      "eyebrow": "L’application des soirs à deux",
+      "title": "Un cocon pour votre couple,",
+      "titleAccent": "au creux de votre poche.",
+      "subtitle": "Un agenda qui pense à vous deux, des jeux qui font parler et rire, un espace intime qui ne révèle que ce que vous partagez, et le quotidien enfin léger.",
+      "ctaPrimary": "Créer notre espace",
+      "ctaSecondary": "Voir la démo",
+      "note": "Gratuit pour commencer. Un seul abonnement pour deux. Aucune publicité, jamais."
+    },
+    "mock": {
+      "greeting": "Bonsoir Camille",
+      "date": "Vendredi 7 novembre",
+      "daily": "Question du jour",
+      "dailyText": "Quelle habitude de l’autre te fait sourire ?",
+      "upcoming": "À venir",
+      "event": "Dîner chez Nadia · 20 h",
+      "eventMeta": "Samedi · Partagé",
+      "whatNow": "On fait quoi ?",
+      "match": "2 envies en commun",
+      "matchHint": "révélées d’un commun accord"
     },
     "pillars": {
-      "title": "Trois piliers, une seule application",
+      "eyebrow": "Trois piliers",
+      "title": "S’aimer, s’amuser, construire ensemble",
       "love": {
-        "title": "S'aimer",
-        "body": "Réponses secrètes, confessions, envies partagées en toute confidentialité : apprenez à vous connaître encore mieux."
+        "title": "S’aimer",
+        "body": "Réponses secrètes révélées en même temps, confessions à votre rythme, envies partagées en toute confidentialité.",
+        "items": [
+          "Question du jour",
+          "Réponses secrètes",
+          "Double Secret"
+        ]
       },
       "play": {
-        "title": "S'amuser",
-        "body": "Dilemmes, défis, quiz de souvenirs, « Lequel de nous deux ? » : des jeux pensés pour deux, pas des listes de questions."
+        "title": "S’amuser",
+        "body": "Dilemmes, « Lequel de nous deux ? », défis à relever ensemble : des jeux pensés pour deux, pas des listes de questions.",
+        "items": [
+          "Dilemmes",
+          "Défis à deux",
+          "Qui connaît le mieux ?"
+        ]
       },
       "build": {
         "title": "Construire ensemble",
-        "body": "Agenda partagé intelligent, listes, tâches sans classement, projets de vie : le quotidien, simplement."
+        "body": "Agenda partagé qui respecte le privé, listes de courses en temps réel, tâches sans classement, projets de vie étape par étape.",
+        "items": [
+          "Agenda à deux",
+          "Courses & tâches",
+          "Projets"
+        ]
       }
     },
+    "whatNow": {
+      "eyebrow": "Le bouton magique",
+      "title": "« On fait quoi ? »",
+      "body": "Quand, avec qui, quel budget, quelle envie : quatre choix et des idées adaptées, à ajouter à votre agenda en un geste. Rien n’est décidé à votre place.",
+      "steps": [
+        "Maintenant, ce soir ou ce week-end",
+        "À deux ou en famille",
+        "Gratuit à grand budget",
+        "Romantique, drôle, détente, aventure…"
+      ]
+    },
+    "games": {
+      "eyebrow": "Jeux",
+      "title": "Des jeux qui font parler, pas scroller",
+      "body": "Chaque jeu est une excuse pour se raconter, rire et se surprendre. Les réponses se dévoilent en même temps, jamais avant.",
+      "list": [
+        "Réponses secrètes",
+        "Qui connaît le mieux l’autre ?",
+        "Dilemmes",
+        "Lequel de nous deux ?",
+        "Défis à deux",
+        "Confessions"
+      ],
+      "cardLabel": "Réponses secrètes",
+      "cardQuestion": "« Quel est le moment de notre histoire que tu rejouerais volontiers ? »",
+      "you": "Vous",
+      "partner": "Votre partenaire",
+      "answered": "Répondu ✓",
+      "waiting": "En attente…",
+      "cardNote": "Révélation simultanée, toujours."
+    },
     "privacy": {
-      "title": "Votre intimité n'appartient qu'à vous",
-      "body": "Les réponses individuelles ne sont jamais révélées sans accord mutuel. Les événements privés restent privés. Aucun SDK publicitaire, aucune utilisation de vos données intimes pour entraîner une IA."
+      "eyebrow": "Confiance",
+      "title": "Votre intimité n’appartient qu’à vous",
+      "body": "Nous avons conçu l’application pour qu’elle n’ait jamais à choisir entre vous deux.",
+      "points": [
+        {
+          "title": "Rien n’est révélé sans accord mutuel",
+          "body": "Réponses secrètes, envies, confessions : chacun garde la main, jusqu’au bout."
+        },
+        {
+          "title": "Le privé reste privé",
+          "body": "Un événement privé n’apparaît même pas chez l’autre. Un créneau « occupé » ne dit rien de plus."
+        },
+        {
+          "title": "Aucune publicité, aucun traqueur",
+          "body": "Pas de SDK publicitaire, pas d’entraînement d’IA sur vos données intimes. Vos données restent en Europe."
+        }
+      ]
+    },
+    "pricing": {
+      "eyebrow": "Tarifs",
+      "title": "Un seul abonnement pour deux",
+      "body": "Commencez gratuitement. Passez à Premium Couple quand vous voulez : un paiement couvre les deux partenaires.",
+      "free": {
+        "name": "Gratuit",
+        "tagline": "Pour commencer à deux.",
+        "items": [
+          "Agenda partagé",
+          "Listes et tâches",
+          "Question du jour",
+          "Une sélection de jeux et de défis",
+          "« On fait quoi ? » (catalogue)"
+        ]
+      },
+      "premium": {
+        "name": "Premium Couple",
+        "monthly": "4,99 € / mois",
+        "yearly": "ou 29,99 € / an",
+        "items": [
+          "Tous les jeux, toutes les catégories",
+          "Double Secret complet, niveau « Feu » inclus",
+          "Défis et idées sans limite",
+          "Idées personnalisées par l’IA",
+          "Projets avancés et à venir : souvenirs, surprises"
+        ],
+        "cta": "Commencer"
+      },
+      "note": "Prix indicatifs TTC. Résiliable à tout moment."
+    },
+    "faq": {
+      "eyebrow": "Questions",
+      "title": "On vous répond",
+      "items": [
+        {
+          "q": "Faut-il deux comptes ?",
+          "a": "Oui : chacun le sien, pour que chacun garde la main sur ce qu’il partage. On s’associe avec un code en dix secondes."
+        },
+        {
+          "q": "Mon partenaire voit-il mes réponses ?",
+          "a": "Jamais avant la révélation prévue par le jeu, et jamais pour l’espace Intimité tant que vous ne l’avez pas décidé tous les deux."
+        },
+        {
+          "q": "Est-ce une application « coquine » ?",
+          "a": "C’est d’abord une application pour mieux vivre à deux. L’espace Intimité est facultatif, réservé aux majeurs, activé par chacun, et son intensité se règle du tendre à l’audacieux."
+        },
+        {
+          "q": "Et si on se sépare ?",
+          "a": "Chacun peut quitter l’espace. Les données communes sont dissociées et vous pouvez supprimer votre compte à tout moment."
+        }
+      ]
+    },
+    "testimonial": {
+      "label": "Exemple d’usage",
+      "quote": "« Le dimanche soir, on ouvre la question du jour avec le thé. Trois minutes, et on a parlé de vrai. »",
+      "author": "Alex & Camille, couple fictif de la démo"
     },
     "ctaBottom": {
-      "title": "Prêts à commencer ?",
-      "body": "Créez votre compte, invitez votre partenaire avec un code, et c'est parti.",
-      "cta": "Créer notre espace"
+      "title": "Prêts à vous retrouver ?",
+      "body": "Créez votre compte, invitez votre partenaire avec un code, et c’est parti.",
+      "cta": "Créer notre espace",
+      "demo": "Essayer la démo d’abord"
     }
   },
   "auth": {
@@ -143,7 +276,8 @@
       "title": "Quitter le couple",
       "body": "Cette action est immédiate. Vos données personnelles restent les vôtres ; l'espace commun est conservé en lecture 30 jours puis archivé.",
       "confirm": "Oui, quitter"
-    }
+    },
+    "spaceHint": "Votre espace à deux : partenaire, dates, invitation."
   },
   "dashboard": {
     "greeting": {
@@ -162,7 +296,8 @@
     "shortcuts": "Raccourcis",
     "pendingInvitation": "Votre partenaire n'a pas encore rejoint votre espace.",
     "seeInvitation": "Voir l'invitation",
-    "addEvent": "Ajouter un moment"
+    "addEvent": "Ajouter un moment",
+    "tonight": "Ce soir, maintenant, ce week-end"
   },
   "profile": {
     "title": "Mon profil",
@@ -498,7 +633,7 @@
       "1": "Douceur",
       "2": "Complicité",
       "3": "Désir",
-      "4": "Audace"
+      "4": "Feu"
     },
     "choices": {
       "YES": "Oui",
@@ -514,9 +649,56 @@
       "requested": "Demande envoyée. {partner} doit aussi le souhaiter.",
       "partnerRequested": "{partner} souhaite découvrir vos points communs.",
       "revealed": "Vos envies communes",
-      "privacy": "Aucune réponse individuelle n'est jamais montrée. Une envie retirée disparaît aussitôt."
+      "privacy": "Aucune réponse individuelle n'est jamais montrée. Une envie retirée disparaît aussitôt.",
+      "eyebrow": "Révélé seulement si « oui » des deux"
     },
-    "locked": "Premium"
+    "locked": "Premium",
+    "intensityHint": "Du tendre au très chaud. Le niveau « Feu » est explicite : il n’apparaît que si vous l’acceptez tous les deux.",
+    "tonight": {
+      "eyebrow": "Signal discret",
+      "title": "Ce soir ?",
+      "hint": "Allumez votre signal si l’envie est là. {partner} ne le saura que si le sien est allumé aussi : jamais de refus à encaisser, jamais d’indice.",
+      "toggle": "Allumer le signal « Ce soir ? »",
+      "off": "Signal éteint",
+      "waiting": "Signal allumé. Rien n’est visible tant que {partner} n’allume pas le sien.",
+      "mutual": "Vous êtes deux à y penser ce soir.",
+      "expires": "S’efface de lui-même au matin."
+    },
+    "cards": {
+      "eyebrow": "Une carte, un geste, à tour de rôle",
+      "title": "Les cartes du soir",
+      "subtitle": "Tirez une carte : elle s’affiche sur vos deux téléphones. Celui ou celle qui tire réalise la carte pour l’autre, sauf mention contraire. Tout se refuse d’un geste, sans explication.",
+      "open": "Ouvrir les cartes du soir",
+      "back": "Retour à l’espace Intimité",
+      "levels": {
+        "1": "Douceur",
+        "2": "Complicité",
+        "3": "Désir",
+        "4": "Feu"
+      },
+      "levelHint": {
+        "intensity": "Hors de l’intensité acceptée par l’un de vous deux",
+        "premium": "Réservé à Premium Couple",
+        "empty": "Plus de carte ce soir"
+      },
+      "remaining": "{count, plural, =0 {aucune carte} =1 {1 carte} other {# cartes}}",
+      "draw": "Tirer une carte",
+      "drawAnother": "Autre carte",
+      "done": "Fait",
+      "deckEmpty": "Choisissez un niveau pour commencer.",
+      "forPartner": "{drawer} pour {partner}",
+      "forDrawer": "{partner} pour {drawer}",
+      "forBoth": "À deux",
+      "drawnBy": "Tirée par {name}",
+      "timer": "Lancer le minuteur",
+      "timerRunning": "{seconds} s",
+      "timerDone": "Temps écoulé",
+      "doneCount": "{count, plural, =0 {Aucune carte réalisée ce soir} =1 {1 carte réalisée ce soir} other {# cartes réalisées ce soir}}",
+      "expires": "Tout s’efface au matin.",
+      "reset": "Terminer la soirée",
+      "resetConfirm": "Effacer la table et les cartes vues ce soir ?",
+      "rules": "Une règle : un « non » ne se discute pas. On repose la carte, on en tire une autre, ou on arrête là."
+    }
   },
   "ideas": {
     "title": "On fait quoi ?",
@@ -818,6 +1000,7 @@
     "enter": "Explorer la démo",
     "banner": "Mode démo : données fictives stockées dans ce navigateur, partenaire « Camille » simulé. Aucun compte, aucun envoi.",
     "reset": "Réinitialiser",
-    "leave": "Quitter la démo"
+    "leave": "Quitter la démo",
+    "premiumNote": "Premium Couple est activé dans la démo pour tout montrer."
   }
 }

@@ -512,3 +512,41 @@ export interface ProjectDto {
   createdAt: string;
   updatedAt: string;
 }
+
+// ---------------------------------------------------------------- Intimité : signal « Ce soir ? »
+export interface TonightDto {
+  /** Mon signal est actif. */
+  mine: boolean;
+  /** Les deux signaux sont actifs. Faux tant que l'un des deux manque : aucune information sur le partenaire seul. */
+  mutual: boolean;
+  /** Fin de validité du signal (matin suivant, 5 h locale). */
+  expiresAt: string | null;
+}
+
+// ---------------------------------------------------------------- Intimité : « Les cartes du soir »
+export interface IntimacyCardDto {
+  id: string;
+  level: number;
+  /** Qui réalise : celui qui a tiré (DRAWER), l'autre (PARTNER), ou les deux. */
+  role: 'DRAWER' | 'PARTNER' | 'BOTH';
+  text: string;
+  durationSec: number | null;
+}
+export interface CardLevelDto {
+  level: number;
+  /** Autorisé par les réglages des deux partenaires (intensité maximale commune) et l'offre. */
+  available: boolean;
+  /** Raison si indisponible. */
+  reason: 'intensity' | 'premium' | null;
+  /** Cartes restantes ce soir à ce niveau. */
+  remaining: number;
+}
+export interface CardTableDto {
+  levels: CardLevelDto[];
+  /** Carte sur la table, visible par les deux ; null si aucune. */
+  current: { card: IntimacyCardDto; drawnByUserId: string; drawnAt: string } | null;
+  /** Cartes réalisées ce soir. */
+  doneCount: number;
+  /** Fin de la soirée (5 h locale) : tout s'efface. */
+  expiresAt: string | null;
+}

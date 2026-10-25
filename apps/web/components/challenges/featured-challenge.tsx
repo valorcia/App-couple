@@ -18,8 +18,8 @@ export function FeaturedChallenge() {
   const [open, setOpen] = React.useState(false);
   const c = featured.data?.challenge ?? null;
   return (
-    <Card>
-      <CardHeader><CardTitle className="flex items-center gap-2"><Flag className="h-5 w-5 text-primary" aria-hidden />{featured.data?.kind === 'active' ? t('featured') : t('suggestion')}</CardTitle></CardHeader>
+    <Card tone="warm" className="h-full">
+      <CardHeader><CardTitle className="flex items-center gap-2 text-secondary"><Flag className="h-5 w-5 text-primary" aria-hidden />{featured.data?.kind === 'active' ? t('featured') : t('suggestion')}</CardTitle></CardHeader>
       <CardContent>
         {featured.isPending ? <Skeleton className="h-24" /> : c ? <ChallengeCard c={c} onOpen={() => setOpen(true)} compact /> : <p className="text-sm text-fg-muted">{t('none')}</p>}
       </CardContent>

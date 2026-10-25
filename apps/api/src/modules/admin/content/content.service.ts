@@ -4,6 +4,7 @@ import { AppError, ErrorCode } from '@couple/shared';
 import type { z } from 'zod';
 import {
   adminActivitySchema,
+  adminCardSchema,
   adminCategorySchema,
   adminChallengeSchema,
   adminContentListSchema,
@@ -59,6 +60,9 @@ export class ContentAdminService {
       case 'desires':
         rows = await this.prisma.desireItem.findMany({ where: { ...(text ? { text } : {}), status: input.status, tier: input.tier, locale: input.locale, category: input.categoryCode }, include: { pack: { select: { code: true } } }, orderBy: { id: 'desc' }, take, ...cursor });
         break;
+      case 'cards':
+        rows = await this.prisma.intimacyCard.findMany({ where: { ...(text ? { text } : {}), status: input.status, tier: input.tier, locale: input.locale }, orderBy: [{ level: 'asc' }, { id: 'desc' }], take, ...cursor });
+        break;
       case 'activities':
         rows = await this.prisma.activityIdea.findMany({ where: { ...(text ? { title: text } : {}), status: input.status, tier: input.tier, locale: input.locale }, orderBy: { id: 'desc' }, take, ...cursor });
         break;
@@ -75,16 +79,17 @@ export class ContentAdminService {
   }
 
   async counts() {
-    const [questions, challenges, desires, activities, categories, packs] = await Promise.all([
+    const [questions, challenges, desires, cards, activities, categories, packs] = await Promise.all([
       this.prisma.question.groupBy({ by: ['status'], _count: { _all: true } }),
       this.prisma.challenge.groupBy({ by: ['status'], _count: { _all: true } }),
       this.prisma.desireItem.groupBy({ by: ['status'], _count: { _all: true } }),
+      this.prisma.intimacyCard.groupBy({ by: ['status'], _count: { _all: true } }),
       this.prisma.activityIdea.groupBy({ by: ['status'], _count: { _all: true } }),
       this.prisma.contentCategory.count(),
       this.prisma.contentPack.count(),
     ]);
     const fold = (g: { status: string; _count: { _all: number } }[]) => Object.fromEntries(g.map((x) => [x.status, x._count._all]));
-    return { questions: fold(questions), challenges: fold(challenges), desires: fold(desires), activities: fold(activities), categories, packs };
+    return { questions: fold(questions), challenges: fold(challenges), desires: fold(desires), cards: fold(cards), activities: fold(activities), categories, packs };
   }
 
   // ------------------------------------------------------------------ écriture
@@ -109,6 +114,11 @@ export class ContentAdminService {
         const { packCode, ...rest } = d;
         const data = { ...rest, packId: await this.packId(packCode) };
         row = id ? await this.prisma.desireItem.update({ where: { id }, data }) : await this.prisma.desireItem.create({ data });
+        break;
+      }
+      case 'cards': {
+        const d = parse(adminCardSchema, body);
+        row = id ? await this.prisma.intimacyCard.update({ where: { id }, data: d }) : await this.prisma.intimacyCard.create({ data: d });
         break;
       }
       case 'activities': {
@@ -175,6 +185,8 @@ export class ContentAdminService {
         return this.prisma.challenge.findUnique({ where: { id }, include: { category: { select: { code: true, name: true } }, pack: { select: { code: true } } } });
       case 'desires':
         return this.prisma.desireItem.findUnique({ where: { id }, include: { pack: { select: { code: true } } } });
+      case 'cards':
+        return this.prisma.intimacyCard.findUnique({ where: { id } });
       case 'activities':
         return this.prisma.activityIdea.findUnique({ where: { id } });
       case 'categories':
@@ -186,7 +198,7 @@ export class ContentAdminService {
 
   // ------------------------------------------------------------------ internes
   private model(type: ContentType) {
-    return { questions: this.prisma.question, challenges: this.prisma.challenge, desires: this.prisma.desireItem, activities: this.prisma.activityIdea, categories: this.prisma.contentCategory, packs: this.prisma.contentPack }[type];
+    return { questions: this.prisma.question, challenges: this.prisma.challenge, desires: this.prisma.desireItem, cards: this.prisma.intimacyCard, activities: this.prisma.activityIdea, categories: this.prisma.contentCategory, packs: this.prisma.contentPack }[type];
   }
   private async categoryId(code: string | null | undefined): Promise<string | null> {
     if (!code) return null;

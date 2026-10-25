@@ -22,6 +22,8 @@ export function ProfileSettings() {
   const ta = useTranslations('auth');
   const tn = useTranslations('notifications');
   const td = useTranslations('daily');
+  const tnav = useTranslations('nav');
+  const tco = useTranslations('couple');
   const { user, refetch, logout } = useAuth();
   const router = useRouter();
   const toMessage = useApiErrorMessage();
@@ -115,6 +117,10 @@ export function ProfileSettings() {
       <Card className="flex items-center justify-between p-5 md:hidden">
         <div><p className="font-medium">{td('title')}</p><p className="text-sm text-fg-muted">{td('subtitle')}</p></div>
         <Button asChild variant="outline" size="sm"><Link href="/quotidien">{tc('continue')}</Link></Button>
+      </Card>
+      <Card className="flex items-center justify-between p-5 md:hidden">
+        <div><p className="font-medium">{tnav('us')}</p><p className="text-sm text-fg-muted">{tco('spaceHint')}</p></div>
+        <Button asChild variant="outline" size="sm"><Link href="/couple">{tc('continue')}</Link></Button>
       </Card>
 
       <Card>

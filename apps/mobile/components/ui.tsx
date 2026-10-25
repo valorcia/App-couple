@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { ActivityIndicator, Pressable, StyleSheet, Text, TextInput, type TextInputProps, View, type ViewProps } from 'react-native';
-import { radius, spacing, useTheme } from '@/lib/theme';
+import { radius, shadow, spacing, useTheme } from '@/lib/theme';
 
 export function Screen({ children, style, ...props }: ViewProps) {
   const t = useTheme();
@@ -13,7 +13,7 @@ export function Screen({ children, style, ...props }: ViewProps) {
 
 export function Title({ children }: { children: React.ReactNode }) {
   const t = useTheme();
-  return <Text style={{ fontSize: 30, lineHeight: 36, color: t.secondary, fontWeight: '600', marginBottom: spacing(2) }}>{children}</Text>;
+  return <Text style={{ fontSize: 34, lineHeight: 40, color: t.secondary, fontWeight: '600', letterSpacing: -0.5, marginBottom: spacing(2) }}>{children}</Text>;
 }
 
 export function Muted({ children }: { children: React.ReactNode }) {
@@ -21,11 +21,11 @@ export function Muted({ children }: { children: React.ReactNode }) {
   return <Text style={{ fontSize: 15, lineHeight: 22, color: t.fgMuted }}>{children}</Text>;
 }
 
-export function Card({ children, style, tone = 'default', ...props }: ViewProps & { tone?: 'default' | 'blush' | 'plum' }) {
+export function Card({ children, style, tone = 'default', ...props }: ViewProps & { tone?: 'default' | 'blush' | 'plum' | 'honey' | 'night' }) {
   const t = useTheme();
-  const bg = tone === 'blush' ? t.bgBlush : tone === 'plum' ? t.secondary : t.bgElevated;
+  const bg = tone === 'blush' ? t.bgBlush : tone === 'plum' ? t.secondary : tone === 'honey' ? t.bgHoney : tone === 'night' ? t.night : t.bgElevated;
   return (
-    <View style={[{ backgroundColor: bg, borderRadius: radius.lg, padding: spacing(5), borderWidth: tone === 'default' ? 1 : 0, borderColor: t.border }, style]} {...props}>
+    <View style={[{ backgroundColor: bg, borderRadius: radius.lg, padding: spacing(5), borderWidth: tone === 'default' ? 1 : 0, borderColor: t.border }, tone === 'default' || tone === 'night' ? shadow : null, style]} {...props}>
       {children}
     </View>
   );
@@ -34,6 +34,7 @@ export function Card({ children, style, tone = 'default', ...props }: ViewProps 
 export function Button({ title, onPress, variant = 'primary', loading, disabled }: { title: string; onPress: () => void; variant?: 'primary' | 'secondary' | 'ghost'; loading?: boolean; disabled?: boolean }) {
   const t = useTheme();
   const bg = variant === 'primary' ? t.primary : variant === 'secondary' ? t.secondary : 'transparent';
+  const elevated = variant === 'primary' ? { ...shadow, shadowColor: t.primary, shadowOpacity: 0.3 } : null;
   const fg = variant === 'primary' ? t.primaryFg : variant === 'secondary' ? t.secondaryFg : t.fg;
   return (
     <Pressable
@@ -41,7 +42,7 @@ export function Button({ title, onPress, variant = 'primary', loading, disabled 
       accessibilityState={{ disabled: disabled || loading, busy: loading }}
       onPress={onPress}
       disabled={disabled || loading}
-      style={({ pressed }) => [styles.button, { backgroundColor: bg, opacity: disabled ? 0.5 : pressed ? 0.85 : 1 }]}
+      style={({ pressed }) => [styles.button, elevated, { backgroundColor: bg, opacity: disabled ? 0.5 : pressed ? 0.85 : 1 }]}
     >
       {loading ? <ActivityIndicator color={fg} /> : <Text style={{ color: fg, fontSize: 16, fontWeight: '600' }}>{title}</Text>}
     </Pressable>

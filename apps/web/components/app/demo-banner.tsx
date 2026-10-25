@@ -30,11 +30,11 @@ export function DemoBanner() {
     router.replace('/connexion');
   };
   return (
-    <div role="status" className="flex flex-wrap items-center justify-center gap-x-4 gap-y-1 bg-secondary px-4 py-2 text-center text-xs text-secondary-fg">
+    <div role="status" className="flex flex-wrap items-center justify-center gap-x-4 gap-y-1 bg-bg-honey px-4 py-2 text-center text-xs text-accent-fg">
       <span className="inline-flex items-center gap-2"><FlaskConical className="h-3.5 w-3.5" aria-hidden />{t('banner')}</span>
       <span className="flex gap-3">
-        <button type="button" className="underline underline-offset-2" onClick={reset}>{t('reset')}</button>
-        <button type="button" className="underline underline-offset-2" onClick={leave}>{t('leave')}</button>
+        <button type="button" className="font-medium underline underline-offset-2" onClick={reset}>{t('reset')}</button>
+        <button type="button" className="font-medium underline underline-offset-2" onClick={leave}>{t('leave')}</button>
       </span>
     </div>
   );

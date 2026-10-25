@@ -9,6 +9,7 @@ import { questions } from './content/questions';
 import { challenges } from './content/challenges';
 import { desireItems } from './content/desires';
 import { activityIdeas } from './content/activities';
+import { intimacyCards } from './content/cards';
 
 const prisma = new PrismaClient();
 
@@ -64,6 +65,16 @@ async function main() {
     dCount++;
   }
 
+  // --- Cartes du soir (espace Intimité) ---
+  let cardCount = 0;
+  for (const c of intimacyCards) {
+    const existing = await prisma.intimacyCard.findFirst({ where: { text: c.text, locale: 'fr' }, select: { id: true } });
+    const data = { level: c.level, role: c.role, text: c.text, durationSec: c.durationSec ?? null, tier: c.tier ?? 'PREMIUM', tags: c.tags ?? [], locale: 'fr', status: 'PUBLISHED' as const };
+    if (existing) await prisma.intimacyCard.update({ where: { id: existing.id }, data });
+    else await prisma.intimacyCard.create({ data });
+    cardCount++;
+  }
+
   // --- Idées d'activités (« On fait quoi ? ») ---
   let aCount = 0;
   for (const a of activityIdeas) {
@@ -117,7 +128,7 @@ async function main() {
     console.log(`Comptes démo : admin@demo.local, alex@demo.local, camille@demo.local (mot de passe : Demo!EntreNous2026) — admin id ${admin.id}`);
   }
 
-  console.log(`Seed terminé : ${categories.length} catégories, ${qCount} questions, ${cCount} défis, ${dCount} envies, ${aCount} idées d'activités.`);
+  console.log(`Seed terminé : ${categories.length} catégories, ${qCount} questions, ${cCount} défis, ${dCount} envies, ${aCount} idées d'activités, ${cardCount} cartes du soir.`);
 }
 
 main()

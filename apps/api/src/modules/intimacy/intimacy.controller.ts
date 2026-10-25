@@ -1,8 +1,8 @@
 import { Controller, Delete, Get, HttpCode, Post, Put, Req } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import type { Request } from 'express';
-import { desireResponseSchema, listDesireItemsSchema, updateIntimacySettingsSchema, uuidSchema } from '@couple/validation';
-import type { DesireItemDto, DesireMatchesDto, IntimacySettingsDto } from '@couple/types';
+import { desireResponseSchema, drawCardSchema, listDesireItemsSchema, tonightSchema, updateIntimacySettingsSchema, uuidSchema } from '@couple/validation';
+import type { CardTableDto, DesireItemDto, DesireMatchesDto, IntimacySettingsDto, TonightDto } from '@couple/types';
 import { ZodBody, ZodParam, ZodQuery } from '@/common/decorators/zod.decorators';
 import { type AuthUser, type CoupleContext, CurrentCouple, CurrentUser, RequireCouple } from '@/common/decorators/auth.decorators';
 import { PrismaService } from '@/common/prisma/prisma.service';
@@ -54,5 +54,38 @@ export class IntimacyController {
   @HttpCode(200)
   reveal(@CurrentUser() user: AuthUser, @CurrentCouple() couple: CoupleContext, @Req() req: Request): Promise<DesireMatchesDto> {
     return this.intimacy.requestReveal({ userId: user.id, couple }, { ip: req.ip });
+  }
+
+  @Get('tonight')
+  tonight(@CurrentUser() user: AuthUser, @CurrentCouple() couple: CoupleContext): Promise<TonightDto> {
+    return this.intimacy.tonight({ userId: user.id, couple });
+  }
+
+  @Put('tonight')
+  setTonight(@CurrentUser() user: AuthUser, @CurrentCouple() couple: CoupleContext, @ZodBody(tonightSchema) body: typeof tonightSchema._output): Promise<TonightDto> {
+    return this.intimacy.setTonight({ userId: user.id, couple }, body.on);
+  }
+
+  @Get('cards')
+  cards(@CurrentUser() user: AuthUser, @CurrentCouple() couple: CoupleContext): Promise<CardTableDto> {
+    return this.intimacy.cardsTable({ userId: user.id, couple });
+  }
+
+  @Post('cards/draw')
+  @HttpCode(200)
+  draw(@CurrentUser() user: AuthUser, @CurrentCouple() couple: CoupleContext, @ZodBody(drawCardSchema) body: typeof drawCardSchema._output): Promise<CardTableDto> {
+    return this.intimacy.drawCard({ userId: user.id, couple }, body.level);
+  }
+
+  @Post('cards/done')
+  @HttpCode(200)
+  done(@CurrentUser() user: AuthUser, @CurrentCouple() couple: CoupleContext): Promise<CardTableDto> {
+    return this.intimacy.cardDone({ userId: user.id, couple });
+  }
+
+  @Delete('cards')
+  @HttpCode(200)
+  resetCards(@CurrentUser() user: AuthUser, @CurrentCouple() couple: CoupleContext): Promise<CardTableDto> {
+    return this.intimacy.resetCards({ userId: user.id, couple });
   }
 }

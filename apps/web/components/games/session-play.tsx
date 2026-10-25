@@ -6,7 +6,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useTranslations } from 'next-intl';
 import { ArrowLeft, Check, SkipForward } from 'lucide-react';
 import type { AnswerPayloadDto, GameRoundDto, GameSessionDto } from '@couple/types';
-import { Alert, Avatar, Badge, Button, Card, Skeleton, Textarea, cn } from '@couple/ui';
+import { Alert, Avatar, Badge, Button, Card, Glow, Skeleton, Textarea, cn } from '@couple/ui';
 import { api } from '@/lib/api';
 import { useAuth } from '@/lib/auth-provider';
 import { useApiErrorMessage } from '@/lib/use-api-error';
@@ -103,10 +103,13 @@ function RoundView({ s, round, userId, names, onAnswer, onSkip, onVerdict, pendi
 
   return (
     <div className="space-y-5">
-      <Card tone="plum" className="p-8">
-        {round.prompt.categoryCode ? <p className="text-xs uppercase tracking-widest opacity-70">{round.prompt.categoryCode}</p> : null}
-        <p className="mt-2 font-display text-2xl leading-snug sm:text-3xl">{round.prompt.text}</p>
+      <Card tone="night" className="relative overflow-hidden p-8 sm:p-10">
+        <Glow tone="primary" size={320} className="-right-24 -top-28" />
+        <div className="relative">
+        {round.prompt.categoryCode ? <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-primary">{round.prompt.categoryCode}</p> : null}
+        <p className="mt-3 font-display-soft text-3xl leading-[1.15] sm:text-4xl">{round.prompt.text}</p>
         {s.gameType === 'WHO_KNOWS_BEST' ? <p className="mt-3 text-sm opacity-80">{isSubject ? t('wkb.subjectHint', { partner: names.partner }) : t('wkb.guessHint', { partner: names.partner })}</p> : null}
+        </div>
       </Card>
 
       {round.skipped ? (
@@ -125,7 +128,7 @@ function RoundView({ s, round, userId, names, onAnswer, onSkip, onVerdict, pendi
           {s.gameType === 'DILEMMA' && round.prompt.options ? (
             <div className="grid gap-3 sm:grid-cols-2">
               {round.prompt.options.map((o, i) => (
-                <button key={i} type="button" disabled={pending} onClick={() => onAnswer({ kind: 'choice', index: i })} className="min-h-28 rounded-lg border border-border bg-bg-elevated p-5 text-left font-display text-xl transition-colors hover:border-primary hover:bg-primary/5">
+                <button key={i} type="button" disabled={pending} onClick={() => onAnswer({ kind: 'choice', index: i })} className="hover-lift min-h-28 rounded-lg border border-border bg-bg-elevated p-5 text-left font-display text-xl hover:border-primary hover:bg-primary/5">
                   {o}
                 </button>
               ))}
@@ -133,7 +136,7 @@ function RoundView({ s, round, userId, names, onAnswer, onSkip, onVerdict, pendi
           ) : s.gameType === 'WHICH_OF_US' ? (
             <div className="grid grid-cols-2 gap-3">
               {[{ id: userId, name: names.me }, { id: partnerId, name: names.partner }].map((p) => (
-                <button key={p.id} type="button" disabled={pending} onClick={() => onAnswer({ kind: 'vote', userId: p.id })} className="flex flex-col items-center gap-3 rounded-lg border border-border bg-bg-elevated p-6 transition-colors hover:border-primary hover:bg-primary/5">
+                <button key={p.id} type="button" disabled={pending} onClick={() => onAnswer({ kind: 'vote', userId: p.id })} className="hover-lift flex flex-col items-center gap-3 rounded-lg border border-border bg-bg-elevated p-6 hover:border-primary hover:bg-primary/5">
                   <Avatar name={p.name} size={56} />
                   <span className="font-medium">{p.name}</span>
                 </button>
@@ -184,9 +187,9 @@ function Reveal({ s, round, userId, partnerId, names, onVerdict, pending }: { s:
 
 function RevealCard({ label, children, delay }: { label: string; children: React.ReactNode; delay: number }) {
   return (
-    <div className="animate-fade-up rounded-lg border border-border bg-bg-elevated p-5" style={{ animationDelay: `${delay}ms` }}>
-      <p className="text-xs uppercase tracking-wider text-fg-subtle">{label}</p>
-      <p className="mt-2 font-display text-xl">{children}</p>
+    <div className="animate-curtain surface-warm rounded-lg border border-border p-5 shadow-card" style={{ animationDelay: `${delay}ms` }}>
+      <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-primary">{label}</p>
+      <p className="mt-2 font-display-italic text-2xl leading-snug text-secondary">{children}</p>
     </div>
   );
 }

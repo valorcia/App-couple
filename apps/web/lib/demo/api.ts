@@ -1,7 +1,7 @@
 import { ApiClientError } from '@couple/shared/api-client';
-import type { AuthResponseDto, BillingStatusDto, CalendarEventDto, ChallengeDto, CoupleDto, DailyQuestionDto, DesireItemDto, DesireMatchesDto, GameCatalogDto, GameSessionDto, GameSessionListItemDto, GameType, IdeaSuggestionsDto, IntimacySettingsDto, MeDto, NotificationPreferencesDto, Page, ProjectDto, ShoppingListDto, TaskDto } from '@couple/types';
+import type { AuthResponseDto, BillingStatusDto, CardTableDto, CalendarEventDto, ChallengeDto, CoupleDto, DailyQuestionDto, DesireItemDto, DesireMatchesDto, GameCatalogDto, GameSessionDto, GameSessionListItemDto, GameType, IdeaSuggestionsDto, IntimacySettingsDto, MeDto, NotificationPreferencesDto, Page, ProjectDto, ShoppingListDto, TaskDto } from '@couple/types';
 import { DEMO_STATE_KEY } from './mode';
-import { CATEGORIES, CHALLENGES, COUPLE_ID, DESIRES, IDEAS, ME_ID, PARTNER_DESIRE_YES, PARTNER_ID, PARTNER_TEXTS, PRODUCTS, QUESTIONS, type DemoRound, type DemoSession, type DemoState, initialState, nid } from './data';
+import { CARDS, CATEGORIES, CHALLENGES, COUPLE_ID, DESIRES, IDEAS, ME_ID, PARTNER_DESIRE_YES, PARTNER_ID, PARTNER_TEXTS, PRODUCTS, QUESTIONS, type DemoRound, type DemoSession, type DemoState, initialState, nid } from './data';
 
 type Body = Record<string, unknown>;
 interface Options {
@@ -92,7 +92,7 @@ export class DemoApi {
     if (a === 'ideas') return this.ideas(m, s, b);
     if (a === 'billing') {
       if (is('GET', 'billing', 'products')) return PRODUCTS.map((p) => ({ ...p, checkoutAvailable: false }));
-      if (is('GET', 'billing', 'status')) return { premium: false, entitlements: [], subscription: null, checkoutAvailable: false } satisfies BillingStatusDto;
+      if (is('GET', 'billing', 'status')) return { premium: true, entitlements: ['premium'], subscription: { provider: 'MANUAL', status: 'ACTIVE', productCode: 'premium_yearly', currentPeriodEnd: new Date(Date.now() + 200 * 86400000).toISOString(), cancelAtPeriodEnd: false, manageVia: 'manual' }, checkoutAvailable: false } satisfies BillingStatusDto;
       return fail(503, 'BILLING_UNAVAILABLE', 'Le paiement n’est pas disponible en mode démo.');
     }
     if (a === 'notifications') return this.notifications(m, s, b);
@@ -113,7 +113,7 @@ export class DemoApi {
   }
   private me(): MeDto {
     const p = this.state.profile;
-    return { id: ME_ID, email: 'demo@entre-nous.app', role: 'USER', status: 'ACTIVE', emailVerified: true, adultConfirmed: p.adultConfirmed, locale: 'fr', timezone: 'Europe/Paris', profile: { displayName: p.displayName, avatarUrl: null, bio: p.bio, interests: p.interests }, couple: this.couple(), entitlements: [], createdAt: '2026-01-10T09:00:00.000Z' };
+    return { id: ME_ID, email: 'demo@entre-nous.app', role: 'USER', status: 'ACTIVE', emailVerified: true, adultConfirmed: p.adultConfirmed, locale: 'fr', timezone: 'Europe/Paris', profile: { displayName: p.displayName, avatarUrl: null, bio: p.bio, interests: p.interests }, couple: this.couple(), entitlements: ['premium'], createdAt: '2026-01-10T09:00:00.000Z' };
   }
 
   // ------------------------------------------------------------------ agenda
@@ -176,10 +176,10 @@ export class DemoApi {
   private games(m: string, s: string[], b: Body, q: Options['query'] & object): unknown {
     if (m === 'GET' && s[1] === 'catalog') {
       const games = (['SECRET_ANSWERS', 'WHO_KNOWS_BEST', 'DILEMMA', 'WHICH_OF_US', 'CONFESSIONS'] as GameType[]).map((gameType) => {
-        const cats = CATEGORIES.filter((c) => (c.gameTypes as readonly string[]).includes(gameType)).map((c) => ({ code: c.code, name: c.name, description: c.description, icon: c.icon, questionCount: QUESTIONS[gameType].filter((x) => x.category === c.code).length, locked: 'locked' in c && !!c.locked }));
+        const cats = CATEGORIES.filter((c) => (c.gameTypes as readonly string[]).includes(gameType) && (c.code !== 'intimacy' || this.state.intimacy.enabled)).map((c) => ({ code: c.code, name: c.name, description: c.description, icon: c.icon, questionCount: QUESTIONS[gameType].filter((x) => x.category === c.code).length, locked: 'locked' in c && !!c.locked }));
         return { gameType, available: true, categories: cats, totalQuestions: QUESTIONS[gameType].length };
       });
-      return { games, premium: false, sessionsLeftToday: Math.max(0, 3 - this.state.sessions.filter((x) => x.createdAt.slice(0, 10) === now().slice(0, 10)).length) } satisfies GameCatalogDto;
+      return { games, premium: true, sessionsLeftToday: null } satisfies GameCatalogDto;
     }
     if (m === 'GET' && s[1] === 'daily') return this.daily();
     if (m === 'POST' && s[1] === 'daily' && s[2] === 'answer') {
@@ -196,8 +196,8 @@ export class DemoApi {
       const gameType = b.gameType as GameType;
       const codes = (b.categoryCodes as string[] | undefined) ?? [];
       const maxLevel = Number(b.maxLevel ?? 4);
-      let bank = QUESTIONS[gameType].filter((x) => (!codes.length || codes.includes(x.category)) && !CATEGORIES.find((c) => c.code === x.category && 'locked' in c && c.locked) && (x.level ?? 1) <= maxLevel);
-      if (!bank.length) bank = QUESTIONS[gameType].filter((x) => (x.level ?? 1) <= maxLevel);
+      let bank = QUESTIONS[gameType].filter((x) => (!codes.length || codes.includes(x.category)) && (x.category !== 'intimacy' || (this.state.intimacy.enabled && codes.includes('intimacy'))) && (x.level ?? 1) <= maxLevel);
+      if (!bank.length) bank = QUESTIONS[gameType].filter((x) => x.category !== 'intimacy' && (x.level ?? 1) <= maxLevel);
       if (!bank.length) return fail(422, 'VALIDATION_FAILED', 'Aucune question disponible pour ces critères.');
       const count = b.length === 'long' ? Math.min(8, bank.length) : Math.min(4, bank.length);
       const rounds: DemoRound[] = bank.slice(0, count).map((x, index) => ({ index, prompt: { text: x.text, options: x.options, categoryCode: x.category, level: x.level, subjectUserId: gameType === 'WHO_KNOWS_BEST' ? (index % 2 === 0 ? ME_ID : PARTNER_ID) : undefined }, myAnswer: null, partnerAnswer: null, revealedAt: null, skipped: false, verdict: null }));
@@ -216,7 +216,7 @@ export class DemoApi {
     if (!round || s[3] !== 'rounds') return fail(404, 'NOT_FOUND', 'Manche introuvable.');
     if (closed(round) && s[5] !== 'verdict') return fail(409, 'GAME_ROUND_CLOSED', 'Cette manche est terminée.');
     if (m === 'POST' && s[5] === 'answer') {
-      round.myAnswer = b as DemoRound['myAnswer'];
+      round.myAnswer = ((b.answer as DemoRound['myAnswer'] | undefined) ?? (b as DemoRound['myAnswer']));
       // Partenaire simulé : répond aussitôt, puis révélation (jamais avant que les deux aient répondu).
       round.partnerAnswer = this.partnerAnswer(session.gameType, round);
       round.revealedAt = now();
@@ -299,11 +299,11 @@ export class DemoApi {
   // ------------------------------------------------------------------ défis
   private challenges(m: string, s: string[], b: Body, q: Options['query'] & object): unknown {
     const withProgress = (c: ChallengeDto): ChallengeDto => ({ ...c, progress: this.state.challengeProgress[c.id] ?? null });
-    if (m === 'GET' && s.length === 1) return CHALLENGES.filter((c) => (!q.budget || c.budget === q.budget) && (!q.difficulty || c.difficulty === q.difficulty)).map(withProgress);
+    if (m === 'GET' && s.length === 1) return CHALLENGES.filter((c) => (!c.intimate || this.state.intimacy.enabled) && (!q.budget || c.budget === q.budget) && (!q.difficulty || c.difficulty === q.difficulty)).map(withProgress);
     if (m === 'GET' && s[1] === 'progress') return CHALLENGES.filter((c) => this.state.challengeProgress[c.id]).map(withProgress);
     if (m === 'GET' && s[1] === 'featured') {
       const active = CHALLENGES.map(withProgress).find((c) => c.progress && ['PROPOSED', 'ACCEPTED'].includes(c.progress.status));
-      return active ? { challenge: active, kind: 'active' } : { challenge: withProgress(pick(CHALLENGES.filter((c) => !c.locked), new Date().getDate())), kind: 'suggestion' };
+      return active ? { challenge: active, kind: 'active' } : { challenge: withProgress(pick(CHALLENGES.filter((c) => !c.locked && !c.intimate), new Date().getDate())), kind: 'suggestion' };
     }
     const c = CHALLENGES.find((x) => x.id === s[1]);
     if (!c || m !== 'POST') return fail(404, 'NOT_FOUND', 'Défi introuvable.');
@@ -326,7 +326,7 @@ export class DemoApi {
   // ------------------------------------------------------------------ intimité
   private intimacy(m: string, s: string[], b: Body): unknown {
     const st = this.state.intimacy;
-    const settings = (): IntimacySettingsDto => ({ adultConfirmed: this.state.profile.adultConfirmed, moduleAvailable: true, enabled: st.enabled, enabledCategories: st.enabledCategories, maxIntensity: st.maxIntensity, partnerEnabled: true, bothEnabled: st.enabled, premium: false });
+    const settings = (): IntimacySettingsDto => ({ adultConfirmed: this.state.profile.adultConfirmed, moduleAvailable: true, enabled: st.enabled, enabledCategories: st.enabledCategories, maxIntensity: st.maxIntensity, partnerEnabled: true, bothEnabled: st.enabled, premium: true });
     const guard = () => {
       if (!this.state.profile.adultConfirmed) fail(403, 'ADULT_CONFIRMATION_REQUIRED', 'Confirmez votre majorité.');
       if (!st.enabled) fail(403, 'INTIMACY_DISABLED', 'Activez d’abord votre espace Intimité.');
@@ -356,6 +356,41 @@ export class DemoApi {
       st.iRequested = false;
       st.revealedAt = null;
       return undefined;
+    }
+    if (s[1] === 'cards') {
+      st.cardsSeen ??= []; st.cardsDone ??= 0; st.currentCard ??= null;
+      const table = (): CardTableDto => {
+        const morning = new Date(); morning.setHours(29, 0, 0, 0);
+        const cur = st.currentCard ? CARDS.find((c) => c.id === st.currentCard!.id) : null;
+        return {
+          levels: [1, 2, 3, 4].map((level) => { const remaining = CARDS.filter((c) => c.level === level && !st.cardsSeen.includes(c.id)).length; const reason = level > st.maxIntensity ? 'intensity' as const : null; return { level, available: !reason && remaining > 0, reason, remaining }; }),
+          current: cur && st.currentCard ? { card: cur, drawnByUserId: st.currentCard.drawnByUserId, drawnAt: st.currentCard.drawnAt } : null,
+          doneCount: st.cardsDone, expiresAt: st.currentCard || st.cardsSeen.length ? morning.toISOString() : null,
+        };
+      };
+      if (m === 'POST' && s[2] === 'draw') {
+        const level = Number(b.level);
+        if (level > st.maxIntensity) return fail(403, 'FORBIDDEN', 'Ce niveau dépasse l’intensité acceptée par l’un de vous deux.');
+        const pool = CARDS.filter((c) => c.level === level && !st.cardsSeen.includes(c.id));
+        if (!pool.length) return fail(409, 'CONFLICT', 'Plus de carte à ce niveau ce soir.');
+        const picked = pool[Math.floor(Math.random() * pool.length)]!;
+        st.cardsSeen.push(picked.id);
+        st.currentCard = { id: picked.id, drawnByUserId: ME_ID, drawnAt: now() };
+        return table();
+      }
+      if (m === 'POST' && s[2] === 'done') { if (st.currentCard) { st.cardsDone += 1; st.currentCard = null; } return table(); }
+      if (m === 'DELETE') { st.cardsSeen = []; st.cardsDone = 0; st.currentCard = null; return table(); }
+      return table();
+    }
+    if (s[1] === 'tonight') {
+      if (m === 'PUT') {
+        st.tonightMine = Boolean(b.on);
+        // Partenaire simulé : Camille allume le sien quand vous allumez le vôtre (démo).
+        st.tonightPartner = st.tonightMine;
+        if (st.tonightMine) this.notify('SUGGESTION', 'intimacy.tonight', 'Un signal partagé', 'Vous avez quelque chose en commun ce soir. À retrouver dans votre espace.', '/intimite');
+      }
+      const morning = new Date(); morning.setHours(29, 0, 0, 0);
+      return { mine: st.tonightMine, mutual: st.tonightMine && st.tonightPartner, expiresAt: st.tonightMine ? morning.toISOString() : null };
     }
     if (s[1] === 'matches') {
       if (m === 'POST' && s[2] === 'reveal') {

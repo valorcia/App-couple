@@ -1,63 +1,91 @@
 # DESIGN_SYSTEM — Entre Nous
 
 ## 1. Direction artistique
-**Éditorial chaleureux.** Une revue lifestyle haut de gamme plutôt qu'une app SaaS :
-grandes marges, typographie expressive, cartes aux coins doux, photographie et
-illustrations abstraites (formes organiques, textures papier), peu de couleurs vives à la
-fois. Les émotions passent par la lumière et le rythme, pas par des cœurs.
+**« Un soir d'hiver à deux ».** Un salon le soir : plaid, bougie, lumière chaude et basse,
+papier épais, encre douce. Chaleureux, intime, rassurant, un peu artisanal. Jamais
+clinique, jamais « SaaS » : on doit se sentir à la maison, pas dans un outil.
 
-Mots-clés : intime, lumineux, calme, complice, précis.
+Mots-clés : cocon, lumière, complicité, douceur, précision.
 
-À éviter : cœurs en motif, dégradés saturés, écrans denses, iconographie enfantine,
-tableaux de bord « corporate ».
+Principes :
+- **Lumière et matière** : halo chaud en haut de page (lampe), grain de papier très discret
+  (`body::before`, bruit SVG, opacité 4,5 % clair / 6 % sombre, `soft-light`), ombres
+  colorées prune (jamais gris pur), rayons généreux, cartes « coussin ».
+- **Une seule action évidente** par écran (bouton corail en dégradé), le reste en
+  surfaces douces.
+- **Discrétion visible** : verrous, mentions rassurantes, aucune donnée intime en évidence.
+
+À éviter : cœurs en motif, photos stock de couples, dégradés saturés, écrans denses,
+iconographie enfantine, stéréotypes de genre, tableaux de bord « corporate ».
 
 ## 2. Couleurs
 
 ### Palette de marque
 | Token | Clair | Sombre | Usage |
 | --- | --- | --- | --- |
-| `--ivory` | `#F8F3EC` | — | fond principal clair |
-| `--blush` (rose poudré) | `#EBC9C4` | `#5A3B3B` | surfaces douces, accents secondaires |
-| `--coral` | `#E0705A` | `#F08A74` | action principale, accent émotionnel |
-| `--plum` (prune) | `#4A2A4F` | `#D9C2DB` | titres, texte fort, fond sombre |
-| `--champagne` | `#E9D7B4` | `#8A7249` | surlignages, Premium |
-| `--charcoal` (anthracite) | `#2B2A2E` | `#1A191C` | texte, fond mode sombre |
+| `--ivory` | `#F9F3EA` | — | fond principal clair |
+| `--blush` (rose poudré) | `#EFCBC3` | `#3B2A32` (surface) | surfaces douces, piliers « S'aimer » |
+| `--coral` (terracotta) | `#D8664D` | `#F08F78` | action principale, accent émotionnel |
+| `--plum` (prune) | `#4B2A46` | `#DDC3DD` | titres, texte fort, cartes immersives |
+| `--plum-deep` / `--night` | `#2F1D33` | `#16101A` | surfaces « nuit » : jeu en cours, « On fait quoi ? », Double Secret |
+| `--champagne` | `#ECD9B4` | `#8F7449` | surlignages, Premium |
+| `--honey` (miel) | `#D9A441` | `#E3B35C` | chaleur, carte postale, piliers « S'amuser », bandeau démo |
+| `--sage` (sauge) | `#6E9B7F` | `#7FB391` | états positifs, piliers « Construire » |
+| `--charcoal` | `#2D2530` | `#1C1519` (fond) | texte, fond veilleuse |
 
 ### Tokens sémantiques
 ```
---bg            fond de page
---bg-elevated   cartes
---bg-muted      zones secondaires
---fg            texte principal
---fg-muted      texte secondaire
---border        séparateurs
---primary / --primary-fg      action principale (corail)
---secondary / --secondary-fg  action secondaire (prune)
---accent        champagne (Premium, surlignage)
---success --warning --danger --info
---ring          focus
+--bg / --bg-elevated / --bg-muted        page, cartes, zones secondaires
+--bg-blush / --bg-honey / --bg-sage      surfaces teintées
+--night / --night-elevated / --night-fg  surfaces immersives
+--fg / --fg-muted / --fg-subtle          texte
+--border / --border-strong               séparateurs
+--primary / --primary-fg                 corail (dégradé primary → primary-hover sur les boutons)
+--secondary / --secondary-fg             prune
+--accent / --accent-fg                   champagne (Premium)
+--success --warning --danger --info --ring
+--glow / --halo / --halo-2               halos (lampe) et lueurs
+--shadow-soft / --shadow-card / --shadow-lift / --shadow-glow
 ```
-Mode sombre : fond anthracite profond `#1A191C`, cartes `#242328`, texte ivoire
-`#F3EDE4`, corail éclairci pour le contraste, prune comme accent. Activation via
+Mode sombre « veilleuse » : fond brun-prune `#1C1519` (jamais noir), cartes `#261D23`,
+texte ivoire `#F5ECE2`, corail adouci, prune comme accent clair. Activation via
 `data-theme="dark"` (préférence système par défaut).
 
 Contraste : tous les couples texte/fond ≥ 4,5:1 (AA). Le corail sur ivoire est réservé
-aux éléments ≥ 18 px ou aux fonds pleins avec texte blanc.
+aux éléments ≥ 18 px, aux surtitres en capitales espacées et aux fonds pleins avec texte blanc.
 
 ## 3. Typographie
-- Titres : **Fraunces** (variable, serif éditoriale) — poids 500–600, interlettrage -1 %.
-- Texte : **Inter** (variable) — 400/500/600.
-- Échelle (web) : 12 / 14 / 16 / 18 / 22 / 28 / 36 / 48. Mobile : identique moins un cran
-  pour les titres de page.
-- Interligne : 1,5 texte, 1,15 titres.
+- Titres : **Fraunces** (variable). Axes exploités : `opsz` 144 et `SOFT` 100 + `WONK` 1
+  sur les `h1` et la classe `.font-display-soft` (côté manuscrit) ; `.font-display-italic`
+  pour les phrases douces (question du jour, révélations, citation). Poids 500.
+- Texte : **Inter** (variable) — 400/500/600. Surtitres : 11 px, capitales, interlettrage 0,18 em, corail.
+- Échelle (web) : 12 / 14 / 16 / 18 / 22 / 28 / 36 / 44 / 56 / 70 (héros).
+- Interligne : 1,5 texte, 1,12 titres. `text-wrap: balance` sur les titres, `pretty` sur les paragraphes.
 
 ## 4. Espacement, rayons, ombres
 - Grille 4 pt : 4, 8, 12, 16, 24, 32, 48, 64.
-- Rayons : `sm 10px`, `md 16px`, `lg 24px`, `pill 999px`. Cartes `lg`.
-- Ombres très douces et teintées prune : `0 8px 30px -12px rgb(74 42 79 / .18)`.
-- Bordures 1 px `--border` (ivoire foncé) plutôt que des ombres fortes.
+- Rayons : `sm 12px`, `md 18px`, `lg 28px`, `pill 999px`. Cartes `lg`.
+- Ombres colorées prune : `card` (repos), `soft` (surfaces nuit, boutons), `lift` (survol,
+  dialogues), `glow` (halo corail). Bordures 1 px `--border` sur les cartes claires.
+- Composants de composition (`packages/ui`) : `Surface` (section enveloppante avec halo,
+  tons warm / night / honey / blush), `Glow`, `SectionHeader` (surtitre + titre + note),
+  `Doodle` (pictos monochromes tracés à main levée : tasse, plaid, bougie, guirlande,
+  carnet, lune, clés, cœur noué, valise, étincelle, verrou), `Card` tons default / warm /
+  blush / champagne / honey / sage / plum / night avec `interactive` (élévation au survol),
+  `Badge` tons honey / sage / night, `EmptyState` avec doodle.
+
+### Identité « Les cartes du soir »
+Écran à part, volontairement non générique : table de nuit (`.card-table`, dégradé prune profond,
+vignette basse, liseré intérieur en pointillés), **sceaux de cire** pour les niveaux (`.wax-seal`,
+chiffres romains, flamme pour « Feu »), carte à retourner en 3D (`.card3d`, dos à motif de points
+`.card-back-pattern`, face papier crème `.card-front-paper` à coins ornementaux `.card-corner`),
+texte de la carte en Fraunces italique. Minuteur discret, deux actions seulement (« Fait », « Autre carte »).
 
 ## 5. Mouvement
+- Micro-animations : `animate-rise` (apparition + stagger via `--i`), `animate-bloom`,
+  `animate-curtain` (révélation des réponses), `animate-float` (illustrations), `hover-lift`.
+- Durées 150 / 250 / 420 ms, courbe `--ease`. `prefers-reduced-motion` neutralise tout.
+
 - Durées : 150 ms (micro), 250 ms (transitions), 400 ms (révélations).
 - Courbe : `cubic-bezier(.2,.8,.2,1)`.
 - Moments signature : révélation simultanée des réponses (deux cartes qui se retournent),

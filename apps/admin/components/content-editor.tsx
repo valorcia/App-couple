@@ -4,7 +4,7 @@ import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { Alert, Button, Dialog, DialogContent, Field, Input, Textarea } from '@couple/ui';
 import { api, errorMessage } from '@/lib/api';
 
-export type ContentType = 'questions' | 'challenges' | 'desires' | 'activities' | 'categories' | 'packs';
+export type ContentType = 'questions' | 'challenges' | 'desires' | 'cards' | 'activities' | 'categories' | 'packs';
 
 /** Description des champs par type : le formulaire est généré, le serveur valide (zod). */
 type FieldDef = { key: string; label: string; kind: 'text' | 'textarea' | 'number' | 'boolean' | 'select' | 'list'; options?: string[]; help?: string };
@@ -37,6 +37,12 @@ export const FIELDS: Record<ContentType, FieldDef[]> = {
     { key: 'category', label: 'Catégorie', kind: 'select', options: ['tenderness', 'romance', 'seduction', 'complicity', 'desires', 'fantasies', 'experiences'] },
     { key: 'intensity', label: 'Intensité (1-4)', kind: 'number' }, TIER, { key: 'packCode', label: 'Pack (code)', kind: 'text' }, LOCALE, COMMON_STATUS,
   ],
+  cards: [
+    { key: 'text', label: 'Carte (geste ou défi)', kind: 'textarea' },
+    { key: 'level', label: 'Niveau (1 douceur → 4 feu)', kind: 'number' },
+    { key: 'role', label: 'Qui réalise', kind: 'select', options: ['DRAWER', 'PARTNER', 'BOTH'], help: 'DRAWER : celui qui tire · PARTNER : l’autre · BOTH : à deux' },
+    { key: 'durationSec', label: 'Minuteur (secondes)', kind: 'number' }, TIER, LOCALE, COMMON_STATUS, { key: 'tags', label: 'Tags', kind: 'list' },
+  ],
   activities: [
     { key: 'title', label: 'Titre', kind: 'text' }, { key: 'description', label: 'Description', kind: 'textarea' },
     { key: 'moods', label: 'Ambiances', kind: 'list', help: 'ROMANTIC, FUNNY, RELAX, ADVENTURE, CULTURE, FOOD, SPICY' },
@@ -60,6 +66,7 @@ const DEFAULTS: Record<ContentType, Record<string, unknown>> = {
   questions: { gameType: 'SECRET_ANSWERS', level: 1, tier: 'FREE', locale: 'fr', status: 'DRAFT', tags: [] },
   challenges: { difficulty: 'EASY', budget: 'FREE', tier: 'FREE', locale: 'fr', status: 'DRAFT', instructions: [], materials: [], tags: [], intimate: false },
   desires: { category: 'tenderness', intensity: 1, tier: 'FREE', locale: 'fr', status: 'DRAFT' },
+  cards: { level: 1, role: 'DRAWER', tier: 'PREMIUM', locale: 'fr', status: 'DRAFT', tags: [] },
   activities: { moods: ['RELAX'], moments: ['WEEKEND'], company: ['COUPLE'], budget: 'FREE', indoor: true, intimate: false, tier: 'FREE', locale: 'fr', status: 'DRAFT', tags: [] },
   categories: { gameTypes: [], sortOrder: 0, status: 'PUBLISHED' },
   packs: { status: 'DRAFT' },

@@ -10,7 +10,7 @@ import { useAuth } from '@/lib/auth';
 import { ContentEditor, type ContentType } from '@/components/content-editor';
 
 const TYPES: { key: ContentType; label: string }[] = [
-  { key: 'questions', label: 'Questions' }, { key: 'challenges', label: 'Défis' }, { key: 'desires', label: 'Envies' }, { key: 'activities', label: 'Idées d’activités' }, { key: 'categories', label: 'Catégories' }, { key: 'packs', label: 'Packs' },
+  { key: 'questions', label: 'Questions' }, { key: 'challenges', label: 'Défis' }, { key: 'desires', label: 'Envies' }, { key: 'cards', label: 'Cartes du soir' }, { key: 'activities', label: 'Idées d’activités' }, { key: 'categories', label: 'Catégories' }, { key: 'packs', label: 'Packs' },
 ];
 
 export default function ContentPage() {
@@ -28,7 +28,7 @@ export default function ContentPage() {
   const setStatusM = useMutation({ mutationFn: ({ id, s }: { id: string; s: string }) => api.post(`/admin/content/${type}/${id}/status`, { status: s }), onSuccess: () => qc.invalidateQueries({ queryKey: ['admin', 'content'] }) });
 
   const label = (item: Record<string, unknown>) => String(item.text ?? item.title ?? item.name ?? '');
-  const sub = (item: Record<string, unknown>) => [item.gameType, (item.category as { name?: string } | undefined)?.name ?? item.category, item.tier, item.locale, item.intensity ? `intensité ${item.intensity}` : null, item.level && type === 'questions' ? `niveau ${item.level}` : null].filter(Boolean).join(' · ');
+  const sub = (item: Record<string, unknown>) => [item.gameType, (item.category as { name?: string } | undefined)?.name ?? item.category, item.tier, item.locale, item.intensity ? `intensité ${item.intensity}` : null, item.level && type === 'cards' ? `niveau ${item.level} · ${item.role}` : null, item.level && type === 'questions' ? `niveau ${item.level}` : null].filter(Boolean).join(' · ');
 
   return (
     <div className="space-y-6">

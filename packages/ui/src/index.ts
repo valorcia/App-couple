@@ -16,3 +16,7 @@ export * from './components/switch';
 export * from './components/checkbox';
 export * from './components/progress';
 export * from './components/select';
+export * from './components/doodle';
+export * from './components/glow';
+export * from './components/surface';
+export * from './components/section-header';

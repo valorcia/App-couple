@@ -60,6 +60,7 @@ function AuthGate() {
       <Stack.Screen name="quotidien" />
       <Stack.Screen name="projets/[id]" />
       <Stack.Screen name="intimite" />
+      <Stack.Screen name="intimite-cartes" />
       <Stack.Screen name="premium" />
       <Stack.Screen name="notifications-reglages" />
     </Stack>
