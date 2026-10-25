@@ -7,3 +7,4 @@ export * from './calendar';
 export * from './games';
 export * from './challenges';
 export * from './intimacy';
+export * from './ideas';

@@ -10,8 +10,10 @@ import { useRealtimeInvalidation } from '@/lib/realtime';
 import { eventColor } from '@/lib/calendar-utils';
 import { DailyQuestionCard } from '@/components/games/daily-question';
 import { FeaturedChallenge } from '@/components/challenges/featured-challenge';
+import { WhatNow } from '@/components/ideas/what-now';
+import * as React from 'react';
 import { CalendarDays, ClipboardList, Gamepad2, Gift, Sparkles } from 'lucide-react';
-import { Badge, Button, Card, CardContent, CardHeader, CardTitle, EmptyState } from '@couple/ui';
+import { Button, Card, CardContent, CardHeader, CardTitle, EmptyState } from '@couple/ui';
 import { useAuth } from '@/lib/auth-provider';
 
 function greetingKey(d = new Date()): 'morning' | 'afternoon' | 'evening' {
@@ -21,7 +23,6 @@ function greetingKey(d = new Date()): 'morning' | 'afternoon' | 'evening' {
 
 export function Dashboard() {
   const t = useTranslations('dashboard');
-  const tc = useTranslations('common');
   const { user } = useAuth();
   const coupleActive = user?.couple?.status === 'ACTIVE';
   const upcoming = useQuery({
@@ -34,6 +35,13 @@ export function Dashboard() {
     enabled: coupleActive,
   });
   useRealtimeInvalidation('calendar.changed', [['calendar']]);
+  const [whatNowOpen, setWhatNowOpen] = React.useState(false);
+  React.useEffect(() => {
+    const openFromHash = () => { if (window.location.hash === '#on-fait-quoi') setWhatNowOpen(true); };
+    openFromHash();
+    window.addEventListener('hashchange', openFromHash);
+    return () => window.removeEventListener('hashchange', openFromHash);
+  }, []);
   if (!user) return null;
   const couple = user.couple;
   const nextEvents = (upcoming.data ?? []).filter((e) => new Date(e.endAt) > new Date()).slice(0, 4);
@@ -62,12 +70,12 @@ export function Dashboard() {
           <div className="pointer-events-none absolute -right-10 -top-10 h-48 w-48 rounded-full bg-primary/30 blur-3xl" aria-hidden />
           <h2 id="ofq-title" className="text-3xl">{t('whatNow')}</h2>
           <p className="mt-2 opacity-80">{t('whatNowHint')}</p>
-          <Button className="mt-6" size="lg" disabled title={tc('comingSoon')}>
+          <Button className="mt-6" size="lg" onClick={() => setWhatNowOpen(true)} disabled={couple?.status !== 'ACTIVE'}>
             <Sparkles className="h-5 w-5" aria-hidden />{t('whatNow')}
           </Button>
-          <Badge tone="champagne" className="ml-3">{tc('comingSoon')}</Badge>
         </Card>
       </section>
+      <WhatNow open={whatNowOpen} onClose={() => { setWhatNowOpen(false); if (window.location.hash === '#on-fait-quoi') history.replaceState(null, '', window.location.pathname); }} />
 
       <div className="grid gap-6 md:grid-cols-2">
         <Card>

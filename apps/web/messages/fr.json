@@ -515,5 +515,69 @@
       "privacy": "Aucune réponse individuelle n'est jamais montrée. Une envie retirée disparaît aussitôt."
     },
     "locked": "Premium"
+  },
+  "ideas": {
+    "title": "On fait quoi ?",
+    "subtitle": "Quatre choix, quelques idées, et un moment ajouté à l'agenda si ça vous tente.",
+    "steps": {
+      "when": "Quand ?",
+      "who": "Avec qui ?",
+      "budget": "Quel budget ?",
+      "mood": "Quelle ambiance ?"
+    },
+    "moment": {
+      "NOW": "Maintenant",
+      "TONIGHT": "Ce soir",
+      "WEEKEND": "Ce week-end",
+      "DATE": "Une date"
+    },
+    "company": {
+      "COUPLE": "À deux",
+      "FAMILY": "En famille"
+    },
+    "budget": {
+      "FREE": "Gratuit",
+      "LOW": "Petit budget",
+      "MEDIUM": "Budget moyen",
+      "HIGH": "Budget libre"
+    },
+    "mood": {
+      "ROMANTIC": "Romantique",
+      "FUNNY": "Drôle",
+      "RELAX": "Détente",
+      "ADVENTURE": "Aventure",
+      "CULTURE": "Culture",
+      "FOOD": "Gastronomie",
+      "SPICY": "Coquine"
+    },
+    "date": "Date",
+    "go": "Voir les idées",
+    "back": "Modifier",
+    "again": "D'autres idées",
+    "results": "Nos propositions",
+    "empty": "Rien ne correspond exactement à ces critères. Élargissez le budget ou changez d'ambiance.",
+    "ai": {
+      "used": "Enrichi par Notre Complice",
+      "disabled": "Suggestions du catalogue (assistant IA non configuré).",
+      "quota": "Quota d'idées IA du mois atteint : suggestions du catalogue.",
+      "error": "L'assistant n'a pas répondu : suggestions du catalogue.",
+      "off": "Suggestions du catalogue.",
+      "remaining": "{count} idée(s) IA restante(s) ce mois-ci"
+    },
+    "doneBefore": "Déjà fait ensemble",
+    "minutes": "{count} min",
+    "indoor": "Intérieur",
+    "outdoor": "Extérieur",
+    "aiBadge": "Idée IA",
+    "schedule": {
+      "cta": "Ajouter à l'agenda",
+      "title": "Ajouter à l'agenda",
+      "body": "L'événement sera partagé et {partner} sera invité(e).",
+      "start": "Début",
+      "end": "Fin",
+      "confirm": "Confirmer",
+      "done": "C'est noté dans votre agenda.",
+      "seeCalendar": "Voir l'agenda"
+    }
   }
 }

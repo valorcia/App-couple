@@ -9,6 +9,7 @@ export const APP_SETTINGS = {
   'quota.free.dailyQuestionsPerDay': 1,
   'quota.free.aiRequestsPerMonth': 10,
   'quota.premium.aiRequestsPerMonth': 300,
+  'ai.ideas.cacheTtlSeconds': 6 * 3600,
   'quota.free.storageBytes': 500 * 1024 * 1024,
   'quota.premium.storageBytes': 20 * 1024 * 1024 * 1024,
   'quota.free.challengesCatalog': 5,

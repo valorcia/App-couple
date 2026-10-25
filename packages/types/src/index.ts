@@ -332,3 +332,36 @@ export interface DesireMatchesDto {
   partnerRequested: boolean;
   myAnswersCount: number;
 }
+
+// ---------------------------------------------------------------- « On fait quoi ? »
+export type IdeaMoment = 'NOW' | 'TONIGHT' | 'WEEKEND' | 'DATE';
+export type IdeaCompany = 'COUPLE' | 'FAMILY';
+export type IdeaBudget = 'FREE' | 'LOW' | 'MEDIUM' | 'HIGH';
+export type IdeaMood = 'ROMANTIC' | 'FUNNY' | 'RELAX' | 'ADVENTURE' | 'CULTURE' | 'FOOD' | 'SPICY';
+
+export interface IdeaDto {
+  id: string;
+  source: 'CATALOG' | 'AI';
+  title: string;
+  description: string;
+  budget: IdeaBudget;
+  durationMinutes: number | null;
+  indoor: boolean | null;
+  moods: IdeaMood[];
+  tags: string[];
+  /** Déjà réalisée par le couple (info, pas une exclusion stricte). */
+  doneBefore: boolean;
+}
+
+export interface IdeaSuggestionsDto {
+  ideas: IdeaDto[];
+  /** Fenêtre proposée pour l'ajout à l'agenda. */
+  suggestedStartAt: string;
+  suggestedEndAt: string;
+  ai: { used: boolean; reason: 'disabled' | 'quota' | 'error' | 'off' | null; remainingThisMonth: number | null };
+}
+
+export interface ScheduledIdeaDto {
+  eventId: string;
+  experienceId: string;
+}

@@ -1,6 +1,6 @@
 # DEVELOPMENT_STATUS
 
-Dernière mise à jour : 2026-10-25 — Phases 1 et 2 terminées, **Phase 3 en cours (jalons 1 à 5 livrés : agenda, moteur de jeux, 5 jeux + question du jour, défis, Double Secret)**.
+Dernière mise à jour : 2026-10-25 — Phases 1 et 2 terminées, **Phase 3 en cours (jalons 1 à 6 livrés : agenda, moteur de jeux, 5 jeux + question du jour, défis, Double Secret, « On fait quoi ? »)**.
 
 ## Fonctionnalités terminées
 
@@ -31,11 +31,12 @@ Dernière mise à jour : 2026-10-25 — Phases 1 et 2 terminées, **Phase 3 en c
 - **Défis à deux** (API + web) : catalogue filtrable (budget, difficulté, durée), verrouillage gratuit (`quota.free.challengesCatalog`) et Premium, défis intimes visibles seulement si l'espace Intimité est actif des deux côtés, cycle proposer → accepter → chacun valide sa part → réussi ensemble, passer sans pénalité, note facultative, « Défi du moment » (en cours ou suggestion stable du jour) sur l'accueil, notifications.
 - **Intimité & Double Secret** (API + web) : flag `intimacy.module`, confirmation de majorité datée, activation individuelle avec `ConsentRecord` INTIMACY (révocable), catalogue commun = intersection des catégories et intensités acceptées par chacun, réponses Oui / Non / Peut-être **jamais exposées au partenaire**, intersection des « Oui » calculée en SQL, révélation uniquement après demande des deux, retrait d'un « Oui » = disparition immédiate, suppression de ses réponses, notifications sans détail, audit sans contenu. Catégories gratuites configurables (`intimacy.freeCategories`).
 
+- **« On fait quoi ? »** (API + web) : assistant en 4 étapes (quand / avec qui / budget / ambiance), propositions du catalogue `ActivityIdea` (filtres, idées intimes seulement si l'espace Intimité est actif, idées déjà réalisées signalées), enrichissement IA facultatif via `packages/ai` (fournisseur Anthropic ou OpenAI-compatible, sorties JSON validées, règles de sécurité anti-injection, quotas mensuels par couple, cache Redis, journal `AIUsage` sans contenu) avec repli honnête sur le catalogue (raison affichée : désactivé / quota / erreur), ajout à l'agenda partagé par confirmation explicite (événement DATE + invitation du partenaire) et trace `Experience`.
+
 ## En cours
-- Jalon 6 : « On fait quoi ? ».
+- Jalon 7 : abonnements et entitlements (Stripe web, RevenueCat mobile).
 
 ## Restant (ordre prévu — voir docs/ROADMAP.md)
-6. « On fait quoi ? » (catalogue → agenda ; IA ensuite).
 7. Abonnements (Stripe web, RevenueCat mobile) + quotas gratuits.
 8. Notifications (préférences, heures silencieuses, push Expo).
 9. CMS admin des contenus.
@@ -52,10 +53,11 @@ Dernière mise à jour : 2026-10-25 — Phases 1 et 2 terminées, **Phase 3 en c
 | Unitaires `@couple/shared` | `pnpm --filter @couple/shared test` | 5 tests |
 | Unitaires `@couple/validation` | `pnpm --filter @couple/validation test` | 1 test |
 | Unitaires `@couple/game-engine` | `pnpm --filter @couple/game-engine test` | 5 tests |
-| API (unitaires + intégration sur PostgreSQL réel) | `pnpm --filter @couple/api test` | 49 tests : auth, couples, autorisations, admin, agenda, récurrence, temps réel, notifications, jeux, question du jour, défis, intimité |
+| Unitaires `@couple/ai` | `pnpm --filter @couple/ai test` | 4 tests |
+| API (unitaires + intégration sur PostgreSQL réel) | `pnpm --filter @couple/api test` | 51 tests : auth, couples, autorisations, admin, agenda, récurrence, temps réel, notifications, jeux, question du jour, défis, intimité, « On fait quoi ? » |
 | Lint + typecheck (toutes apps/packages) | `pnpm turbo run lint typecheck` | OK |
 | Build Next web + admin | `pnpm --filter @couple/web --filter @couple/admin build` | OK |
-| E2E Playwright (navigateur réel, API + web production) | `pnpm --filter @couple/web test:e2e` | 6 scénarios : onboarding à deux comptes, refus de connexion, agenda (partagé / occupé / privé / invitation), dilemme à deux + question du jour, défi à deux, Double Secret (activation, confidentialité, révélation mutuelle) |
+| E2E Playwright (navigateur réel, API + web production) | `pnpm --filter @couple/web test:e2e` | 7 scénarios : onboarding à deux comptes, refus de connexion, agenda (partagé / occupé / privé / invitation), dilemme à deux + question du jour, défi à deux, Double Secret (activation, confidentialité, révélation mutuelle), « On fait quoi ? » (catalogue → agenda) |
 
 ## Dépendances externes (à fournir)
 | Besoin | Variable(s) | Phase |

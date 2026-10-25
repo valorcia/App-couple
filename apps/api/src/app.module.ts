@@ -26,6 +26,8 @@ import { CalendarModule } from './modules/calendar/calendar.module';
 import { GamesModule } from './modules/games/games.module';
 import { IntimacyModule } from './modules/intimacy/intimacy.module';
 import { ChallengesModule } from './modules/challenges/challenges.module';
+import { IdeasModule } from './modules/ideas/ideas.module';
+import { AiModule } from './common/ai/ai.module';
 
 const SENSITIVE_PATHS = ['/auth', '/me/confirm-adult'];
 
@@ -68,6 +70,8 @@ const SENSITIVE_PATHS = ['/auth', '/me/confirm-adult'];
     GamesModule,
     IntimacyModule,
     ChallengesModule,
+    AiModule,
+    IdeasModule,
     HealthModule,
     DevModule.register(),
   ],

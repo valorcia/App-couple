@@ -42,7 +42,8 @@
     "zod": "^4.1.0",
     "rrule": "^2.8.1",
     "@socket.io/redis-adapter": "^8.3.0",
-    "@couple/game-engine": "workspace:*"
+    "@couple/game-engine": "workspace:*",
+    "@couple/ai": "workspace:*"
   },
   "devDependencies": {
     "@couple/config": "workspace:*",

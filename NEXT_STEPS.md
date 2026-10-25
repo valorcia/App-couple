@@ -18,13 +18,14 @@ pnpm test              # tout doit être vert avant de commencer
 2. `docs/DECISIONS.md` section A : arbitrages A1–A6. S'ils ont reçu une réponse du propriétaire, les appliquer d'abord.
 3. `docs/ARCHITECTURE.md` §4 (conventions API : guards, DTO de sortie, projections de confidentialité).
 
-## 3. Prochaine tâche : Phase 3, jalon 6 — « On fait quoi ? »
-- API `apps/api/src/modules/ideas/` : `POST /ideas/suggest` {moment, company, budget, mood, date?} → 3 à 5 `ActivityIdea` du catalogue (filtre moods/moments/company/budget, exclusion des idées déjà faites via `Experience` source CATALOG, tirage stable) ; `POST /ideas/:id/schedule` {startAt, endAt} → crée l'événement partagé (via `CalendarService.create`) après confirmation explicite ; enregistre une `Experience`.
-- IA facultative : `packages/ai` (interface `AiProvider`, `generateStructured` avec zod, quotas Redis par couple, cache) ; si `AI_PROVIDER=disabled` ou quota épuisé → catalogue seul, jamais de faux résultat.
-- Web : assistant en 4 étapes (Segmented + Chips), cartes de propositions, bouton « Ajouter à l'agenda » (confirmation), écran vide honnête si rien ne correspond.
-- Tests : filtres, exclusion des idées déjà faites, création d'événement, quota IA.
+## 3. Prochaine tâche : Phase 3, jalon 7 — Abonnements & entitlements
+- `apps/api/src/modules/billing/` : `GET /billing/products` (produits actifs), `POST /billing/checkout` (Stripe Checkout Session, mode subscription, `client_reference_id = coupleId`, URL succès/annulation web), `POST /billing/portal` (Stripe Billing Portal), `POST /webhooks/stripe` (signature vérifiée, idempotence `WebhookEvent`, `checkout.session.completed`, `customer.subscription.updated|deleted`, `invoice.payment_failed` → `Subscription` + `Entitlement` du couple), `POST /webhooks/revenuecat` (signature, `INITIAL_PURCHASE`, `RENEWAL`, `CANCELLATION`, `EXPIRATION` → idem), `GET /billing/status`.
+- Règles : un abonnement couvre le couple ; le body brut de la requête Stripe est nécessaire pour la signature (middleware `raw` sur la route) ; jamais de paiement simulé ; en l'absence de clés, `/billing/checkout` répond 503 `BILLING_UNAVAILABLE` et le web affiche l'état « paiement non configuré ».
+- Web : page `/premium` (offres depuis `/billing/products`, bouton Stripe), paywall contextuel (composant `PaywallCard` déclenché par les erreurs 402 `ENTITLEMENT_REQUIRED` / `QUOTA_EXCEEDED`), gestion de l'abonnement dans Profil.
+- Admin : vue abonnements (table `Subscription`), MRR simple.
+- Tests : webhooks signés (clé de test), idempotence, mise à jour des entitlements, expiration.
 
-Puis jalon 7 (abonnements Stripe/RevenueCat + entitlements), jalon 8 (push + préférences), jalon 9 (CMS admin), jalon 10 (mobile).
+Puis jalon 8 (push Expo + préférences + heures silencieuses), jalon 9 (CMS admin), jalon 10 (mobile).
 
 ## 4. Conventions à respecter
 - Jamais d'entité Prisma brute en sortie d'API : mapper vers un DTO explicite.
