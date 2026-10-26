@@ -1,0 +1,65 @@
+# Blueprint Render GRATUIT (0 €, sans carte) pour tester en conditions réelles : API sur le plan Free
+# (s'endort après 15 min sans trafic, premier chargement lent ensuite ; pas de notification du matin
+# pendant le sommeil) + Redis Key Value gratuit. La base Postgres vient de Neon (gratuite, Francfort) :
+# créer un projet sur neon.tech et coller sa « connection string » dans DATABASE_URL.
+# Dans Render : Blueprints → New Blueprint Instance → ce dépôt → Blueprint Path : render.free.yaml.
+# Pour une vraie mise en service, passer à render.yaml (plan Starter, toujours allumé).
+services:
+  - type: web
+    name: entre-nous-api
+    runtime: docker
+    repo: https://github.com/valorcia/App-couple
+    branch: master
+    region: frankfurt
+    plan: free
+    dockerfilePath: ./apps/api/Dockerfile
+    dockerContext: .
+    healthCheckPath: /health/ready
+    autoDeployTrigger: commit
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: API_PORT
+        value: "10000"
+      - key: PORT
+        value: "10000"
+      - key: COOKIE_SECURE
+        value: "true"
+      - key: WORKERS_INLINE
+        value: "true"
+      - key: MAIL_PROVIDER
+        value: resend
+      - key: SEED_ON_DEPLOY
+        value: "true"
+      - key: DATABASE_URL
+        sync: false # Neon : postgresql://…neon.tech/neondb?sslmode=require
+      - key: REDIS_URL
+        fromService:
+          type: keyvalue
+          name: entre-nous-redis
+          property: connectionString
+      - key: JWT_SECRET
+        generateValue: true
+      - key: DATA_ENCRYPTION_KEY
+        generateValue: true
+      - key: API_PUBLIC_URL
+        sync: false # https://entre-nous-api.onrender.com (adapter si Render change le nom)
+      - key: WEB_PUBLIC_URL
+        sync: false # https://app-couple-dun.vercel.app
+      - key: ADMIN_PUBLIC_URL
+        sync: false # https://app-couple-dun.vercel.app
+      - key: CORS_ORIGINS
+        sync: false # https://app-couple-dun.vercel.app
+      - key: MAIL_FROM
+        sync: false # Entre Nous <onboarding@resend.dev>
+      - key: RESEND_API_KEY
+        sync: false
+      - key: ADMIN_BOOTSTRAP_EMAILS
+        sync: false
+
+  - type: keyvalue
+    name: entre-nous-redis
+    region: frankfurt
+    plan: free
+    maxmemoryPolicy: noeviction
+    ipAllowList: []

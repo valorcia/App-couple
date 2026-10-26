@@ -71,11 +71,13 @@ Le dépôt contient un blueprint Render qui crée l'API (Docker, Francfort, plan
 
 1. Render → **New → Blueprint** → connecter GitHub → choisir `valorcia/App-couple` (branche `master`).
 2. Renseigner les variables demandées : `API_PUBLIC_URL`, `WEB_PUBLIC_URL`, `ADMIN_PUBLIC_URL`, `CORS_ORIGINS`, `MAIL_FROM`, `RESEND_API_KEY`, `ADMIN_BOOTSTRAP_EMAILS` (votre adresse : le compte est promu ADMIN au démarrage une fois créé dans l'app). `JWT_SECRET` et `DATA_ENCRYPTION_KEY` sont générés par Render (la clé de chiffrement est dérivée en 32 octets au démarrage).
-3. **Apply** : à chaque mise en ligne, `apps/api/scripts/pre-deploy.sh` applique les migrations puis, tant que `SEED_ON_DEPLOY=true`, le catalogue de contenu (jamais de comptes de démonstration en production). Passer `SEED_ON_DEPLOY` à `false` après la première mise en ligne pour que les modifications faites dans l'admin ne soient pas réécrites.
+3. **Apply** : à chaque démarrage du conteneur, `apps/api/scripts/start.sh` applique les migrations (`pre-deploy.sh`) puis, tant que `SEED_ON_DEPLOY=true`, le catalogue de contenu (jamais de comptes de démonstration en production). Passer `SEED_ON_DEPLOY` à `false` après la première mise en ligne pour que les modifications faites dans l'admin ne soient pas réécrites.
 4. Vérifier `https://<api>/health/ready` → 200, puis pointer `NEXT_PUBLIC_API_URL` du projet Vercel web sur cette URL et redéployer.
 5. Domaine : ajouter `api.<domaine>` dans Render (Settings → Custom Domains) et `app.<domaine>` sur Vercel. **Indispensable** pour que le cookie de session soit conservé (§5) : `*.vercel.app` + `*.onrender.com` sont deux sites différents.
 
 Coût indicatif : Starter 7 $/mois + Postgres Basic ≈ 6 $/mois ; Redis gratuit au départ.
+
+**Variante gratuite pour tester (`render.free.yaml`, 0 €, sans carte)** : même blueprint avec l'API sur le plan Free et Redis gratuit ; la base vient de **Neon** (neon.tech, gratuit, région Francfort, aucune expiration) et se colle dans `DATABASE_URL` à la création. Dans Render : Blueprints → New Blueprint Instance → *Blueprint Path* `render.free.yaml`. Limites : l'API s'endort après 15 min sans trafic (premier chargement de 30 à 60 s ensuite), donc pas de notification du matin ni de rappel pendant le sommeil ; à réserver aux tests, puis passer sur `render.yaml`.
 
 ## 5. Cookies et domaines
 

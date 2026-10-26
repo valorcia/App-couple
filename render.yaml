@@ -1,6 +1,7 @@
 # Blueprint Render (https://render.com/docs/blueprint-spec) : API + Postgres + Redis en un clic.
 # Dans Render : New → Blueprint → choisir ce dépôt → renseigner les variables marquées « sync: false ».
-# Le web et l'admin restent sur Vercel (docs/DEPLOYMENT.md §2-3).
+# Le web et l'admin restent sur Vercel (docs/DEPLOYMENT.md §2-3). Version gratuite pour tester : render.free.yaml.
+# Les migrations (et le catalogue si SEED_ON_DEPLOY=true) s'appliquent au démarrage du conteneur (apps/api/scripts/start.sh).
 services:
   - type: web
     name: entre-nous-api
@@ -12,7 +13,6 @@ services:
     dockerfilePath: ./apps/api/Dockerfile
     dockerContext: .
     healthCheckPath: /health/ready
-    preDeployCommand: sh /app/apps/api/scripts/pre-deploy.sh
     autoDeployTrigger: commit
     envVars:
       - key: NODE_ENV

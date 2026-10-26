@@ -26,6 +26,6 @@ USER node
 EXPOSE 4000
 HEALTHCHECK --interval=30s --timeout=5s CMD wget -qO- http://127.0.0.1:4000/health/live || exit 1
 WORKDIR /app/apps/api
-# Exécution via @swc-node/register (voir docs/ARCHITECTURE.md §3) ; migrations lancées séparément :
-#   pnpm --filter @couple/database migrate:deploy
-CMD ["node", "-r", "@swc-node/register", "src/main.ts"]
+# Exécution via @swc-node/register (voir docs/ARCHITECTURE.md §3). scripts/start.sh applique les migrations
+# au démarrage (MIGRATE_ON_START=false pour les lancer séparément : pnpm --filter @couple/database migrate:deploy).
+CMD ["sh", "scripts/start.sh"]
