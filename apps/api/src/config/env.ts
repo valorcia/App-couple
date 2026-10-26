@@ -1,3 +1,4 @@
+import { createHash } from 'node:crypto';
 import { z } from 'zod';
 
 const envSchema = z.object({
@@ -16,9 +17,10 @@ const envSchema = z.object({
   JWT_SECRET: z.string().min(32, 'JWT_SECRET doit faire au moins 32 caractères'),
   JWT_ACCESS_TTL: z.string().default('15m'),
   REFRESH_TOKEN_TTL_DAYS: z.coerce.number().int().min(1).max(365).default(30),
-  DATA_ENCRYPTION_KEY: z
-    .string()
-    .refine((v) => Buffer.from(v, 'base64').length === 32, 'DATA_ENCRYPTION_KEY : 32 octets encodés en base64 attendus (openssl rand -base64 32)'),
+  /** 32 octets en base64 (`openssl rand -base64 32`), ou n'importe quel secret d'au moins 32 caractères : il est alors dérivé en clé de 32 octets (SHA-256). */
+  DATA_ENCRYPTION_KEY: z.string().min(32, 'DATA_ENCRYPTION_KEY : au moins 32 caractères (idéalement openssl rand -base64 32)'),
+  /** Adresses (séparées par des virgules) promues ADMIN au démarrage si le compte existe : amorçage de l'administration en production. */
+  ADMIN_BOOTSTRAP_EMAILS: z.string().default(''),
   COOKIE_SECURE: z.coerce.boolean().default(false),
 
   MAIL_PROVIDER: z.enum(['console', 'smtp', 'resend']).default('console'),
@@ -58,10 +60,22 @@ export function loadEnv(source: NodeJS.ProcessEnv = process.env): Env {
     throw new Error(`Configuration invalide :\n  ${issues}`);
   }
   if (parsed.data.WORKERS_INLINE === undefined) parsed.data.WORKERS_INLINE = parsed.data.NODE_ENV !== 'production';
+  parsed.data.DATA_ENCRYPTION_KEY = normalizeEncryptionKey(parsed.data.DATA_ENCRYPTION_KEY);
   if (parsed.data.NODE_ENV === 'production' && parsed.data.RATE_LIMIT_DISABLED) {
     throw new Error('RATE_LIMIT_DISABLED est interdit en production');
   }
   return parsed.data;
+}
+
+/**
+ * Clé de chiffrement des champs : si la valeur est déjà 32 octets en base64, elle est gardée telle
+ * quelle ; sinon (secret généré par l'hébergeur, p. ex. Render `generateValue`), on dérive une clé de
+ * 32 octets par SHA-256. La dérivation est déterministe : la même valeur donne toujours la même clé.
+ */
+export function normalizeEncryptionKey(value: string): string {
+  const raw = Buffer.from(value, 'base64');
+  if (raw.length === 32 && raw.toString('base64').replace(/=+$/, '') === value.replace(/=+$/, '')) return value;
+  return createHash('sha256').update(value, 'utf8').digest('base64');
 }
 
 export const ENV = Symbol('ENV');

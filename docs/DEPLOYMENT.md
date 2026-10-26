@@ -6,7 +6,7 @@
 | --- | --- | --- |
 | `apps/web` (Next.js) | **Vercel** | Rendu Next.js natif, CDN, previews par branche. |
 | `apps/admin` (Next.js) | **Vercel** (projet séparé) | Même chose ; protéger l'URL (Vercel Authentication ou IP de confiance). |
-| `apps/api` (NestJS) | Serveur persistant : Railway, Fly.io, Render, Scaleway Containers, ou VM Docker | WebSockets Socket.IO, workers BullMQ, planificateur et connexions Redis longues : incompatibles avec un hébergement serverless. |
+| `apps/api` (NestJS) | Serveur persistant : **Render** (blueprint `render.yaml` fourni, §4 bis), Railway, Fly.io, Scaleway Containers, ou VM Docker | WebSockets Socket.IO, workers BullMQ, planificateur et connexions Redis longues : incompatibles avec un hébergement serverless. |
 | PostgreSQL 16 | Managé en UE (Neon, Supabase, Scaleway, OVH) | Données personnelles : rester en Union européenne (RGPD). |
 | Redis 7 | Managé (Upstash, Redis Cloud, Scaleway) | Rate limiting, cache, files BullMQ, adaptateur Socket.IO. |
 | Stockage objet | S3 compatible (Cloudflare R2, Scaleway) | Souvenirs, documents (Phase 4). |
@@ -64,6 +64,18 @@ WORKERS_INLINE=true                    # ou un second conteneur avec WORKER_MODE
 Puis, une seule fois par environnement : `pnpm db:migrate` (migrations Prisma) et, en staging seulement, `pnpm db:seed`.
 
 Clés optionnelles, à ajouter quand les comptes existent : `AI_PROVIDER` / `AI_API_KEY` / `AI_MODEL`, `STRIPE_SECRET_KEY` / `STRIPE_WEBHOOK_SECRET` (webhook `POST /billing/webhooks/stripe`), `REVENUECAT_WEBHOOK_SECRET` (webhook `POST /billing/webhooks/revenuecat`), `EXPO_ACCESS_TOKEN`, `S3_*`. Aucune clé n'est jamais commitée.
+
+### 4 bis. API sur Render en un clic (blueprint `render.yaml`)
+
+Le dépôt contient un blueprint Render qui crée l'API (Docker, Francfort, plan Starter), un Postgres 16 et un Redis (« Key Value », politique `noeviction` pour BullMQ) :
+
+1. Render → **New → Blueprint** → connecter GitHub → choisir `valorcia/App-couple` (branche `master`).
+2. Renseigner les variables demandées : `API_PUBLIC_URL`, `WEB_PUBLIC_URL`, `ADMIN_PUBLIC_URL`, `CORS_ORIGINS`, `MAIL_FROM`, `RESEND_API_KEY`, `ADMIN_BOOTSTRAP_EMAILS` (votre adresse : le compte est promu ADMIN au démarrage une fois créé dans l'app). `JWT_SECRET` et `DATA_ENCRYPTION_KEY` sont générés par Render (la clé de chiffrement est dérivée en 32 octets au démarrage).
+3. **Apply** : à chaque mise en ligne, `apps/api/scripts/pre-deploy.sh` applique les migrations puis, tant que `SEED_ON_DEPLOY=true`, le catalogue de contenu (jamais de comptes de démonstration en production). Passer `SEED_ON_DEPLOY` à `false` après la première mise en ligne pour que les modifications faites dans l'admin ne soient pas réécrites.
+4. Vérifier `https://<api>/health/ready` → 200, puis pointer `NEXT_PUBLIC_API_URL` du projet Vercel web sur cette URL et redéployer.
+5. Domaine : ajouter `api.<domaine>` dans Render (Settings → Custom Domains) et `app.<domaine>` sur Vercel. **Indispensable** pour que le cookie de session soit conservé (§5) : `*.vercel.app` + `*.onrender.com` sont deux sites différents.
+
+Coût indicatif : Starter 7 $/mois + Postgres Basic ≈ 6 $/mois ; Redis gratuit au départ.
 
 ## 5. Cookies et domaines
 

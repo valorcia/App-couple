@@ -1,0 +1,71 @@
+# Blueprint Render (https://render.com/docs/blueprint-spec) : API + Postgres + Redis en un clic.
+# Dans Render : New → Blueprint → choisir ce dépôt → renseigner les variables marquées « sync: false ».
+# Le web et l'admin restent sur Vercel (docs/DEPLOYMENT.md §2-3).
+services:
+  - type: web
+    name: entre-nous-api
+    runtime: docker
+    repo: https://github.com/valorcia/App-couple
+    branch: master
+    region: frankfurt # données personnelles en Union européenne
+    plan: starter # toujours allumé : WebSockets, planificateur, files BullMQ
+    dockerfilePath: ./apps/api/Dockerfile
+    dockerContext: .
+    healthCheckPath: /health/ready
+    preDeployCommand: sh /app/apps/api/scripts/pre-deploy.sh
+    autoDeployTrigger: commit
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: API_PORT
+        value: "10000"
+      - key: PORT
+        value: "10000"
+      - key: COOKIE_SECURE
+        value: "true"
+      - key: WORKERS_INLINE
+        value: "true" # files traitées dans le même conteneur (un seul service à payer)
+      - key: MAIL_PROVIDER
+        value: resend
+      - key: SEED_ON_DEPLOY
+        value: "true" # catalogue de contenu (questions, cartes, défis…) ; passer à false après la première mise en ligne
+      - key: DATABASE_URL
+        fromDatabase:
+          name: entre-nous-db
+          property: connectionString
+      - key: REDIS_URL
+        fromService:
+          type: keyvalue
+          name: entre-nous-redis
+          property: connectionString
+      - key: JWT_SECRET
+        generateValue: true
+      - key: DATA_ENCRYPTION_KEY
+        generateValue: true # dérivée en clé de 32 octets au démarrage (apps/api/src/config/env.ts)
+      - key: API_PUBLIC_URL
+        sync: false # ex. https://api.votredomaine.fr (ou l'URL onrender.com le temps des tests)
+      - key: WEB_PUBLIC_URL
+        sync: false # ex. https://app.votredomaine.fr
+      - key: ADMIN_PUBLIC_URL
+        sync: false # ex. https://admin.votredomaine.fr
+      - key: CORS_ORIGINS
+        sync: false # ex. https://app.votredomaine.fr,https://admin.votredomaine.fr
+      - key: MAIL_FROM
+        sync: false # ex. Entre Nous <bonjour@votredomaine.fr> (domaine vérifié chez Resend)
+      - key: RESEND_API_KEY
+        sync: false
+      - key: ADMIN_BOOTSTRAP_EMAILS
+        sync: false # votre adresse : promue ADMIN au démarrage une fois le compte créé dans l'app
+
+  - type: keyvalue
+    name: entre-nous-redis
+    region: frankfurt
+    plan: free # 25 Mo : suffisant pour démarrer (rate limiting, cache, files) ; passer à starter avec la croissance
+    maxmemoryPolicy: noeviction # obligatoire pour BullMQ
+    ipAllowList: [] # accès interne uniquement
+
+databases:
+  - name: entre-nous-db
+    region: frankfurt
+    plan: basic-256mb
+    postgresMajorVersion: "16"
